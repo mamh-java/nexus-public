@@ -406,9 +406,7 @@ public class OrientBrowseNodeStore
                 ""));
       }
     }
-    if(repository.getFormat().getValue().equals("raw")){
-      Collections.reverse(listItems);
-    }
+
     return listItems;
   }
 

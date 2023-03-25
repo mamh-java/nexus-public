@@ -131,7 +131,7 @@ public class RepositoryBrowseResource
     final List<BrowseListItem> listItems = hasChildren ?
         browseNodeQueryService.toListItems(repository, browseNodes) :
         Collections.emptyList();
-
+    Collections.reverse(listItems);
     //if there are visible children return them, or if we are at the root node and permitted to browse the repo
     if (hasChildren || (isRoot(repositoryPath) && permitted)) {
       return Response

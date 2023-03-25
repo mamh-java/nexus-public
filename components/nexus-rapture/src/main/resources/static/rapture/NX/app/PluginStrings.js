@@ -48,7 +48,7 @@ Ext.define('NX.app.PluginStrings', {
     Column_No_Data: 'No data',
 
     // Header
-    Header_Panel_Logo_Text: 'Sonatype Nexus Repository Manager',
+    Header_Panel_Logo_Text: 'Nexus制品库',
     Header_BrowseMode_Title: 'Browse',
     Header_BrowseMode_Tooltip: 'Browse server contents',
     Header_AdminMode_Title: 'Administration',

@@ -254,7 +254,9 @@ public class OrientBrowseNodeStore
     }
 
     results.sort(getBrowseNodeComparator(format));
-
+    if(repository.getFormat().getValue().equals("raw")){
+      Collections.reverse(results);
+    }
     return results;
   }
 
@@ -404,7 +406,9 @@ public class OrientBrowseNodeStore
                 ""));
       }
     }
-
+    if(repository.getFormat().getValue().equals("raw")){
+      Collections.reverse(listItems);
+    }
     return listItems;
   }
 

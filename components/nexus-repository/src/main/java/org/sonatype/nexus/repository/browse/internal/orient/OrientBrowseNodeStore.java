@@ -375,7 +375,7 @@ public class OrientBrowseNodeStore
     List<BrowseListItem> listItems = new ArrayList<>();
 
     if (nodes != null) {
-      SimpleDateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
+      SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
       for (BrowseNode browseNode : nodes) {
         String size = null;
         String lastModified = null;

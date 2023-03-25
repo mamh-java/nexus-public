@@ -82,12 +82,17 @@
             </td>
             <td align="right">
                 #if( $listItem.collection )
-                    &nbsp;
                 #else
                     $listItem.size
                 #end
             </td>
-            <td>$listItem.description</td>
+            <td>
+                #if( $listItem.collection )
+                    目录 $listItem.description
+                #else
+                    文件 $listItem.description
+                #end
+            </td>
         </tr>
     #end
 </table>

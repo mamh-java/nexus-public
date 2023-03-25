@@ -17,6 +17,8 @@ import javax.inject.Named;
 
 import org.sonatype.nexus.common.app.VersionComparator;
 
+import java.util.regex.Pattern;
+
 /**
  * Sort using VersionComparator when dealing with two components, fall back to node name when dealing
  * with any other comparison of the same type (component/asset/folder), finally fall back to node type
@@ -36,6 +38,8 @@ public class DefaultBrowseNodeComparator
   private static final int TYPE_FOLDER = 2;
 
   private static final int TYPE_ASSET = 3;
+
+  private static final Pattern VERSION_RE = Pattern.compile("^\\d+$", Pattern.CASE_INSENSITIVE);
 
   @Inject
   public DefaultBrowseNodeComparator(final VersionComparator versionComparator) {
@@ -57,7 +61,13 @@ public class DefaultBrowseNodeComparator
     }
 
     if (o1Type == o2Type) {
-      return o1.getName().compareToIgnoreCase(o2.getName());
+      if(isNumberLike(o1.getName()) && isNumberLike(o2.getName())){
+        int number1 = Integer.parseInt( o1.getName() );
+        int number2 = Integer.parseInt( o2.getName() );
+        return Integer.compare(number1, number2);
+      } else {
+        return o1.getName().compareToIgnoreCase(o2.getName());
+      }
     }
 
     return Integer.compare(o1Type, o2Type);
@@ -74,4 +84,9 @@ public class DefaultBrowseNodeComparator
 
     return TYPE_FOLDER;
   }
+
+  private boolean isNumberLike(final String version) {
+    return VERSION_RE.matcher(version).matches();
+  }
+
 }

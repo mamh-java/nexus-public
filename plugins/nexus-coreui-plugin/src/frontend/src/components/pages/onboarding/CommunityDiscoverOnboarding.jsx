@@ -27,11 +27,8 @@ export default function CommunityDiscoverOnboarding() {
   return (
     <div className="discover-onboarding-screen">
       <div>
-        <p>Sonatype Nexus Repository Community Edition provides powerful tools to support your deployments.
-          <br/>
-          <NxTextLink target="_blank" className="ce-onboarding-learn-more-link" href={discoverLink}>Learn more about the Community Edition.</NxTextLink>
-        </p>
-        
+        <p>Nexus Repository Community Edition provides powerful tools to support your deployments.{' '}
+        <NxTextLink target="_blank" className="ce-onboarding-learn-more-link" href={discoverLink}>Learn more about the Community Edition.</NxTextLink></p>
         <p><strong>Benefits:</strong> Support for all formats, OCI, PostgreSQL, Kubernetes, and smart usage tracking.</p>
       </div>
 

@@ -18,8 +18,7 @@ import {ExtJS} from '@sonatype/nexus-ui-plugin';
 import {
   NxTextLink,
   NxErrorAlert,
-  NxWarningAlert,
-  NxH3
+  NxWarningAlert
 } from '@sonatype/react-shared-components';
 import './CEHardLimitsBanners.scss';
 import CEHardLimitBannersMachine from './CEHardLimitBannersMachine';
@@ -28,7 +27,7 @@ import {helperFunctions} from './UsageHelper';
 
 const {
   useGracePeriodEndDate,
-  useViewPurchaseALicenseUrl,
+  useViewPricingUrl,
   useThrottlingStatus,
   useDaysUntilGracePeriodEnds
 } = helperFunctions;
@@ -55,6 +54,7 @@ export default function CEHardLimitBanners({onClose}) {
   const isCommunityEdition = ExtJS.state().getEdition() === 'COMMUNITY';
 
   const gracePeriodEndDate = useGracePeriodEndDate();
+  const viewPricingUrl = useViewPricingUrl();
   const throttlingStatus = useThrottlingStatus();
   const daysUntilGracePeriodEnds = useDaysUntilGracePeriodEnds();
 
@@ -83,7 +83,7 @@ export default function CEHardLimitBanners({onClose}) {
     return <>
       <NxTextLink className="review-usage-link" onClick={scrollToUsageCenter}>
         Review your usage
-      </NxTextLink> or <NxTextLink className="usage-view-pricing-link" href={useViewPurchaseALicenseUrl()} target="_blank">
+      </NxTextLink> or <NxTextLink className="usage-view-pricing-link" href={viewPricingUrl} target="_blank">
         purchase a license to remove limits.
       </NxTextLink>
     </>
@@ -124,7 +124,6 @@ export default function CEHardLimitBanners({onClose}) {
         }
         {throttlingStatus === 'OVER_LIMITS_GRACE_PERIOD_ENDED' &&
           <NxErrorAlert className="ce-banner-over-limit-grace-period-ended">
-            <NxH3 className="banner-header">{HEADER.OVER_LIMITS.TITLE}</NxH3>
             <p>{BANNERS.OVER_LIMIT_END_GRACE} <ContactLinks /></p>
           </NxErrorAlert>
         }

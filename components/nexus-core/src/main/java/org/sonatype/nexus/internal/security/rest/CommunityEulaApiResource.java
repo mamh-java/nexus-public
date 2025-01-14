@@ -17,7 +17,6 @@ import java.util.Optional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.sonatype.nexus.kv.GlobalKeyValueStore;
@@ -44,7 +43,6 @@ public class CommunityEulaApiResource
   @RequiresPermissions("nexus:*")
   @RequiresAuthentication
   @GET
-  @Produces(MediaType.APPLICATION_JSON)
   public EulaStatus getCommunityEulaStatus() {
     Optional<NexusKeyValue> eulaStatusOptional = globalKeyValueStore.getKey(EULA_KEY);
     EulaStatus eulaStatus = new EulaStatus();
@@ -58,7 +56,6 @@ public class CommunityEulaApiResource
     else {
       eulaStatus.setAccepted(false);
     }
-    eulaStatus.setDisclaimer(EulaStatus.EXPECTED_DISCLAIMER);
     return eulaStatus;
   }
 
@@ -68,15 +65,10 @@ public class CommunityEulaApiResource
   @RequiresPermissions("nexus:*")
   @Consumes(MediaType.APPLICATION_JSON)
   public void setEulaAcceptedCE(EulaStatus eulaStatus) {
-    if (eulaStatus.hasExpectedDisclaimer()) {
-      NexusKeyValue kv = new NexusKeyValue();
-      kv.setKey(EULA_KEY);
-      kv.setType(ValueType.OBJECT);
-      kv.setValue(Map.of("accepted", eulaStatus.isAccepted()));
-      globalKeyValueStore.setKey(kv);
-    }
-    else {
-      throw new IllegalArgumentException("Invalid EULA disclaimer");
-    }
+    NexusKeyValue kv = new NexusKeyValue();
+    kv.setKey(EULA_KEY);
+    kv.setType(ValueType.OBJECT);
+    kv.setValue(Map.of("accepted", eulaStatus.isAccepted()));
+    globalKeyValueStore.setKey(kv);
   }
 }

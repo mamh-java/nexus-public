@@ -35,8 +35,7 @@ Ext.define('NX.coreui.view.formfield.SettingsFieldSet', {
     'NX.coreui.view.formfield.factory.FormfieldTextFieldFactory',
     'NX.coreui.view.formfield.factory.FormfieldUrlFactory',
     'NX.coreui.view.formfield.factory.FormfieldStaticInfoFactory',
-    'NX.coreui.view.formfield.factory.FormfieldTaskScopeFactory',
-    'NX.coreui.view.formfield.factory.FormfieldPanelMessageFactory'
+    'NX.coreui.view.formfield.factory.FormfieldTaskScopeFactory'
   ],
 
   mixins: {

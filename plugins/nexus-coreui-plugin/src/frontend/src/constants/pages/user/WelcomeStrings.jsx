@@ -10,6 +10,7 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
+import { NxTextLink } from '@sonatype/react-shared-components';
 import React from 'react';
 
 export default {
@@ -72,13 +73,13 @@ export default {
       },
       HEADER: {
         BUTTONS: {
-          LEARN_MORE: 'Learn More',
+          GET_STARTED: 'Get Started',
           RESTORE_USAGE: 'How to Restore Usage',
           PURCHASE_NOW: 'Purchase Now'
         },
         OVER_LIMITS: {
           STATUS_INDICATOR: 'Usage over limits',
-          WARNING: (endDate) => <>Usage limits came into effect on {endDate}. As usage levels are currently higher than the Nexus Repository Community Edition maximum, new components can no longer be added to this instance.</>,
+          WARNING: (endDate) => <>As of {endDate}, new components cannot be added while usage exceeds limits.</>,
           TITLE: 'Usage Limits In Effect'
         },
         APPROACHING_LIMITS: {
@@ -96,7 +97,7 @@ export default {
         },
         GRACE_PERIOD: {
           OVER_WARNING: (endDate) => <>Starting {endDate}, new components cannot be added.</>,
-          UNDER_WARNING: (endDate) => <>Usage limits take effect on {endDate}. When the usage exceeds the Nexus Repository Community Edition maximum, new components can no longer be added to this instance.</>,
+          UNDER_WARNING: (endDate) => <> Starting {endDate} when you exceed usage limits, you will not be able to add new components.</>,
           TITLE: (endDate) => <>Usage Limits Will Be Enforced Starting {endDate}</>
         }
       },

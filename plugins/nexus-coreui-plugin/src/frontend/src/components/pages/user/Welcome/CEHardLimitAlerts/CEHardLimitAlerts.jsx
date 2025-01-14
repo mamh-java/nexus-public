@@ -19,6 +19,7 @@ import {
   NxH3,
   NxButtonBar,
   NxWarningAlert,
+  NxInfoAlert,
   NxTextLink
 } from '@sonatype/react-shared-components';
 
@@ -29,8 +30,7 @@ import './CEHardLimitAlerts.scss';
 
 const {
   useGracePeriodEndDate,
-  useViewLearnMoreUrl,
-  useViewPurchaseALicenseUrl,
+  useViewPricingUrl,
   useThrottlingStatus
 } = helperFunctions;
 
@@ -51,39 +51,58 @@ export default function CEHardLimitAlerts() {
   const isCommunityEdition = ExtJS.state().getEdition() === 'COMMUNITY';
 
   const gracePeriodEndDate = useGracePeriodEndDate();
+  const viewPricingUrl = useViewPricingUrl();
   const throttlingStatus = useThrottlingStatus();
 
   const isUnderEndGraceDismissed = document.cookie.includes('under_end_grace=dismissed');
   const dismissedBanners = state.context.dismissedBanners || [];
 
+  const utmParams = {
+    utm_medium: 'product',
+    utm_source: 'nexus_repo_community',
+    utm_campaign: 'repo_community_usage'
+  };
+
   function PurchaseOrUploadHeaderLinks() {
     return(
       <>
-        <NxTextLink target="_blank" className="usage-view-pricing-link" href={useViewPurchaseALicenseUrl()}>Purchase a license to remove limits</NxTextLink>, or if you have already purchased a license{' '}
+        Purchase a license to remove limits, or if you have already purchased a license{' '}
         <NxTextLink className="ce-upload-license" href="#admin/system/licensing">upload it here</NxTextLink>.
         <NxButtonBar>
           <a
             className="nx-btn nx-btn--primary usage-view-pricing-button"
             target="_blank"
-            href={useViewLearnMoreUrl()}>
-            {HEADER.BUTTONS.LEARN_MORE}
+            href={viewPricingUrl}>
+            {HEADER.BUTTONS.GET_STARTED}
           </a>
         </NxButtonBar>
       </>
     );
   }
 
+  function UnderLimitsInGracePeriodLinks() {
+    return (
+      <>
+        <NxTextLink target="_blank" className="usage-view-pricing-link" href={viewPricingUrl}>Purchase a license to remove limits</NxTextLink>
+          , or if you have already purchased a license{' '}
+        <NxTextLink className="ce-upload-license" href="#admin/system/licensing">upload it here</NxTextLink>.
+      </>
+    )
+  }
+
   function ThrottlingHeaderAlertLinks() {
+    const restoreUsageLink = `http://links.sonatype.com/products/nxrm3/how-to-restore-usage?${new URLSearchParams(utmParams).toString()}`;
+
     return(
       <>
         Purchase a license to remove limits, or if you have already purchased a license{' '}
         <NxTextLink className="ce-upload-license" href="#admin/system/licensing">upload it here</NxTextLink>.
         <NxButtonBar>
-          <a className="nx-btn ce-restore-usage" target="_blank" href={useViewLearnMoreUrl()}>{HEADER.BUTTONS.LEARN_MORE}</a>
+          <a className="nx-btn ce-restore-usage" target="_blank" href={restoreUsageLink}>{HEADER.BUTTONS.RESTORE_USAGE}</a>
           <a
             className="nx-btn nx-btn--primary usage-view-pricing-button"
             target="_blank"
-            href={useViewPurchaseALicenseUrl()}>
+            href={viewPricingUrl}>
             {HEADER.BUTTONS.PURCHASE_NOW}</a>
         </NxButtonBar>
       </>
@@ -118,12 +137,12 @@ export default function CEHardLimitAlerts() {
           </>
         }
         {throttlingStatus === 'BELOW_LIMITS_IN_GRACE' && !dismissedBanners.includes('below_limits_in_grace') && <>
-            <NxWarningAlert className="ce-alert-under-limit-in-grace-period" onClose={() => dismiss('below_limits_in_grace')}>
+            <NxInfoAlert className="ce-alert-under-limit-in-grace-period" onClose={() => dismiss('below_limits_in_grace')}>
               <div>
                 {HEADER.GRACE_PERIOD.UNDER_WARNING(gracePeriodEndDate)}{' '}
-                <PurchaseOrUploadHeaderLinks />
+                <UnderLimitsInGracePeriodLinks />
               </div>
-            </NxWarningAlert>
+            </NxInfoAlert>
           </>
         }
         {throttlingStatus === 'OVER_LIMITS_GRACE_PERIOD_ENDED' && <>

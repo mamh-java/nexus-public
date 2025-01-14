@@ -44,7 +44,7 @@ Ext.define('NX.view.AboutWindow', {
       align: 'stretch'
     };
 
-    me.height = 465;
+    me.height = 480;
     me.width = NX.view.ModalDialog.LARGE_MODAL;
 
     me.title = NX.I18n.get('AboutWindow_Title');
@@ -79,6 +79,11 @@ Ext.define('NX.view.AboutWindow', {
             title: NX.I18n.get('AboutWindow_About_Title'),
             xtype: 'uxiframe',
             src: NX.util.Url.urlOf('/COPYRIGHT.html')
+          },
+          {
+            title: NX.I18n.get('AboutWindow_License_Tab'),
+            xtype: 'uxiframe',
+            src: NX.util.Url.licenseUrl()
           }
         ]
       }

@@ -533,22 +533,19 @@ public class S3BlobStore
       BlobId propRef = new BlobId(blobId.asUniqueString(), UTC.now());
       String softDeletedLocation = attributePath(propRef);
 
-      String softDeletedPrefixLocation = getLocationPrefix(propRef);
       DateTime deletedDateTime = new DateTime();
       blobAttributes.setDeleted(true);
       blobAttributes.setDeletedReason(reason);
       blobAttributes.setDeletedDateTime(deletedDateTime);
-      blobAttributes.setSoftDeletedLocation(softDeletedPrefixLocation);
+      blobAttributes.setSoftDeletedLocation(getLocationPrefix(propRef));
       blobAttributes.store();
 
       // Save properties file under the new location
-      String originalPrefixLocation = getLocationPrefix(blobId);
-      if (!originalPrefixLocation.equals(softDeletedPrefixLocation)) {
-        S3BlobAttributes newBlobAttributes = new S3BlobAttributes(s3, getConfiguredBucket(), softDeletedLocation);
-        newBlobAttributes.updateFrom(blobAttributes);
-        newBlobAttributes.setOriginalLocation(originalPrefixLocation);
-        newBlobAttributes.store();
-      }
+      S3BlobAttributes newBlobAttributes = new S3BlobAttributes(s3, getConfiguredBucket(), softDeletedLocation);
+      newBlobAttributes.updateFrom(blobAttributes);
+      newBlobAttributes.setOriginalLocation(getLocationPrefix(blobId));
+      newBlobAttributes.store();
+
       // soft delete is implemented using an S3 lifecycle that sets expiration on objects with DELETED_TAG
       // tag the bytes
       s3.setObjectTagging(tagAsDeleted(contentPath(blobId)));

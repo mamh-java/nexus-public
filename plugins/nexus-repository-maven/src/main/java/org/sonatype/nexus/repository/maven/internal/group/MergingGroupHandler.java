@@ -18,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -64,7 +65,7 @@ public class MergingGroupHandler
 
   @Inject
   public MergingGroupHandler(
-      @Named Cooperation2Factory cooperationFactory,
+      final Cooperation2Factory cooperationFactory,
       @Named("${nexus.maven.group.cooperation.enabled:-true}") final boolean cooperationEnabled,
       @Named("${nexus.maven.group.cooperation.majorTimeout:-0s}") final Duration majorTimeout,
       @Named("${nexus.maven.group.cooperation.minorTimeout:-30s}") final Duration minorTimeout,
@@ -78,16 +79,17 @@ public class MergingGroupHandler
         .build(getClass());
   }
 
-  protected Response doGetHash(@Nonnull final Context context) throws Exception {
+  protected Response doGetHash(@Nonnull final Context context) throws Exception
+  {
     final MavenPath mavenPath = context.getAttributes().require(MavenPath.class);
     final MavenGroupFacet groupFacet = context.getRepository().facet(MavenGroupFacet.class);
     final Repository repository = context.getRepository();
     log.trace("Incoming request for {} : {}", context.getRepository().getName(), mavenPath.getPath());
 
-    // hashes need the parent asset(s) loaded into cache, they are calculated as a side effect of that
+    //hashes need the parent asset(s) loaded into cache, they are calculated as a side effect of that
     final MavenPath parentPath = mavenPath.subordinateOf();
 
-    // Create a new context to request the parent path and prime the caches with the subordinates
+    //Create a new context to request the parent path and prime the caches with the subordinates
     final Context copyContext = context.copy(
         oldAttributes -> {
           AttributesMap newAttributes = new AttributesMap();
@@ -174,6 +176,7 @@ public class MergingGroupHandler
       }
     });
 
+
     if (content != null) {
       return HttpResponses.ok(content);
     }
@@ -186,7 +189,8 @@ public class MergingGroupHandler
   private Optional<Content> checkCache(
       @Nonnull final MavenGroupFacet groupFacet,
       @Nonnull final MavenPath mavenPath,
-      @Nonnull final Repository repository) throws IOException
+      @Nonnull final Repository repository)
+      throws IOException
   {
     try {
       // check group-level cache to see if it's been invalidated by any updates

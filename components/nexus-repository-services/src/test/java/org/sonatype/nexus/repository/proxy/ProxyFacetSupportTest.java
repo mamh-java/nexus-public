@@ -68,6 +68,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -192,7 +193,7 @@ public class ProxyFacetSupportTest
     underTest.installDependencies(eventManager);
     underTest.attach(repository);
     DefaultCooperation2Factory cooperationFactory = new DefaultCooperation2Factory();
-    underTest.configureCooperation(cooperationFactory,false, Duration.ofSeconds(0),
+    underTest.configureCooperation(cooperationFactory, cooperationFactory, false, false, false, Duration.ofSeconds(0),
         Duration.ofSeconds(60), 10);
     underTest.buildCooperation();
   }
@@ -347,6 +348,69 @@ public class ProxyFacetSupportTest
     doThrow(e).when(underTest).getCachedContent(cachedContext);
 
     underTest.get(cachedContext);
+  }
+
+  /*
+   * Verifies that distributed cooperation is used when nexus.proxy.clustered.cooperation.enabled is set to true
+   */
+  @Test
+  public void testDistributedCooperationSelected() throws IOException {
+    DefaultCooperation2Factory distributedCooperationFactory = spy(new DefaultCooperation2Factory());
+    DefaultCooperation2Factory defaultCooperationFactory = spy(new DefaultCooperation2Factory());
+
+    underTest.configureCooperation(distributedCooperationFactory, defaultCooperationFactory, true, true, true,
+        Duration.ofSeconds(0), Duration.ofSeconds(60), 10);
+
+    verify(distributedCooperationFactory).configure();
+    verify(defaultCooperationFactory, never()).configure();
+  }
+
+  /*
+   * Verifies that default cooperation is used when nexus.proxy.clustered.cooperation.enabled is set to false
+   * in clustered mode
+   */
+  @Test
+  public void testLocalCooperationSelectedWhenProxyCooperationDisabledInClusteredMode() throws IOException {
+    DefaultCooperation2Factory distributedCooperationFactory = spy(new DefaultCooperation2Factory());
+    DefaultCooperation2Factory defaultCooperationFactory = spy(new DefaultCooperation2Factory());
+
+    underTest.configureCooperation(distributedCooperationFactory, defaultCooperationFactory, false, true, true,
+        Duration.ofSeconds(0), Duration.ofSeconds(60), 10);
+
+    verify(defaultCooperationFactory, times(1)).configure();
+    verify(distributedCooperationFactory, never()).configure();
+  }
+
+  /*
+   * Verifies that default cooperation is used when nexus.proxy.clustered.cooperation.enabled is set to true in
+   * non-clustered mode
+   */
+  @Test
+  public void testLocalCooperationSelectedInNonClusteredMode() throws IOException {
+    // select default cooperation factory, when nexus.proxy.clustered.cooperation.enabled is enabled in non-clustered
+    // mode
+    DefaultCooperation2Factory localCooperationFactory = spy(new DefaultCooperation2Factory());
+    DefaultCooperation2Factory defaultCooperationFactory = spy(new DefaultCooperation2Factory());
+
+    underTest.configureCooperation(defaultCooperationFactory, localCooperationFactory, true, false, true,
+        Duration.ofSeconds(0), Duration.ofSeconds(60), 10);
+
+    verify(defaultCooperationFactory, times(1)).configure();
+    verify(localCooperationFactory, never()).configure();
+  }
+
+  /*
+   * Verifies that injected cooperation factory(OrientCooperation2Factory) is used when
+   * nexus.proxy.clustered.cooperation.enabled is set to true in non-clustered mode and orient
+   */
+  @Test
+  public void testLocalCooperationSelectedInNonClusteredModeAndOrient() throws IOException {
+    DefaultCooperation2Factory cooperationFactory = spy(new DefaultCooperation2Factory());
+
+    underTest.configureCooperation(cooperationFactory, null, true, false, true, Duration.ofSeconds(0),
+        Duration.ofSeconds(60), 10);
+
+    verify(cooperationFactory, times(1)).configure();
   }
 
   @Test

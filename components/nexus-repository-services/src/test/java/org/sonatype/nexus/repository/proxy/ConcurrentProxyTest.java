@@ -227,18 +227,14 @@ public class ConcurrentProxyTest
 
   void waitForThreadCooperation(final int expectedCount) {
     await().until(
-        () -> underTest.getThreadCooperationPerRequest()
-            .entrySet()
-            .stream()
+        () -> underTest.getThreadCooperationPerRequest().entrySet().stream()
             .collect(summingInt(Entry<String, Integer>::getValue)),
         is(expectedCount));
   }
 
   void waitForThreadCooperation(final String filename, final int expectedCount) {
     await().until(
-        () -> underTest.getThreadCooperationPerRequest()
-            .entrySet()
-            .stream()
+        () -> underTest.getThreadCooperationPerRequest().entrySet().stream()
             .filter(entry -> entry.getKey().contains(filename))
             .collect(summingInt(Entry<String, Integer>::getValue)),
         is(expectedCount));
@@ -263,6 +259,7 @@ public class ConcurrentProxyTest
   void waitForCooperationExceptionCount(final int expectedCount) {
     await().until(() -> cooperationExceptionCount.get(), is(expectedCount));
   }
+
 
   ConcurrentTask verifyValidGet(final Request request) {
     return () -> {
@@ -313,7 +310,7 @@ public class ConcurrentProxyTest
   public void noDownloadCooperation() throws Exception {
     int iterations = 3;
 
-    underTest.configureCooperation(cooperationFactory, false, Duration.ofSeconds(0),
+    underTest.configureCooperation(cooperationFactory, cooperationFactory, false, false, false, Duration.ofSeconds(0),
         Duration.ofSeconds(0), 0);
     underTest.buildCooperation();
 
@@ -374,7 +371,7 @@ public class ConcurrentProxyTest
   public void downloadCooperation() throws Exception {
     int iterations = 3;
 
-    underTest.configureCooperation(cooperationFactory, true, Duration.ofSeconds(60),
+    underTest.configureCooperation(cooperationFactory, cooperationFactory, true, false, true, Duration.ofSeconds(60),
         Duration.ofSeconds(10),
         NUM_CLIENTS);
     underTest.buildCooperation();
@@ -464,7 +461,7 @@ public class ConcurrentProxyTest
   public void limitCooperatingThreads() throws Exception {
     int threadLimit = 10;
 
-    underTest.configureCooperation(cooperationFactory, true, Duration.ofSeconds(60),
+    underTest.configureCooperation(cooperationFactory, cooperationFactory, false, false, true, Duration.ofSeconds(60),
         Duration.ofSeconds(10),
         threadLimit);
     underTest.buildCooperation();

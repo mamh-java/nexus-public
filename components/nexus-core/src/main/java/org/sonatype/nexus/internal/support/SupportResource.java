@@ -28,6 +28,8 @@ import org.sonatype.nexus.supportzip.SupportZipGenerator;
 import org.sonatype.nexus.common.log.SupportZipGeneratorRequest;
 import org.sonatype.nexus.supportzip.SupportZipGenerator.Result;
 
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import io.swagger.annotations.Api;
@@ -38,6 +40,8 @@ import java.util.Date;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM;
+import static org.sonatype.nexus.repository.http.HttpStatus.FORBIDDEN;
+import static org.sonatype.nexus.repository.http.HttpStatus.OK;
 
 /**
  * Resource for support API.
@@ -60,6 +64,10 @@ public class SupportResource
   @RequiresAuthentication
   @RequiresPermissions("nexus:atlas:create")
   @ApiOperation("Creates and downloads a support zip")
+  @ApiResponses({
+      @ApiResponse(code = OK, message = "successful operation"),
+      @ApiResponse(code = FORBIDDEN, message = "Insufficient permissions to generate support zip")
+  })
   @Consumes(APPLICATION_JSON)
   @Produces(APPLICATION_OCTET_STREAM)
   @POST
@@ -74,6 +82,10 @@ public class SupportResource
   @RequiresAuthentication
   @RequiresPermissions("nexus:atlas:create")
   @ApiOperation("Creates a support zip and returns the path")
+  @ApiResponses({
+      @ApiResponse(code = OK, message = "successful operation"),
+      @ApiResponse(code = FORBIDDEN, message = "Insufficient permissions to generate support zip")
+  })
   @Consumes(APPLICATION_JSON)
   @Produces(APPLICATION_JSON)
   @POST

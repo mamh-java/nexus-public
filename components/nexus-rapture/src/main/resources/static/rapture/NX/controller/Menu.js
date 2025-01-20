@@ -150,6 +150,9 @@ Ext.define('NX.controller.Menu', {
         '#breadcrumb button': {
           click: me.warnBeforeButtonClick
         },
+        '#nx-health-check-warnings': {
+          click: me.warnBeforeButtonClick
+        },
         'nx-actions button[handler]': {
           click: me.warnBeforeButtonClick
         },

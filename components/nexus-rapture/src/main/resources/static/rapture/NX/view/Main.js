@@ -155,7 +155,7 @@ Ext.define('NX.view.Main', {
         collapseMenu: false,
         ui: 'nx-mode',
         cls: ['nx-health-button-green', 'nx-modebutton'],
-        onClick: function() {
+        handler: function() {
           NX.Bookmarks.navigateTo(NX.Bookmarks.fromToken('admin/support/status'));
         }
       },

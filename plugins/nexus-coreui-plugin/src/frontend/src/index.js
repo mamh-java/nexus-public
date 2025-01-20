@@ -350,7 +350,7 @@ window.plugins.push({
       iconCls: 'x-fa fa-file-archive',
       visibility: {
         bundle: 'org.sonatype.nexus.plugins.nexus-coreui-plugin',
-        permissions: [Permissions.METRICS.READ]
+        permissions: [Permissions.ATLAS.READ]
       }
     },
     {

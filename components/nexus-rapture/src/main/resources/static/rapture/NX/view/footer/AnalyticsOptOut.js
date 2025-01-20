@@ -47,10 +47,11 @@ Ext.define('NX.view.footer.AnalyticsOptOut', {
    */
   initComponent: function() {
     var me = this;
+    var lockGraphicUrl = NX.app.relativePath + "/static/rapture/resources/images/lock-graphic-01.svg";
 
     me.items = [
       {
-        html: '<img alt="lock" class="nx-coreui-component-analyticsoptout-banner-icon" src="/static/rapture/resources/images/lock-graphic-01.svg" />'
+        html: '<img alt="lock" class="nx-coreui-component-analyticsoptout-banner-icon" src="' + lockGraphicUrl + '" />'
       }
     ];
 

@@ -51,6 +51,10 @@ Ext.define('NX.controller.dev.Developer', {
     }
   ],
 
+  _OVER_LIMITS: 'Over limits',
+  _NEAR_LIMITS: '75% usage',
+  _UNDER_LIMITS: 'Under limits',
+
   /**
    * @protected
    */
@@ -225,6 +229,123 @@ Ext.define('NX.controller.dev.Developer', {
     Ext.Object.each(provider.state, function (key, value) {
       provider.clear(key);
     });
-  }
+  },
 
+  /**
+   * Can be used to disconnect the state updates at runtime for debugging
+   */
+  toggleStateUpdates: function() {
+    var state = NX.State.controller();
+    if (state.statusProvider.isConnected()) {
+      state.statusProvider.disconnect();
+      NX.Messages.warning('State updates disconnected');
+    }
+    else {
+      state.statusProvider.connect();
+      NX.Messages.info('State updates re-connected');
+    }
+  },
+
+  //-- Simulate various Community Edition States, disconnect state updates first --//
+
+  showUnderLimitsPreGracePeriod: function() {
+    NX.State.setValues({
+      contentUsageEvaluationResult: this.mockMetricData(),
+      'nexus.community.gracePeriodEnds': '',
+      'nexus.community.throttlingStatus': this._UNDER_LIMITS
+    });
+  },
+
+  showNearLimitsPreGracePeriod: function() {
+    NX.State.setValues({
+      contentUsageEvaluationResult: this.mockMetricData(75000, 150000),
+      'nexus.community.gracePeriodEnds': '',
+      'nexus.community.throttlingStatus': this._NEAR_LIMITS
+    });
+  },
+
+  showUnderLimitsInGracePeriod: function() {
+    NX.State.setValues({
+      contentUsageEvaluationResult: this.mockMetricData(),
+      'nexus.community.gracePeriodEnds': this.relativeGracePeriodDate(7),
+      'nexus.community.throttlingStatus': this._UNDER_LIMITS
+    });
+  },
+
+  showNearLimitsInGracePeriod: function() {
+    NX.State.setValues({
+      contentUsageEvaluationResult: this.mockMetricData(75000, 150000),
+      'nexus.community.gracePeriodEnds': this.relativeGracePeriodDate(7),
+      'nexus.community.throttlingStatus': this._NEAR_LIMITS
+    });
+  },
+
+  showOverLimitsInGracePeriod: function() {
+    NX.State.setValues({
+      contentUsageEvaluationResult: this.mockMetricData(100000, 200000),
+      'nexus.community.gracePeriodEnds': this.relativeGracePeriodDate(7),
+      'nexus.community.throttlingStatus': this._OVER_LIMITS
+    });
+  },
+
+  showUnderLimitsPostGracePeriod: function() {
+    NX.State.setValues({
+      contentUsageEvaluationResult: this.mockMetricData(),
+      'nexus.community.gracePeriodEnds': this.relativeGracePeriodDate(-7),
+      'nexus.community.throttlingStatus': this._UNDER_LIMITS
+    });
+  },
+
+  showNearLimitsPostGracePeriod: function() {
+    NX.State.setValues({
+      contentUsageEvaluationResult: this.mockMetricData(75000, 150000),
+      'nexus.community.gracePeriodEnds': this.relativeGracePeriodDate(-7),
+      'nexus.community.throttlingStatus': this._NEAR_LIMITS
+    });
+  },
+
+  showOverLimitsPostGracePeriod: function() {
+    NX.State.setValues({
+      contentUsageEvaluationResult: this.mockMetricData(100000, 200000),
+      'nexus.community.gracePeriodEnds': this.relativeGracePeriodDate(-7),
+      'nexus.community.throttlingStatus': this._OVER_LIMITS
+    });
+  },
+
+  mockMetricData: function(components, requests) {
+    // below limits
+    return [
+      {
+        "metricName": "peak_requests_per_day",
+        "metricValue": requests || 0,
+        "thresholds": [
+          {"thresholdName": "HARD_THRESHOLD", "thresholdValue": 200000},
+          {"thresholdName": "SOFT_THRESHOLD", "thresholdValue": 20000}
+        ],
+        "utilization": "FREE_TIER",
+        "aggregates": [{"name": "content_request_count", "value": requests || 0, "period": "peak_recorded_count_30d"}]
+      }, {
+        "metricName": "component_total_count",
+        "metricValue": components || 0,
+        "thresholds": [
+          {"thresholdName": "HARD_THRESHOLD", "thresholdValue": 100000},
+          {"thresholdName": "SOFT_THRESHOLD", "thresholdValue": 100000}
+        ],
+        "utilization": "FREE_TIER",
+        "aggregates": [{"name": "component_total_count", "value": components || 0, "period": "peak_recorded_count_30d"}]
+      }, {
+        "metricName": "successful_last_24h",
+        "metricValue": 0,
+        "thresholds": [{"thresholdName": "SOFT_THRESHOLD", "thresholdValue": 100}],
+        "utilization": "FREE_TIER",
+        "aggregates": [{"name": "unique_user_count", "value": 0, "period": "peak_recorded_count_30d"}]
+      }
+    ];
+  },
+
+  relativeGracePeriodDate: function (dayOffset) {
+    var nextWeek = new Date();
+    nextWeek.setDate(new Date().getDate() + dayOffset);
+    return nextWeek.toISOString();
+  }
 });

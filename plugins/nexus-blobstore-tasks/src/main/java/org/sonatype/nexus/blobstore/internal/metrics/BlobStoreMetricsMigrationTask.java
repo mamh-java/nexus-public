@@ -95,9 +95,9 @@ public class BlobStoreMetricsMigrationTask
       Map<OperationType, OperationMetrics> operationMetrics = propertiesReader.getOperationMetrics();
 
       if (metricsFromFile != null && operationMetrics != null) {
-          log.debug("Found metrics {} for {}:{} should be migrated to DB", metricsFromDb, blobStoreType, blobStoreName);
-          metricsStore.initializeMetrics(blobStoreName);
-          metricsStore.updateMetrics(toBlobStoreMetricsEntity(blobStoreName, metricsFromFile, operationMetrics));
+        log.info("Found metrics {} for {}:{} should be migrated to DB", metricsFromDb, blobStoreType, blobStoreName);
+        metricsStore.initializeMetrics(blobStoreName);
+        metricsStore.updateMetrics(toBlobStoreMetricsEntity(blobStoreName, metricsFromFile, operationMetrics));
       }
     }
     catch (Exception e) {
@@ -120,7 +120,7 @@ public class BlobStoreMetricsMigrationTask
         .orElseThrow(() -> new IllegalStateException("Missing method"));
 
     try {
-      method.invoke(propertiesReader,  blobstore);
+      method.invoke(propertiesReader, blobstore);
     }
     catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       throw new IllegalStateException(e);

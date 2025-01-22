@@ -42,9 +42,8 @@ public class BlobStoreMetricsMigrationTaskDescriptor
             BLOBSTORE_NAME_FIELD_ID,
             "Blob store",
             "Select the blob store(s) to obtain metrics for",
-            MANDATORY
-          )
-          .withStoreApi("coreui_Blobstore.ReadNoneGroupEntriesIncludingEntryForAll")
-          .withIdMapping("name"));
+            MANDATORY)
+                .withStoreApi("coreui_Blobstore.readNoneGroupEntriesIncludingEntryForAll")
+                .withIdMapping("name"));
   }
 }

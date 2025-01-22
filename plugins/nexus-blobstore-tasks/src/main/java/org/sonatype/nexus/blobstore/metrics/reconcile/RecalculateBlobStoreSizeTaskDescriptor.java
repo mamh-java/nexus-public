@@ -25,7 +25,7 @@ import static org.sonatype.nexus.common.app.FeatureFlags.RECALCULATE_BLOBSTORE_S
 import static org.sonatype.nexus.formfields.FormField.MANDATORY;
 
 /**
- * Task descriptor for  {@link RecalculateBlobStoreSizeTask}
+ * Task descriptor for {@link RecalculateBlobStoreSizeTask}
  */
 @AvailabilityVersion(from = "1.0")
 @Named
@@ -48,9 +48,7 @@ public class RecalculateBlobStoreSizeTaskDescriptor
             BLOBSTORE_NAME_FIELD_ID,
             "Blob store",
             "Select the blob store(s) to recalculate",
-            MANDATORY
-        ).withStoreApi("coreui_Blobstore.ReadNoneGroupEntriesIncludingEntryForAll")
-            .withIdMapping("name")
-    );
+            MANDATORY).withStoreApi("coreui_Blobstore.readNoneGroupEntriesIncludingEntryForAll")
+                .withIdMapping("name"));
   }
 }

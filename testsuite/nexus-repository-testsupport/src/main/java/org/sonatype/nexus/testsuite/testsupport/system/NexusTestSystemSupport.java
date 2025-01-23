@@ -67,6 +67,9 @@ public abstract class NexusTestSystemSupport<R extends RepositoryTestSystem, C e
   @Inject
   private ConfigTestSystem config;
 
+  @Inject
+  private KeyValueTestSystem keyValues;
+
   protected NexusTestSystemSupport(
       final R repositories,
       final C capabilities)
@@ -160,8 +163,12 @@ public abstract class NexusTestSystemSupport<R extends RepositoryTestSystem, C e
     return config;
   }
 
+  public KeyValueTestSystem keyValues() {
+    return keyValues;
+  }
+
   /**
-   * Wait for nexus to be done active processing of any running tasks and any elasticsearch updates.  If you have a
+   * Wait for nexus to be done active processing of any running tasks and any elasticsearch updates. If you have a
    * test that is acting 'flaky' not having this after running a task or adding/removing components is likely the cause
    */
   public void waitForCalmPeriod() {

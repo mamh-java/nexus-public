@@ -34,6 +34,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriBuilder;
 
+import org.sonatype.nexus.kv.GlobalKeyValueStore;
 import org.sonatype.nexus.pax.exam.NexusPaxExamSupport;
 import org.sonatype.nexus.pax.exam.distribution.NexusTestDistribution.Distribution;
 import org.sonatype.nexus.pax.exam.distribution.NexusTestDistributionService;
@@ -109,6 +110,8 @@ public abstract class NexusITSupport
 
   protected static final String REST_SERVICE_PATH = "service/rest";
 
+  private static final String EULA_KEY = "nexus.community.eula.accepted";
+
   @Rule
   public TestName testName = new TestName();
 
@@ -139,8 +142,12 @@ public abstract class NexusITSupport
   @Inject
   private SearchService searchService;
 
+  @Inject
+  private GlobalKeyValueStore keyValues;
+
   @Rule
-  public SecurityRule securityRule = new SecurityRule(() -> securitySystem, () -> selectorManager, () -> anonymousManager);
+  public SecurityRule securityRule =
+      new SecurityRule(() -> securitySystem, () -> selectorManager, () -> anonymousManager);
 
   @Configuration
   public static Option[] configureNexus() {
@@ -152,6 +159,16 @@ public abstract class NexusITSupport
    */
   public static Option[] configureNexusBase() {
     return NexusTestDistributionService.getInstance().getDistribution(Distribution.BASE);
+  }
+
+  @Before
+  public void acceptCeEula() {
+    keyValues.setBoolean(EULA_KEY, true);
+  }
+
+  @After
+  public void removeCeEulaAcceptance() {
+    keyValues.removeKey(EULA_KEY);
   }
 
   /**
@@ -179,7 +196,7 @@ public abstract class NexusITSupport
 
   @After
   public void verifyNoDeadBlobs() throws Exception {
-    //only need to verify no dead blobs for non-newdb dbs
+    // only need to verify no dead blobs for non-newdb dbs
     if (getValidTestDatabase().isUseContentStore()) {
       doVerifyNoDeadBlobs();
     }
@@ -228,8 +245,7 @@ public abstract class NexusITSupport
     return builder;
   }
 
-  protected void doUseCredentials(final URL nexusUrl, final HttpClientBuilder builder)
-  {
+  protected void doUseCredentials(final URL nexusUrl, final HttpClientBuilder builder) {
     builder.setDefaultCredentialsProvider(credentialsProvider(nexusUrl));
   }
 
@@ -318,7 +334,6 @@ public abstract class NexusITSupport
     return null;
   }
 
-
   /**
    * @return the last header containing a cookie; {@code null} if it doesn't exist
    */
@@ -379,8 +394,7 @@ public abstract class NexusITSupport
       return restClientFactory
           .create(RestClientConfiguration.DEFAULTS
               .withHttpClient(() -> httpClient)
-              .withCustomizer(getObjectMapperCustomizer(testSuiteObjectMapperResolver))
-          )
+              .withCustomizer(getObjectMapperCustomizer(testSuiteObjectMapperResolver)))
           .register(new BasicAuthentication(credentials.getUserPrincipal().getName(), credentials.getPassword()));
     }
     catch (Exception e) {
@@ -407,7 +421,7 @@ public abstract class NexusITSupport
    * Preform a get request
    *
    * @param baseUrl (nexusUrl in most tests)
-   * @param path    to the resource
+   * @param path to the resource
    * @return the response object
    */
   protected Response get(final URL baseUrl, final String path) throws Exception {
@@ -417,16 +431,17 @@ public abstract class NexusITSupport
   /**
    * Preform a get request
    *
-   * @param baseUrl               (nexusUrl in most tests)
-   * @param path                  to the resource
-   * @param headers               {@link Header}s
+   * @param baseUrl (nexusUrl in most tests)
+   * @param path to the resource
+   * @param headers {@link Header}s
    * @param useDefaultCredentials use {@link NexusITSupport#clientBuilder(URL, boolean)} for using credentials
    * @return the response object
    */
-  protected Response get(final URL baseUrl,
-                         final String path,
-                         final Header[] headers,
-                         final boolean useDefaultCredentials) throws Exception
+  protected Response get(
+      final URL baseUrl,
+      final String path,
+      final Header[] headers,
+      final boolean useDefaultCredentials) throws Exception
   {
     HttpGet request = new HttpGet();
     request.setURI(UriBuilder.fromUri(baseUrl.toURI()).path(path).build());
@@ -450,7 +465,8 @@ public abstract class NexusITSupport
   protected String buildNexusUrl(final String... segments) {
     try {
       return nexusUrl.toURI().resolve(Joiner.on('/').join(asList(segments))).toString();
-    } catch (URISyntaxException ex) {
+    }
+    catch (URISyntaxException ex) {
       throw new RuntimeException(ex);
     }
   }

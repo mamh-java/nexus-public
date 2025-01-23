@@ -40,7 +40,7 @@ Ext.define('NX.ext.grid.column.Renderers', {
    * Converts and renders a given date to locale string.
    */
   formattedDate: function(value) {
-    return new Date(value).toLocaleString();
+    return value ? new Date(value).toLocaleString() : '';
   },
 
   /**

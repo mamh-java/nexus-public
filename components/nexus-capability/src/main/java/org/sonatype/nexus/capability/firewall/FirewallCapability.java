@@ -26,7 +26,7 @@ public class FirewallCapability
 {
   private static final String CLM_CAPABILITY_ID = "clm";
 
-  public static final String AUDIT_QUARANTINE_CAPABILITY_ID = "firewall.audit";
+  private static final String AUDIT_QUARANTINE_CAPABILITY_ID = "firewall.audit";
 
   private FirewallCapability() {
     throw new IllegalStateException("Utility class");
@@ -58,14 +58,5 @@ public class FirewallCapability
             .withProperty("quarantine", "true")
             .enabled())
         .size();
-  }
-
-  public static boolean isFirewallSupportedFormat(String format) {
-    for (FirewallSupportedFormat supportedFormat : FirewallSupportedFormat.values()) {
-      if (supportedFormat.getValue().equals(format)) {
-        return true;
-      }
-    }
-    return false;
   }
 }

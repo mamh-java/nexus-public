@@ -50,10 +50,18 @@ public abstract class FilteredHttpClientSupport
   }
 
   @Override
-  protected CloseableHttpResponse doExecute(final HttpHost target, final HttpRequest request, final HttpContext context)
-      throws IOException
+  protected CloseableHttpResponse doExecute(
+      final HttpHost target,
+      final HttpRequest request,
+      final HttpContext context) throws IOException
   {
-    return filter(target, () -> delegate.execute(target, request, context));
+    try {
+      return filter(target, () -> delegate.execute(target, request, context));
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
@@ -61,8 +69,9 @@ public abstract class FilteredHttpClientSupport
     delegate.close();
   }
 
-  protected abstract CloseableHttpResponse filter(final HttpHost target, final Filterable filterable)
-      throws IOException;
+  protected abstract CloseableHttpResponse filter(
+      final HttpHost target,
+      final Filterable filterable) throws IOException, InterruptedException;
 
   @VisibleForTesting
   public interface Filterable

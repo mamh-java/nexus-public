@@ -102,7 +102,7 @@ public class BrowseUnsupportedHandler
       String action = context.getRequest().getAction();
       String path = context.getRequest().getPath();
       log.debug("Matching: {} {}", action, path);
-      if (HttpMethods.GET.equals(action)) {
+      if (HttpMethods.GET.equals(action) || HttpMethods.HEAD.equals(action)) {
         path = Strings2.lower(path);
         return path.endsWith("/") || path.endsWith("/index.html") || path.endsWith("/index.htm");
       }

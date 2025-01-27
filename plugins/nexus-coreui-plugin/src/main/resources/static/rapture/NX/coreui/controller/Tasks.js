@@ -369,18 +369,19 @@ Ext.define('NX.coreui.controller.Tasks', {
   bindRunButton: function(button) {
     var me = this;
     button.mon(
-        NX.Conditions.and(
-            NX.Conditions.isPermitted('nexus:tasks:start'),
-            NX.Conditions.watchEvents(me.getObservables(), me.watchEventsHandler({run: true}))
-        ),
-        {
-          satisfied: function () {
-            button.enable();
-          },
-          unsatisfied: function () {
-            button.disable();
-          }
-        }
+      NX.Conditions.and(
+        NX.Conditions.isPermitted('nexus:tasks:start'),
+        NX.Conditions.watchEvents(me.getObservables(), me.watchEventsHandler({ run: true }))
+      ),
+      {
+        satisfied: function () {
+          button.enable();
+          button.focus();
+        },
+        unsatisfied: function () {
+          button.disable();
+        },
+      }
     );
   },
 
@@ -392,18 +393,19 @@ Ext.define('NX.coreui.controller.Tasks', {
   bindStopButton: function(button) {
     var me = this;
     button.mon(
-        NX.Conditions.and(
-            NX.Conditions.isPermitted('nexus:tasks:stop'),
-            NX.Conditions.watchEvents(me.getObservables(), me.watchEventsHandler({stop: true}))
-        ),
-        {
-          satisfied: function () {
-            button.enable();
-          },
-          unsatisfied: function () {
-            button.disable();
-          }
-        }
+      NX.Conditions.and(
+        NX.Conditions.isPermitted('nexus:tasks:stop'),
+        NX.Conditions.watchEvents(me.getObservables(), me.watchEventsHandler({ stop: true }))
+      ),
+      {
+        satisfied: function () {
+          button.enable();
+          button.focus();
+        },
+        unsatisfied: function () {
+          button.disable();
+        },
+      }
     );
   },
 

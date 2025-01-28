@@ -162,6 +162,8 @@ public class FileBlobStore
 
   private static final int INTERVAL_IN_SECONDS = 60;
 
+  private static final String NATIVE_CONTENT_TMP_PATH = CONTENT_TMP_PATH.replace('/', File.separatorChar);
+
   private Path contentDir;
 
   private Path reconciliationLogDir;
@@ -1108,7 +1110,7 @@ public class FileBlobStore
     return attributeFile.isFile() &&
         attributeFile.getName().endsWith(BLOB_FILE_ATTRIBUTES_SUFFIX) &&
         !attributeFile.getName().startsWith(TEMPORARY_BLOB_ID_PREFIX) &&
-        !attributeFile.getAbsolutePath().contains(CONTENT_TMP_PATH);
+        !attributeFile.getAbsolutePath().contains(NATIVE_CONTENT_TMP_PATH);
   }
 
   class FileBlob

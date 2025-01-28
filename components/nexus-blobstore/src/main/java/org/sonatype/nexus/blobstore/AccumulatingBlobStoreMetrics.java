@@ -87,4 +87,13 @@ public class AccumulatingBlobStoreMetrics
   public boolean isUnavailable() {
     return false;
   }
+
+  public String toString() {
+    return "AccumulatingBlobStoreMetrics{" +
+        "blobCount=" + blobCount +
+        ", totalSize=" + totalSize +
+        ", availableSpaceByFileStore=" + availableSpaceByFileStore +
+        ", unlimited=" + unlimited +
+        '}';
+  }
 }

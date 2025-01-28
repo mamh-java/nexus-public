@@ -63,4 +63,16 @@ public class UnavailableBlobStoreMetrics
   public boolean isUnavailable() {
     return true;
   }
+
+  @Override
+  public String toString() {
+    return "UnavailableBlobStoreMetrics{" +
+        "blobCount=" + getBlobCount() +
+        ", totalSize=" + getTotalSize() +
+        ", availableSpace=" + getAvailableSpace() +
+        ", unlimited=" + isUnlimited() +
+        ", availableSpaceByFileStore=" + getAvailableSpaceByFileStore() +
+        ", unavailable=" + isUnavailable() +
+        '}';
+  }
 }

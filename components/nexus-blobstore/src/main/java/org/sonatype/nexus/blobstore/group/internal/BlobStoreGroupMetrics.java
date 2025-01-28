@@ -97,4 +97,14 @@ public class BlobStoreGroupMetrics
   public boolean isUnavailable() {
     return unavailable;
   }
+
+  public String toString() {
+    return "BlobStoreGroupMetrics{" +
+        "blobCount=" + blobCount +
+        ", totalSize=" + totalSize +
+        ", availableSpaceByFileStore=" + availableSpaceByFileStore +
+        ", unlimited=" + unlimited +
+        ", unavailable=" + unavailable +
+        '}';
+  }
 }

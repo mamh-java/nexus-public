@@ -106,4 +106,13 @@ public class OperationMetrics
 
     return metrics;
   }
+
+  public String toString() {
+    return "OperationMetrics{" +
+        "blobSize=" + blobSize +
+        ", successfulRequests=" + successfulRequests +
+        ", timeOnRequests=" + timeOnRequests +
+        ", errorRequests=" + errorRequests +
+        '}';
+  }
 }

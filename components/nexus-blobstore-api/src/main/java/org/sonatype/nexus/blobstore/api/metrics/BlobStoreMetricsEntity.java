@@ -189,4 +189,22 @@ public class BlobStoreMetricsEntity
     this.downloadErrorRequests = downloadErrorRequests;
     return this;
   }
+
+  @Override
+  public String toString() {
+    return "BlobStoreMetricsEntity{" +
+        "id='" + id + '\'' +
+        ", blobStoreName='" + blobStoreName + '\'' +
+        ", totalSize=" + totalSize +
+        ", blobCount=" + blobCount +
+        ", uploadBlobSize=" + uploadBlobSize +
+        ", uploadSuccessfulRequests=" + uploadSuccessfulRequests +
+        ", uploadTimeOnRequests=" + uploadTimeOnRequests +
+        ", uploadErrorRequests=" + uploadErrorRequests +
+        ", downloadBlobSize=" + downloadBlobSize +
+        ", downloadSuccessfulRequests=" + downloadSuccessfulRequests +
+        ", downloadTimeOnRequests=" + downloadTimeOnRequests +
+        ", downloadErrorRequests=" + downloadErrorRequests +
+        '}';
+  }
 }

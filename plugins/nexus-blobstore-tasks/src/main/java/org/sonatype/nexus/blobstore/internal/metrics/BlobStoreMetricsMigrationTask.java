@@ -82,9 +82,8 @@ public class BlobStoreMetricsMigrationTask
     }
 
     try {
-      BlobStoreMetricsEntity metricsFromDb = metricsStore.get(blobStoreName);
       Optional<BlobStoreMetricsPropertiesReader<?>> optPropertiesReader = reader(blobStoreType);
-      if (!optPropertiesReader.isPresent()) {
+      if (optPropertiesReader.isEmpty()) {
         log.error("Properties reader not found for {}:{}", blobStoreType, blobStoreName);
         return;
       }
@@ -95,9 +94,16 @@ public class BlobStoreMetricsMigrationTask
       Map<OperationType, OperationMetrics> operationMetrics = propertiesReader.getOperationMetrics();
 
       if (metricsFromFile != null && operationMetrics != null) {
-        log.info("Found metrics {} for {}:{} should be migrated to DB", metricsFromDb, blobStoreType, blobStoreName);
+        String blobStoreId = blobStoreType + ":" + blobStoreName;
+        BlobStoreMetricsEntity metricsFromDb = metricsStore.get(blobStoreName);
+        log.info("Initial db metrics for {} are: {}", blobStoreId, metricsFromDb);
+        log.info("Metrics from filesystem to be migrated for {} are: {}", blobStoreId, metricsFromFile);
+        operationMetrics.forEach((operationType, opMetrics) -> log.info(
+            "Operational metrics from filesystem to be migrated for {} and {} are: {}",
+            blobStoreId, operationType, opMetrics));
         metricsStore.initializeMetrics(blobStoreName);
         metricsStore.updateMetrics(toBlobStoreMetricsEntity(blobStoreName, metricsFromFile, operationMetrics));
+        log.info("Final db metrics for {} are: {}", blobStoreId, metricsStore.get(blobStoreName));
       }
     }
     catch (Exception e) {

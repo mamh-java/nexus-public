@@ -13,17 +13,7 @@
 import React, {useEffect, useRef} from 'react';
 import {useMachine} from '@xstate/react';
 
-import {
-  ContentBody,
-  ExtJS,
-  Page,
-  PageActions,
-  PageHeader,
-  PageTitle,
-  Section,
-  SectionToolbar
-} from '@sonatype/nexus-ui-plugin';
-
+import {ExtJS} from '@sonatype/nexus-ui-plugin';
 import {
   NxButton,
   NxButtonBar,
@@ -32,6 +22,16 @@ import {
   NxFormSelect,
   NxTextInput,
 } from '@sonatype/react-shared-components';
+
+import {
+  ContentBody,
+  Page,
+  PageActions,
+  PageHeader,
+  PageTitle,
+  Section,
+  SectionToolbar
+} from '../../../layout';
 
 import {faStamp} from '@fortawesome/free-solid-svg-icons';
 

@@ -18,9 +18,15 @@ import {
   NxLoadWrapper,
   NxButton
 } from '@sonatype/react-shared-components';
+import {ExtJS} from '@sonatype/nexus-ui-plugin';
+
+import {
+  Page,
+  PageHeader,
+  PageTitle
+} from '../../../layout';
 
 import UIStrings from '../../../../constants/UIStrings';
-import {Page, PageHeader, PageTitle, ExtJS} from '@sonatype/nexus-ui-plugin';
 import './InsightFrontend.scss';
 import {faBinoculars} from '@fortawesome/free-solid-svg-icons';
 import InsightFrontendMachine from './InsightFrontendMachine';

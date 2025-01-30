@@ -13,7 +13,6 @@
 
 import React, {useRef} from 'react';
 import {useMachine} from '@xstate/react';
-import {Page, PageHeader, PageTitle} from '@sonatype/nexus-ui-plugin';
 import {
   NxTile,
   NxTabs,
@@ -23,6 +22,8 @@ import {
   NxLoadWrapper,
 } from '@sonatype/react-shared-components';
 import {faBook} from '@fortawesome/free-solid-svg-icons';
+
+import {Page, PageHeader, PageTitle} from '../../../layout';
 
 import LdapServersConfigurationForm from './LdapServersConfigurationForm';
 import LdapServersUserAndGroupForm from './LdapServersUserAndGroupForm';

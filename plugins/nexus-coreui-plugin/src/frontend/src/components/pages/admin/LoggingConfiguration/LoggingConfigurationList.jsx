@@ -15,17 +15,7 @@ import {useMachine} from '@xstate/react';
 
 import {faRedo, faScroll} from '@fortawesome/free-solid-svg-icons';
 
-import {
-  ContentBody,
-  ListMachineUtils,
-  Page,
-  PageActions,
-  PageHeader,
-  PageTitle,
-  Section,
-  SectionToolbar
-} from '@sonatype/nexus-ui-plugin';
-
+import {ListMachineUtils} from '@sonatype/nexus-ui-plugin';
 import {
   NxButton,
   NxFilterInput,
@@ -36,6 +26,16 @@ import {
   NxTableHead,
   NxTableRow,
 } from '@sonatype/react-shared-components';
+
+import {
+  ContentBody,
+  Page,
+  PageActions,
+  PageHeader,
+  PageTitle,
+  Section,
+  SectionToolbar
+} from '../../../layout';
 
 import LoggingConfigurationListMachine from './LoggingConfigurationListMachine';
 

@@ -12,10 +12,18 @@
  */
 import React from 'react';
 import {useMachine} from '@xstate/react';
-import {Page, PageHeader, PageTitle, Section, SectionFooter, ContentBody} from '@sonatype/nexus-ui-plugin';
 import {NxButton, NxLoadWrapper} from '@sonatype/react-shared-components';
 import {NxFontAwesomeIcon} from '@sonatype/react-shared-components';
 import {faKey, faLock} from '@fortawesome/free-solid-svg-icons';
+
+import {
+  ContentBody,
+  Page,
+  PageHeader,
+  PageTitle,
+  Section,
+  SectionFooter
+} from '../../../layout';
 
 import NuGetApiTokenMachine from './NuGetApiTokenMachine';
 import NuGetApiTokenModal from './NuGetApiTokenModal';

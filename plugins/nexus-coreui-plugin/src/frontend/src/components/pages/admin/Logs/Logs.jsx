@@ -12,7 +12,7 @@
  */
 import React from 'react';
 
-import {Detail, Master, MasterDetail} from '../../../layout/MasterDetail';
+import {Detail, Master, MasterDetail} from '../../../layout';
 
 import LogsList from './LogsList';
 import LogViewer from './LogViewer';

@@ -13,14 +13,7 @@
 import React from 'react';
 import {useMachine} from '@xstate/react';
 
-import {
-  ContentBody,
-  FormUtils,
-  Page,
-  PageHeader,
-  PageTitle,
-  Section
-} from '@sonatype/nexus-ui-plugin';
+import {FormUtils} from '@sonatype/nexus-ui-plugin';
 
 import {
   NxButton,
@@ -29,6 +22,14 @@ import {
   NxStatefulForm,
   NxTextInput
 } from '@sonatype/react-shared-components';
+
+import {
+  ContentBody,
+  Page,
+  PageHeader,
+  PageTitle,
+  Section
+} from '../../../layout';
 
 import LoggingConfigurationFormMachine from './LoggingConfigurationFormMachine';
 

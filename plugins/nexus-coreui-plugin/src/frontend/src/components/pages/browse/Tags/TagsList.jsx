@@ -13,14 +13,7 @@
 import React from 'react';
 import { useMachine } from '@xstate/react';
 
-import {
-  ContentBody,
-  ListMachineUtils,
-  Page,
-  PageHeader,
-  PageTitle,
-  HelpTile
-} from '@sonatype/nexus-ui-plugin';
+import {ListMachineUtils} from '@sonatype/nexus-ui-plugin';
 
 import {
   NxH2,
@@ -32,6 +25,14 @@ import {
   NxTableRow,
   NxTile
 } from '@sonatype/react-shared-components';
+
+import {
+  ContentBody,
+  Page,
+  PageHeader,
+  PageTitle
+} from '../../../layout';
+import {HelpTile} from '../../../widgets';
 
 import TagsListMachine from './TagsListMachine';
 import { faTags } from '@fortawesome/free-solid-svg-icons';

@@ -13,13 +13,14 @@
 import React from 'react';
 import {useMachine} from '@xstate/react';
 
+import {ExtJS} from '@sonatype/nexus-ui-plugin';
+
 import {
   ContentBody,
   Page,
   PageHeader,
-  PageTitle,
-  ExtJS,
-} from '@sonatype/nexus-ui-plugin';
+  PageTitle
+} from '../../../layout';
 
 import ContentSelectorsFormMachine from './ContentSelectorsFormMachine';
 import ContentSelectorsForm from './ContentSelectorsForm';

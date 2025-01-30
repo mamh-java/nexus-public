@@ -13,26 +13,25 @@
 import React from 'react';
 import {useMachine} from '@xstate/react';
 import {isEmpty} from 'ramda';
-import {
-  Page,
-  ContentBody,
-  PageHeader,
-  PageTitle,
-  ListMachineUtils,
-  HelpTile,
-} from '@sonatype/nexus-ui-plugin';
-
+import {ListMachineUtils} from '@sonatype/nexus-ui-plugin';
 import {
   faMedkit,
   faExclamationCircle,
   faCheckCircle,
 } from '@fortawesome/free-solid-svg-icons';
-
 import {
   NxTile,
   NxTable,
   NxFontAwesomeIcon,
 } from '@sonatype/react-shared-components';
+
+import {
+  ContentBody,
+  Page,
+  PageHeader,
+  PageTitle
+} from '../../../layout';
+import {HelpTile} from '../../../widgets';
 
 import UIStrings from '../../../../constants/UIStrings';
 

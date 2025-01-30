@@ -11,17 +11,16 @@
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
 import React from 'react';
+import {ExtJS} from '@sonatype/nexus-ui-plugin';
+import {NxTile} from '@sonatype/react-shared-components';
+import {faTruck} from '@fortawesome/free-solid-svg-icons';
+
 import {
   ContentBody,
   Page,
   PageHeader,
-  PageTitle,
-  ExtJS,
-} from '@sonatype/nexus-ui-plugin';
-
-import {NxTile} from '@sonatype/react-shared-components';
-
-import {faTruck} from '@fortawesome/free-solid-svg-icons';
+  PageTitle
+} from '../../../layout';
 
 import HttpForm from './HttpForm';
 import HttpReadOnly from './HttpReadOnly';

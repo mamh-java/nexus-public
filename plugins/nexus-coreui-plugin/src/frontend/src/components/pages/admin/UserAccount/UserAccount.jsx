@@ -14,7 +14,7 @@ import React from 'react';
 import {useMachine} from '@xstate/react';
 import PasswordChangeForm from './PasswordChangeForm';
 import {faUser} from '@fortawesome/free-solid-svg-icons';
-import {ContentBody, FormUtils, Page, PageHeader, PageTitle} from '@sonatype/nexus-ui-plugin';
+import {FormUtils} from '@sonatype/nexus-ui-plugin';
 
 import './UserAccount.scss';
 import UserAccountMachine from './UserAccountMachine';
@@ -27,6 +27,8 @@ import {
   NxTile,
   NxTooltip
 } from '@sonatype/react-shared-components';
+
+import {ContentBody, Page, PageHeader, PageTitle} from '../../../layout';
 
 export default function UserAccount() {
   const [state, send] = useMachine(UserAccountMachine, {devTools: true});

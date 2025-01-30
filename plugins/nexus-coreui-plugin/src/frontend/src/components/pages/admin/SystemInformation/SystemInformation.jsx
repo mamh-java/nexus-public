@@ -13,16 +13,17 @@
 import React from 'react';
 import {useMachine} from '@xstate/react';
 import {faGlobe} from '@fortawesome/free-solid-svg-icons';
+import {ExtJS} from '@sonatype/nexus-ui-plugin';
+
+import {NxButton, NxLoadWrapper} from '@sonatype/react-shared-components';
+
 import {
   ContentBody,
   Page,
   PageActions,
   PageHeader,
-  PageTitle,
-  ExtJS
-} from '@sonatype/nexus-ui-plugin';
-
-import {NxButton, NxLoadWrapper} from '@sonatype/react-shared-components';
+  PageTitle
+} from '../../../layout';
 
 import UIStrings from '../../../../constants/UIStrings';
 import SystemInformationBody from './SystemInformationBody';

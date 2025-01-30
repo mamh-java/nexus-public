@@ -14,7 +14,7 @@ import React from 'react';
 import {useActor} from '@xstate/react';
 
 import {NxCombobox, NxFormGroup, NxTextInput} from '@sonatype/react-shared-components';
-import {ExtJS, FormUtils} from '@sonatype/nexus-ui-plugin';
+import {FormUtils} from '@sonatype/nexus-ui-plugin';
 
 import UIStrings from '../../../../constants/UIStrings';
 const { 

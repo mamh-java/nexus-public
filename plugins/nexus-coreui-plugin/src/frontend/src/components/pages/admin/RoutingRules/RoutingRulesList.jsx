@@ -15,18 +15,7 @@ import {useMachine} from '@xstate/react';
 
 import {faMapSigns} from '@fortawesome/free-solid-svg-icons';
 
-import {
-  ContentBody,
-  HelpTile,
-  Page,
-  PageActions,
-  PageHeader,
-  PageTitle,
-  Section,
-  SectionToolbar,
-  Utils
-} from '@sonatype/nexus-ui-plugin';
-
+import {Utils} from '@sonatype/nexus-ui-plugin';
 import {
   NxButton,
   NxFilterInput,
@@ -36,6 +25,17 @@ import {
   NxTableHead,
   NxTableRow,
 } from '@sonatype/react-shared-components';
+
+import {
+  ContentBody,
+  Page,
+  PageActions,
+  PageHeader,
+  PageTitle,
+  Section,
+  SectionToolbar
+} from '../../../layout';
+import {HelpTile} from '../../../widgets';
 
 import RoutingRulesGlobalPreview from './RoutingRulesGlobalPreview';
 import RoutingRulesListMachine from './RoutingRulesListMachine';

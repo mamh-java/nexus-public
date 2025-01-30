@@ -14,15 +14,7 @@ import React from 'react';
 import {useMachine} from '@xstate/react';
 import {faServer} from '@fortawesome/free-solid-svg-icons';
 
-import {
-  ContentBody,
-  Page,
-  PageHeader,
-  PageTitle,
-  FormUtils,
-  ReadOnlyField,
-} from '@sonatype/nexus-ui-plugin';
-
+import {FormUtils, ReadOnlyField} from '@sonatype/nexus-ui-plugin';
 import {
   NxButton,
   NxTooltip,
@@ -32,6 +24,13 @@ import {
   NxReadOnly,
   NxTile,
 } from '@sonatype/react-shared-components';
+
+import {
+  ContentBody,
+  Page,
+  PageHeader,
+  PageTitle
+} from '../../../layout';
 
 import DataStoreConfigurationMachine from './DataStoreConfigurationMachine';
 import UIStrings from '../../../../constants/UIStrings';

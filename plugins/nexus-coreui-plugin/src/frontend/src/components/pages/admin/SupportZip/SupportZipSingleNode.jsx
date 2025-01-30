@@ -13,8 +13,16 @@
 import React from 'react';
 import {useMachine} from '@xstate/react';
 import UIStrings from '../../../../constants/UIStrings';
-import {ContentBody, ExtJS, Page, PageHeader, PageTitle, Section} from '@sonatype/nexus-ui-plugin';
+import {ExtJS} from '@sonatype/nexus-ui-plugin';
 import {NxLoadWrapper} from '@sonatype/react-shared-components';
+
+import {
+  ContentBody,
+  Page,
+  PageHeader,
+  PageTitle,
+  Section
+} from '../../../layout';
 
 import SupportZipForm from './SupportZipForm';
 import SupportZipResponse from './SupportZipResponse';

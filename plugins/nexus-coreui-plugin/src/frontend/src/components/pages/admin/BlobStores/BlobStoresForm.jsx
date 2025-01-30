@@ -15,15 +15,7 @@ import {useMachine} from '@xstate/react';
 import {path} from 'ramda';
 import {faTrash} from "@fortawesome/free-solid-svg-icons";
 
-import {
-  DynamicFormField,
-  FormUtils,
-  Page,
-  PageActions,
-  PageHeader,
-  PageTitle,
-  Section,
-} from '@sonatype/nexus-ui-plugin';
+import {DynamicFormField, FormUtils} from '@sonatype/nexus-ui-plugin';
 import {
   NxButton,
   NxCheckbox,
@@ -37,6 +29,14 @@ import {
   NxTextInput,
   NxTooltip
 } from '@sonatype/react-shared-components';
+
+import {
+  Page,
+  PageActions,
+  PageHeader,
+  PageTitle,
+  Section
+} from '../../../layout';
 
 import BlobStoresFormMachine, {canUseSpaceUsedQuotaOnly, SPACE_USED_QUOTA_ID} from './BlobStoresFormMachine';
 import UIStrings from '../../../../constants/UIStrings';

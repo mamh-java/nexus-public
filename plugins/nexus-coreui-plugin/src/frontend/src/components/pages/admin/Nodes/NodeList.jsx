@@ -14,14 +14,16 @@ import React from 'react';
 import {useMachine} from '@xstate/react';
 import {NxCard, NxH2, NxH3, NxLoadWrapper} from '@sonatype/react-shared-components';
 import {faArchive} from '@fortawesome/free-solid-svg-icons';
+
 import {
-  Page,
-  PageHeader,
-  PageTitle,
-  PageActions,
   ContentBody,
-  HelpTile
-} from '@sonatype/nexus-ui-plugin';
+  Page,
+  PageActions,
+  PageHeader,
+  PageTitle
+} from '../../../layout';
+import {HelpTile} from '../../../widgets';
+
 import UIStrings from '../../../../constants/UIStrings';
 import NodeListMachine from './NodeListMachine';
 import FreezeAction from './FreezeAction/FreezeAction';

@@ -13,13 +13,7 @@
 import React from 'react';
 import {useMachine} from '@xstate/react';
 
-import {
-  FieldWrapper,
-  Section,
-  SectionToolbar,
-  Utils
-} from '@sonatype/nexus-ui-plugin';
-
+import {FieldWrapper, Utils} from '@sonatype/nexus-ui-plugin';
 import {
   NxButton,
   NxFilterInput,
@@ -31,6 +25,9 @@ import {
   NxTableHead,
   NxTableRow,
 } from '@sonatype/react-shared-components';
+
+import {Section, SectionToolbar} from '../../../layout';
+
 import UIStrings from '../../../../constants/UIStrings';
 
 import ContentSelectorsPreviewMachine from './ContentSelectorsPreviewMachine';

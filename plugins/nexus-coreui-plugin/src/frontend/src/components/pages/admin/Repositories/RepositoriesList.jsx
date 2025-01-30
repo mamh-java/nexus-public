@@ -12,19 +12,7 @@
  */
 import React, {useState, useEffect} from 'react';
 
-import {
-  ContentBody,
-  ExtJS,
-  HelpTile,
-  ListMachineUtils,
-  Page,
-  PageHeader,
-  PageTitle,
-  PageActions,
-  Section,
-  SectionToolbar
-} from '@sonatype/nexus-ui-plugin';
-
+import {ExtJS, ListMachineUtils} from '@sonatype/nexus-ui-plugin';
 import {
   NxButton,
   NxButtonBar,
@@ -37,8 +25,18 @@ import {
   NxTableRow,
   NxTooltip
 } from '@sonatype/react-shared-components';
-
 import {faCopy, faDatabase} from '@fortawesome/free-solid-svg-icons';
+
+import {
+  ContentBody,
+  Page,
+  PageActions,
+  PageHeader,
+  PageTitle,
+  Section,
+  SectionToolbar
+} from '../../../layout';
+import {HelpTile} from '../../../widgets';
 
 import {useRepositoriesService} from './RepositoriesContextProvider';
 

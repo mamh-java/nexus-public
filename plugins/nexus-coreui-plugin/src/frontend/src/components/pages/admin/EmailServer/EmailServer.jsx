@@ -13,16 +13,15 @@
 import React from 'react';
 import {useMachine} from '@xstate/react';
 import {NxTile} from '@sonatype/react-shared-components';
+import {ExtJS, Permissions} from '@sonatype/nexus-ui-plugin';
+import {faEnvelope} from '@fortawesome/free-solid-svg-icons';
+
 import {
   ContentBody,
   Page,
   PageHeader,
-  PageTitle,
-  ExtJS,
-  Permissions,
-} from '@sonatype/nexus-ui-plugin';
-
-import {faEnvelope} from '@fortawesome/free-solid-svg-icons';
+  PageTitle
+} from '../../../layout';
 
 import EmailServerForm from './EmailServerForm';
 import EmailServerReadOnly from './EmailServerReadOnly';

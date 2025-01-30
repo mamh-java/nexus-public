@@ -1,4 +1,4 @@
- /*
+/*
  * Sonatype Nexus (TM) Open Source Version
  * Copyright (c) 2008-present Sonatype, Inc.
  * All rights reserved. Includes the third-party code listed at http://links.sonatype.com/products/nexus/oss/attributions.
@@ -10,21 +10,11 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-import React, {useEffect} from 'react';
+import React from 'react';
 import {useMachine, useActor} from '@xstate/react';
 import {faKey, faLock} from '@fortawesome/free-solid-svg-icons';
 import {isNil} from 'ramda';
-
-import {
-  ContentBody,
-  DateUtils,
-  Page,
-  PageHeader,
-  PageTitle,
-  Section,
-  SectionFooter
-} from '@sonatype/nexus-ui-plugin';
-
+import {DateUtils} from '@sonatype/nexus-ui-plugin';
 import {
   NxButton,
   NxButtonBar,
@@ -37,7 +27,16 @@ import {
   useToggle
 } from '@sonatype/react-shared-components';
 
-import UIStrings from '../../../../constants/UIStrings';
+import {
+  ContentBody,
+  Page,
+  PageHeader,
+  PageTitle,
+  Section,
+  SectionFooter
+} from '../../../layout';
+
+ import UIStrings from '../../../../constants/UIStrings';
 import UserTokenMachine from './UserTokenMachine';
 import UserTokenDetails from './UserTokenDetails';
 import './UserToken.scss';

@@ -23,17 +23,18 @@ import {
   NxButton,
 } from '@sonatype/react-shared-components';
 
-import {
-  Page,
-  PageHeader,
-  PageTitle,
-  ContentBody,
-  PageActions,
-} from '@sonatype/nexus-ui-plugin';
-
 import {faArchive} from '@fortawesome/free-solid-svg-icons';
 
 import {useMachine} from '@xstate/react';
+
+import {
+  ContentBody,
+  Page,
+  PageActions,
+  PageHeader,
+  PageTitle
+} from '../../../../layout';
+
 import SupportZipHaMachine from './SupportZipHaMachine';
 import SupportZipMachine from '../SupportZipMachine';
 

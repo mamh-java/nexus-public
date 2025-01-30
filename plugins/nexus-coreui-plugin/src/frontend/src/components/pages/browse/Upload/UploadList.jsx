@@ -13,15 +13,7 @@
 import React from 'react';
 import {useMachine} from '@xstate/react';
 
-import {
-  ContentBody,
-  ExtJS,
-  ListMachineUtils,
-  Page,
-  PageHeader,
-  PageTitle,
-} from '@sonatype/nexus-ui-plugin';
-
+import {ExtJS, ListMachineUtils} from '@sonatype/nexus-ui-plugin';
 import {
   NxButton,
   NxButtonBar,
@@ -32,6 +24,14 @@ import {
 } from '@sonatype/react-shared-components';
 
 import {faCopy, faUpload} from '@fortawesome/free-solid-svg-icons';
+
+import {
+  ContentBody,
+  Page,
+  PageHeader,
+  PageTitle
+} from '../../../layout';
+
 import UploadListMachine from './UploadListMachine';
 import UIStrings from '../../../../constants/UIStrings';
 import './Upload.scss';

@@ -19,13 +19,7 @@ import {
   faMedkit,
 } from '@fortawesome/free-solid-svg-icons';
 
-import {
-  ContentBody,
-  ListMachineUtils,
-  Page,
-  PageTitle,
-} from '@sonatype/nexus-ui-plugin';
-
+import {ListMachineUtils} from '@sonatype/nexus-ui-plugin';
 import {
   NxFontAwesomeIcon,
   NxTable,
@@ -33,6 +27,12 @@ import {
   NxH2,
   NxBackButton,
 } from '@sonatype/react-shared-components';
+
+import {
+  ContentBody,
+  Page,
+  PageTitle
+} from '../../../layout';
 
 import MetricHealthMachine from './MetricHealthMachine';
 

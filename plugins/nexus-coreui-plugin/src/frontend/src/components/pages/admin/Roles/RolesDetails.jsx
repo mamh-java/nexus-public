@@ -16,14 +16,14 @@ import {useMachine} from '@xstate/react';
 import {
   NxTile,
 } from '@sonatype/react-shared-components';
+import {ExtJS, ValidationUtils} from '@sonatype/nexus-ui-plugin';
+
 import {
   ContentBody,
   Page,
   PageHeader,
-  PageTitle,
-  ExtJS,
-  ValidationUtils,
-} from '@sonatype/nexus-ui-plugin';
+  PageTitle
+} from '../../../layout';
 
 import Machine from './RolesFormMachine';
 import RolesForm from './RolesForm';

@@ -13,16 +13,7 @@
 import React from 'react';
 import {useMachine} from '@xstate/react';
 
-import {
-  CheckboxControlledWrapper,
-  ContentBody,
-  ExtJS,
-  FormUtils,
-  Page,
-  PageHeader,
-  PageTitle,
-} from '@sonatype/nexus-ui-plugin';
-
+import {CheckboxControlledWrapper, ExtJS, FormUtils} from '@sonatype/nexus-ui-plugin';
 import {
   NxButton,
   NxFontAwesomeIcon,
@@ -35,6 +26,13 @@ import {
   NxTextInput,
   NxFieldset
 } from '@sonatype/react-shared-components';
+
+import {
+  ContentBody,
+  Page,
+  PageHeader,
+  PageTitle
+} from '../../../layout';
 
 import CleanupPoliciesFormMachine from './CleanupPoliciesFormMachine';
 import CleanupPoliciesPreview from './CleanupPoliciesPreview';

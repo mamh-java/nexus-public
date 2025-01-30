@@ -13,13 +13,7 @@
 import React, {useEffect} from 'react';
 import {useMachine} from '@xstate/react';
 
-import {
-  ListMachineUtils,
-  Section,
-  SectionToolbar,
-  ValidationUtils
-} from '@sonatype/nexus-ui-plugin';
-
+import {ListMachineUtils, ValidationUtils} from '@sonatype/nexus-ui-plugin';
 import {
   NxButton,
   NxFilterInput,
@@ -33,6 +27,9 @@ import {
   NxTooltip,
   NxWarningAlert
 } from '@sonatype/react-shared-components';
+
+import {Section, SectionToolbar} from '../../../layout';
+
 import UIStrings from '../../../../constants/UIStrings';
 
 import CleanupPoliciesPreviewFormMachine from './CleanupPoliciesPreviewFormMachine';

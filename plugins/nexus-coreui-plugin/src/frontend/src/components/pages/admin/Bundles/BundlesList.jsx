@@ -13,15 +13,17 @@
 import React from 'react';
 import {useActor} from '@xstate/react';
 import {NxFilterInput, NxTable} from '@sonatype/react-shared-components';
+import {ListMachineUtils} from '@sonatype/nexus-ui-plugin';
+import {faPuzzlePiece} from '@fortawesome/free-solid-svg-icons';
+
 import {
   ContentBody,
   Page,
   PageHeader,
   PageTitle,
-  Section,
-  ListMachineUtils
-} from '@sonatype/nexus-ui-plugin';
-import {faPuzzlePiece} from '@fortawesome/free-solid-svg-icons';
+  Section
+} from '../../../layout';
+
 import UIStrings from '../../../../constants/UIStrings';
 
 export default function BundlesList ({ onEdit, service }) {

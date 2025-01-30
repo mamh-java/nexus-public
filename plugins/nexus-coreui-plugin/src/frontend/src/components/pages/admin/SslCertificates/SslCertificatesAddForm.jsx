@@ -22,15 +22,16 @@ import {
   NxRadio,
   NxStatefulForm,
 } from '@sonatype/react-shared-components';
+import {FormUtils} from '@sonatype/nexus-ui-plugin';
+
+import {faIdCardAlt} from '@fortawesome/free-solid-svg-icons';
+
 import {
   ContentBody,
   Page,
   PageHeader,
-  PageTitle,
-  FormUtils
-} from '@sonatype/nexus-ui-plugin';
-
-import {faIdCardAlt} from '@fortawesome/free-solid-svg-icons';
+  PageTitle
+} from '../../../layout';
 
 import UIStrings from '../../../../constants/UIStrings';
 

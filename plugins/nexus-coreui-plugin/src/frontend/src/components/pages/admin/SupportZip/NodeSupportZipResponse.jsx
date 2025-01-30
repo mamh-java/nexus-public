@@ -12,9 +12,11 @@
  */
 import React from 'react';
 import UIStrings from '../../../../constants/UIStrings';
-import {FieldWrapper, SectionFooter, Textfield} from '@sonatype/nexus-ui-plugin';
+import {FieldWrapper, Textfield} from '@sonatype/nexus-ui-plugin';
 import {NxButton, NxFontAwesomeIcon} from '@sonatype/react-shared-components';
 import {faDownload} from '@fortawesome/free-solid-svg-icons';
+
+import {SectionFooter} from '../../../layout';
 
 export default function NodeSupportZipResponse({response, download}) {
   return <div className='nxrm-support-zip-response-ha'>

@@ -11,12 +11,12 @@
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
 import React from 'react';
+import {useMachine} from '@xstate/react';
 
-import {Detail, Master, MasterDetail} from '../../../layout/MasterDetail';
+import {Detail, Master, MasterDetail} from '../../../layout';
 
 import BundlesList from './BundlesList';
 import BundleDetail from './BundleDetail';
-import {useMachine} from '@xstate/react';
 import BundlesListMachine from './BundlesListMachine';
 
 export default function Bundles() {

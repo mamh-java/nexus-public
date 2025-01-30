@@ -15,6 +15,4 @@
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
 
-export { default as MasterDetail } from './MasterDetail';
-export { default as Master } from './Master';
-export { default as Detail } from './Detail';
+export { default as HelpTile } from './HelpTile/HelpTile';

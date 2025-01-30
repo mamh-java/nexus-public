@@ -10,10 +10,9 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {useActor} from '@xstate/react';
-import { FormUtils } from '@sonatype/nexus-ui-plugin';
-import UIStrings from '../../../../../constants/UIStrings';
+import {FormUtils} from '@sonatype/nexus-ui-plugin';
 import {
   NxFieldset,
   NxFileUpload,
@@ -23,6 +22,8 @@ import {
   NxCheckbox,
   NxP
 } from '@sonatype/react-shared-components';
+
+import UIStrings from '../../../../../constants/UIStrings';
 
 const GOOGLE = UIStrings.BLOB_STORES.GOOGLE;
 

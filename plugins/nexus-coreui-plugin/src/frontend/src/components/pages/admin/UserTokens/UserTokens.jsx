@@ -14,16 +14,16 @@ import React from 'react';
 import {useMachine} from '@xstate/react';
 import {faKey} from '@fortawesome/free-solid-svg-icons';
 
+import {ExtJS, Permissions} from '@sonatype/nexus-ui-plugin';
+
+import {NxTile, NxLoadWrapper} from '@sonatype/react-shared-components';
+
 import {
   ContentBody,
   Page,
   PageHeader,
-  PageTitle,
-  ExtJS,
-  Permissions
-} from '@sonatype/nexus-ui-plugin';
-
-import {NxTile, NxLoadWrapper} from '@sonatype/react-shared-components';
+  PageTitle
+} from '../../../layout';
 
 import UserTokensReadOnly from './UserTokensReadOnly';
 import UserTokensMachine from './UserTokensMachine';

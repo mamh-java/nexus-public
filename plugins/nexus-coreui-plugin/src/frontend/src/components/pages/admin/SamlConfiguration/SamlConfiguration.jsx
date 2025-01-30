@@ -1,4 +1,4 @@
- /*
+/*
  * Sonatype Nexus (TM) Open Source Version
  * Copyright (c) 2008-present Sonatype, Inc.
  * All rights reserved. Includes the third-party code listed at http://links.sonatype.com/products/nexus/oss/attributions.
@@ -14,14 +14,7 @@ import React from 'react';
 import {useMachine} from '@xstate/react';
 import {faIdCard} from '@fortawesome/free-solid-svg-icons';
 
-import {
-  ContentBody,
-  FormUtils,
-  Page,
-  PageHeader,
-  PageTitle,
-  Section
-} from '@sonatype/nexus-ui-plugin';
+import {FormUtils} from '@sonatype/nexus-ui-plugin';
 import {
   NxButton,
   NxFieldset,
@@ -30,6 +23,14 @@ import {
   NxStatefulForm,
   NxTooltip
 } from '@sonatype/react-shared-components';
+
+import {
+  ContentBody,
+  Page,
+  PageHeader,
+  PageTitle,
+  Section
+} from '../../../layout';
 
 import SamlConfigurationMachine from './SamlConfigurationMachine';
 import UIStrings from '../../../../constants/UIStrings';

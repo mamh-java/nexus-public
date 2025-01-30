@@ -12,18 +12,7 @@
  */
 import React from 'react';
 import {useMachine} from '@xstate/react';
-import {
-  ContentBody,
-  ExtJS,
-  HelpTile,
-  ListMachineUtils,
-  Page,
-  PageHeader,
-  PageTitle,
-  PageActions,
-  SectionToolbar,
-  Permissions,
-} from '@sonatype/nexus-ui-plugin';
+import {ListMachineUtils} from '@sonatype/nexus-ui-plugin';
 import {
   NxButton,
   NxFilterInput,
@@ -43,6 +32,16 @@ import {
   NxPageTitle,
 } from '@sonatype/react-shared-components';
 import {faSortNumericUp, faTrashAlt} from '@fortawesome/free-solid-svg-icons';
+
+import {
+  ContentBody,
+  Page,
+  PageActions,
+  PageHeader,
+  PageTitle,
+  SectionToolbar
+} from '../../../layout';
+import {HelpTile} from '../../../widgets';
 
 import {canDelete, canUpdate, canCreate} from './LdapServersHelper';
 

@@ -14,16 +14,8 @@ import React from 'react';
 import {useMachine} from '@xstate/react';
 
 import {
-  ContentBody,
-  HelpTile,
   HumanReadableUtils,
-  ListMachineUtils,
-  Page,
-  PageHeader,
-  PageTitle,
-  PageActions,
-  Section,
-  SectionToolbar,
+  ListMachineUtils
 } from '@sonatype/nexus-ui-plugin';
 import {
   NxButton,
@@ -40,6 +32,17 @@ import {
   faExclamationCircle,
   faServer,
 } from '@fortawesome/free-solid-svg-icons';
+
+import {
+  ContentBody,
+  Page,
+  PageActions,
+  PageHeader,
+  PageTitle,
+  Section,
+  SectionToolbar
+} from '../../../layout';
+import {HelpTile} from '../../../widgets';
 
 import BlobStoresListMachine from './BlobStoresListMachine';
 import UIStrings from '../../../../constants/UIStrings';

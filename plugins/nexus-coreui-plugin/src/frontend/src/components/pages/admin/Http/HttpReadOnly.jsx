@@ -21,11 +21,10 @@ import {
   NxH2,
 } from '@sonatype/react-shared-components';
 
-import {FormUtils, ReadOnlyField} from '@sonatype/nexus-ui-plugin';
+import {ReadOnlyField} from '@sonatype/nexus-ui-plugin';
 
 import UIStrings from '../../../../constants/UIStrings';
 
-const {readOnlyRenderField} = FormUtils;
 const {CONFIGURATION: LABELS} = UIStrings.HTTP;
 
 import Machine from './HttpMachine';

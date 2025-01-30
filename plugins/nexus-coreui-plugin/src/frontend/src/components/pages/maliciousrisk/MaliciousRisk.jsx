@@ -12,14 +12,6 @@
  */
 import React from 'react';
 import {useMachine} from "@xstate/react";
-
-import {
-  ContentBody,
-  Page,
-  PageHeader,
-  PageTitle,
-} from '@sonatype/nexus-ui-plugin';
-
 import {
   NxGrid,
   NxH2,
@@ -27,6 +19,13 @@ import {
   NxTile,
   NxWarningAlert
 } from '@sonatype/react-shared-components';
+
+import {
+  ContentBody,
+  Page,
+  PageHeader,
+  PageTitle
+} from '../../layout';
 
 import UIStrings from "../../../constants/UIStrings";
 import MaliciousRiskMachine from "./MaliciousRiskMachine";

@@ -12,15 +12,7 @@
  */
 import React, {useEffect} from 'react';
 
-import {
-  ContentBody,
-  ExtJS,
-  ListMachineUtils,
-  Page,
-  PageHeader,
-  PageTitle,
-} from '@sonatype/nexus-ui-plugin';
-
+import {ExtJS, ListMachineUtils} from '@sonatype/nexus-ui-plugin';
 import {
   NxButton,
   NxButtonBar,
@@ -29,6 +21,13 @@ import {
   NxTable,
   NxTile
 } from '@sonatype/react-shared-components';
+
+import {
+  ContentBody,
+  Page,
+  PageHeader,
+  PageTitle
+} from '../../../layout';
 
 import {
   isIqServerEnabled,

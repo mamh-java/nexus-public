@@ -15,17 +15,7 @@ import {useMachine} from '@xstate/react';
 
 import {faBroom} from '@fortawesome/free-solid-svg-icons';
 
-import {
-  ContentBody,
-  HelpTile,
-  ListMachineUtils,
-  Page,
-  PageActions,
-  PageHeader,
-  PageTitle,
-  Section,
-  SectionToolbar
-} from '@sonatype/nexus-ui-plugin';
+import {ListMachineUtils} from '@sonatype/nexus-ui-plugin';
 
 import {
   NxButton,
@@ -36,6 +26,17 @@ import {
   NxTableHead,
   NxTableRow,
 } from '@sonatype/react-shared-components';
+
+import {
+  ContentBody,
+  Page,
+  PageActions,
+  PageHeader,
+  PageTitle,
+  Section,
+  SectionToolbar
+} from '../../../layout';
+import {HelpTile} from '../../../widgets';
 
 import CleanupPoliciesListMachine from './CleanupPoliciesListMachine';
 

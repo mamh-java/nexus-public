@@ -13,13 +13,7 @@
 import React from 'react';
 import {useMachine} from '@xstate/react';
 
-import {
-  ContentBody,
-  Page,
-  PageTitle,
-  ReadOnlyField
-} from '@sonatype/nexus-ui-plugin';
-
+import {ReadOnlyField} from '@sonatype/nexus-ui-plugin';
 import {
   NxLoadWrapper,
   NxTile,
@@ -29,6 +23,12 @@ import {
   NxReadOnly,
   NxCopyToClipboard
 } from '@sonatype/react-shared-components';
+
+import {
+  ContentBody,
+  Page,
+  PageTitle,
+} from '../../../layout';
 
 import TagsDetailsMachine from './TagsDetailsMachine';
 import { faTags } from '@fortawesome/free-solid-svg-icons';

@@ -13,14 +13,14 @@
 import React from 'react';
 import {useMachine} from '@xstate/react';
 
+import {faWallet} from '@fortawesome/free-solid-svg-icons';
+
 import {
   ContentBody,
   Page,
   PageHeader,
-  PageTitle,
-} from '@sonatype/nexus-ui-plugin';
-
-import {faWallet} from '@fortawesome/free-solid-svg-icons';
+  PageTitle
+} from '../../../layout';
 
 import LicenseDetails from './LicenseDetails';
 import InstallLicense from './InstallLicense';

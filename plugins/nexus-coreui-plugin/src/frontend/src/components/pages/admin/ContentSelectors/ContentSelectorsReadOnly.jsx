@@ -13,8 +13,7 @@
 import React from 'react';
 import {useActor} from '@xstate/react';
 
-import {FormUtils, Section} from '@sonatype/nexus-ui-plugin';
-
+import {FormUtils} from '@sonatype/nexus-ui-plugin';
 import {
   NxButton,
   NxReadOnly,
@@ -23,6 +22,8 @@ import {
   NxButtonBar,
   NxInfoAlert
 } from '@sonatype/react-shared-components';
+
+import {Section} from '../../../layout';
 
 import UIStrings from '../../../../constants/UIStrings';
 

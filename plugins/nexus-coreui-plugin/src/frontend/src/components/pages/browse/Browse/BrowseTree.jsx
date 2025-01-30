@@ -12,23 +12,22 @@
  */
 import React from 'react';
 import {useMachine} from '@xstate/react';
-
-import {
-  ContentBody,
-  Page,
-  PageHeader,
-  PageTitle
-} from '@sonatype/nexus-ui-plugin';
-
 import {
   NxH2,
   NxLoadWrapper,
   NxTile,
   NxTree
 } from '@sonatype/react-shared-components';
-
 import {faDatabase} from '@fortawesome/free-solid-svg-icons';
 import {isEmpty} from 'ramda';
+
+import {
+  ContentBody,
+  Page,
+  PageHeader,
+  PageTitle
+} from '../../../layout';
+
 import UIStrings from '../../../../constants/UIStrings';
 import BrowseTreeMachine from './BrowseTreeMachine';
 import BrowseTreeChildren from './BrowseTreeChildren';

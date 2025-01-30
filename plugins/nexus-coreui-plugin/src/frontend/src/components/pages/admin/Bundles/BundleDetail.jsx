@@ -12,8 +12,14 @@
  */
 import React from 'react';
 import {NxBackButton, NxH3, NxLoadWrapper} from '@sonatype/react-shared-components';
-import {ContentBody, Page, Section} from '@sonatype/nexus-ui-plugin';
 import {useActor} from '@xstate/react';
+
+import {
+  ContentBody,
+  Page,
+  Section
+} from '../../../layout';
+
 import './BundleDetail.scss';
 import UIStrings from '../../../../constants/UIStrings';
 

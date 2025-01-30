@@ -13,10 +13,7 @@
 import React from 'react';
 import {useMachine} from '@xstate/react';
 
-import {
-  Section,
-  FormUtils,
-} from '@sonatype/nexus-ui-plugin';
+import {FormUtils} from '@sonatype/nexus-ui-plugin';
 import {
   NxButton,
   NxFormGroup,
@@ -24,6 +21,8 @@ import {
   NxTooltip,
   NxTextInput
 } from '@sonatype/react-shared-components';
+
+import {Section} from '../../../layout';
 
 import PasswordChangeMachine from './PasswordChangeMachine';
 import UIStrings from '../../../../constants/UIStrings';

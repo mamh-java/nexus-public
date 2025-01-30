@@ -22,14 +22,15 @@ import {
   NxH2,
   NxTooltip,
 } from '@sonatype/react-shared-components';
+
+import {faIdCardAlt} from '@fortawesome/free-solid-svg-icons';
+
 import {
   ContentBody,
   Page,
   PageHeader,
-  PageTitle,
-} from '@sonatype/nexus-ui-plugin';
-
-import {faIdCardAlt} from '@fortawesome/free-solid-svg-icons';
+  PageTitle
+} from '../../../layout';
 
 import UIStrings from '../../../../constants/UIStrings';
 

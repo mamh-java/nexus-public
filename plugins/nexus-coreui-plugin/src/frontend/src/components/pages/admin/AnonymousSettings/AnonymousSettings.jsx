@@ -12,15 +12,18 @@
  */
 import React from 'react';
 import {
+  ExtJS
+} from '@sonatype/nexus-ui-plugin';
+
+import {faUser} from '@fortawesome/free-solid-svg-icons';
+
+import {
   ContentBody,
   Page,
   PageHeader,
   PageTitle,
-  Section,
-  ExtJS,
-} from '@sonatype/nexus-ui-plugin';
-
-import {faUser} from '@fortawesome/free-solid-svg-icons';
+  Section
+} from '../../../layout';
 
 import AnonymousSettingsForm from './AnonymousSettingsForm';
 import AnonymousSettingsReadOnly from './AnonymousSettingsReadOnly';

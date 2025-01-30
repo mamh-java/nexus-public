@@ -15,15 +15,7 @@ import {useMachine} from '@xstate/react';
 import {DateTime} from 'luxon';
 import {faScroll} from '@fortawesome/free-solid-svg-icons';
 
-import {
-  ContentBody,
-  HumanReadableUtils,
-  ListMachineUtils,
-  Page,
-  PageHeader,
-  PageTitle,
-  Section, SectionToolbar
-} from '@sonatype/nexus-ui-plugin';
+import {HumanReadableUtils, ListMachineUtils} from '@sonatype/nexus-ui-plugin';
 
 import {
   NxTable,
@@ -33,6 +25,15 @@ import {
   NxTableRow,
   NxFilterInput
 } from '@sonatype/react-shared-components';
+
+import {
+  ContentBody,
+  Page,
+  PageHeader,
+  PageTitle,
+  Section,
+  SectionToolbar
+} from '../../../layout';
 
 import LogsListMachine from './LogsListMachine';
 

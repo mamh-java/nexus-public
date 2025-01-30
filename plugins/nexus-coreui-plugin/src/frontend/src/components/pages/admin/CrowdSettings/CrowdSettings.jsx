@@ -15,14 +15,7 @@ import {useMachine, useActor} from '@xstate/react';
 import {faTrash} from "@fortawesome/free-solid-svg-icons";
 import {faAtlassian} from '@fortawesome/free-brands-svg-icons';
 import CrowdSettingsMachine from './CrowdSettingsMachine';
-import {
-  ContentBody,
-  FormUtils,
-  Page,
-  PageHeader,
-  PageTitle,
-  Section
-} from '@sonatype/nexus-ui-plugin';
+import {FormUtils} from '@sonatype/nexus-ui-plugin';
 import {
   NxButton,
   NxCheckbox,
@@ -32,7 +25,16 @@ import {
   NxTextInput,
   NxTooltip,
 } from '@sonatype/react-shared-components';
-import UIStrings from '../../../../constants/UIStrings';
+
+ import {
+   ContentBody,
+   Page,
+   PageHeader,
+   PageTitle,
+   Section
+ } from '../../../layout';
+
+ import UIStrings from '../../../../constants/UIStrings';
 
 export default function CrowdSettings() {
   const service = useMachine(CrowdSettingsMachine, {devTools: true})[2];

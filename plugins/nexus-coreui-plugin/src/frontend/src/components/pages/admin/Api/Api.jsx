@@ -13,13 +13,17 @@
 import React from 'react';
 import SwaggerUI from "swagger-ui-react"
 import {
-  Page,
-  PageHeader,
-  PageTitle,
-  ContentBody,
   ExtJS
 } from '@sonatype/nexus-ui-plugin';
 import {faPlug} from '@fortawesome/free-solid-svg-icons';
+
+import {
+  ContentBody,
+  Page,
+  PageHeader,
+  PageTitle
+} from '../../../layout';
+
 import UIStrings from '../../../../constants/UIStrings';
 import 'swagger-ui-react/swagger-ui.css';
 import './Api.scss';

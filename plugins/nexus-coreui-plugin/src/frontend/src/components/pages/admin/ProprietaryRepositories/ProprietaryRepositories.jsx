@@ -11,16 +11,17 @@
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
 import React from 'react';
+import {ExtJS} from '@sonatype/nexus-ui-plugin';
+
+import {faDoorClosed} from '@fortawesome/free-solid-svg-icons';
+
 import {
   ContentBody,
   Page,
   PageHeader,
   PageTitle,
-  Section,
-  ExtJS,
-} from '@sonatype/nexus-ui-plugin';
-
-import {faDoorClosed} from '@fortawesome/free-solid-svg-icons';
+  Section
+} from '../../../layout';
 
 import ProprietaryRepositoriesForm from './ProprietaryRepositoriesForm';
 import ProprietaryRepositoriesReadOnly from './ProprietaryRepositoriesReadOnly';

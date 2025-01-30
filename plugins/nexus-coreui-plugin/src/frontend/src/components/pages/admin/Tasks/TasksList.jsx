@@ -13,15 +13,7 @@
 import React from 'react';
 import {useMachine} from '@xstate/react';
 
-import {
-  ContentBody,
-  HelpTile,
-  ListMachineUtils,
-  Page,
-  PageHeader,
-  PageTitle,
-  PageActions,
-} from '@sonatype/nexus-ui-plugin';
+import {ListMachineUtils} from '@sonatype/nexus-ui-plugin';
 import {
   NxButton,
   NxFilterInput,
@@ -35,6 +27,15 @@ import {
 } from '@sonatype/react-shared-components';
 
 import {faClock} from '@fortawesome/free-solid-svg-icons';
+
+import {
+  ContentBody,
+  Page,
+  PageActions,
+  PageHeader,
+  PageTitle
+} from '../../../layout';
+import {HelpTile} from '../../../widgets';
 
 import Machine from './TasksListMachine';
 import {canCreateTask} from './TasksHelper';

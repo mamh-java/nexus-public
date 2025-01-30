@@ -13,17 +13,7 @@
 import React from 'react';
 import {useMachine} from '@xstate/react';
 
-import {
-  ContentBody,
-  Page,
-  PageHeader,
-  PageTitle,
-  Section,
-  FormUtils,
-  ExtJS,
-  UIStrings as UIStringsGlobal
-} from '@sonatype/nexus-ui-plugin';
-
+import {FormUtils, ExtJS, UIStrings as UIStringsGlobal} from '@sonatype/nexus-ui-plugin';
 import {
   NxButton,
   NxFontAwesomeIcon,
@@ -31,6 +21,14 @@ import {
 } from '@sonatype/react-shared-components';
 
 import {faDatabase, faTrash} from '@fortawesome/free-solid-svg-icons';
+
+import {
+  ContentBody,
+  Page,
+  PageHeader,
+  PageTitle,
+  Section
+} from '../../../layout';
 
 import UIStrings from '../../../../constants/UIStrings';
 import './Repositories.scss';

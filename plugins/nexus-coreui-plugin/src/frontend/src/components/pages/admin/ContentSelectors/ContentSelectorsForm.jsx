@@ -14,12 +14,7 @@ import React from 'react';
 import {useActor} from '@xstate/react';
 import {faTrash} from '@fortawesome/free-solid-svg-icons';
 
-import {
-  Section,
-  FormUtils,
-  ExtJS
-} from '@sonatype/nexus-ui-plugin';
-
+import {FormUtils, ExtJS} from '@sonatype/nexus-ui-plugin';
 import {
   NxButton,
   NxFontAwesomeIcon,
@@ -29,6 +24,8 @@ import {
   NxStatefulForm,
   NxTextInput
 } from '@sonatype/react-shared-components';
+
+import {Section} from '../../../layout';
 
 import ContentSelectorsPreview from './ContentSelectorsPreview';
 import UIStrings from '../../../../constants/UIStrings';

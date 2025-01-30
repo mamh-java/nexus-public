@@ -15,12 +15,7 @@ import {useMachine} from '@xstate/react';
 import {faMinusSquare, faPlusSquare} from '@fortawesome/free-solid-svg-icons';
 
 import {
-  ContentBody,
   FieldWrapper,
-  Page,
-  PageTitle,
-  Section,
-  SectionToolbar
 } from '@sonatype/nexus-ui-plugin';
 
 import {
@@ -36,6 +31,14 @@ import {
   NxTableHead,
   NxTableRow,
 } from '@sonatype/react-shared-components';
+
+import {
+  ContentBody,
+  Page,
+  PageTitle,
+  Section,
+  SectionToolbar
+} from '../../../layout';
 
 import UIStrings from '../../../../constants/UIStrings';
 import RoutingRulesPreview from './RoutingRulesFormPreview';

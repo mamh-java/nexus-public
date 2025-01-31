@@ -60,10 +60,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.sonatype.nexus.blobstore.s3.internal.BucketManager.LIFECYCLE_EXPIRATION_RULE_ID_PREFIX;
-import static org.sonatype.nexus.blobstore.s3.internal.BucketManager.OLD_LIFECYCLE_EXPIRATION_RULE_ID;
 import static org.sonatype.nexus.blobstore.s3.S3BlobStoreConfigurationHelper.BUCKET_KEY;
 import static org.sonatype.nexus.blobstore.s3.S3BlobStoreConfigurationHelper.CONFIG_KEY;
+import static org.sonatype.nexus.blobstore.s3.internal.BucketManager.LIFECYCLE_EXPIRATION_RULE_ID_PREFIX;
+import static org.sonatype.nexus.blobstore.s3.internal.BucketManager.OLD_LIFECYCLE_EXPIRATION_RULE_ID;
 import static org.sonatype.nexus.blobstore.s3.internal.S3BlobStoreException.ACCESS_DENIED_CODE;
 import static org.sonatype.nexus.blobstore.s3.internal.S3BlobStoreException.BUCKET_OWNERSHIP_ERR_MSG;
 import static org.sonatype.nexus.blobstore.s3.internal.S3BlobStoreException.ERROR_CODE_MESSAGES;
@@ -79,7 +79,6 @@ import static org.sonatype.nexus.blobstore.s3.internal.S3BlobStoreException.SIGN
 public class BucketManagerTest
     extends TestSupport
 {
-
   @Mock
   private AmazonS3 s3;
 
@@ -95,6 +94,7 @@ public class BucketManagerTest
   @Before
   public void setup() {
     when(featureFlag.isDisabled()).thenReturn(false);
+    underTest.setS3(s3);
   }
 
   @Test
@@ -147,10 +147,7 @@ public class BucketManagerTest
             new LifecycleAndOperator(
                 ImmutableList.of(
                     new LifecyclePrefixPredicate("otherPrefix/"),
-                    new LifecycleTagPredicate(S3BlobStore.DELETED_TAG)
-                )
-            )
-        ))
+                    new LifecycleTagPredicate(S3BlobStore.DELETED_TAG)))))
         .withExpirationInDays(123)
         .withStatus(BucketLifecycleConfiguration.ENABLED);
     bucketCfg.setRules(ImmutableList.of(glacierRule, otherBlobStoreRule));
@@ -188,8 +185,7 @@ public class BucketManagerTest
     Rule rule2 = new BucketLifecycleConfiguration.Rule()
         .withId(LIFECYCLE_EXPIRATION_RULE_ID_PREFIX + "blobs")
         .withFilter(new LifecycleFilter(
-            new LifecycleTagPredicate(S3BlobStore.DELETED_TAG)
-        ))
+            new LifecycleTagPredicate(S3BlobStore.DELETED_TAG)))
         .withExpirationInDays(2)
         .withStatus(BucketLifecycleConfiguration.ENABLED);
     bucketCfg.setRules(ImmutableList.of(rule1, rule2));
@@ -204,7 +200,8 @@ public class BucketManagerTest
     List<Rule> capturedRules = capturedCfg.getRules();
     assertEquals(2, capturedRules.size());
     assertTrue(capturedRules.stream().anyMatch(r -> "some other rule".equals(r.getId())));
-    assertTrue(capturedRules.stream().filter(r -> (LIFECYCLE_EXPIRATION_RULE_ID_PREFIX + "blobs").equals(r.getId()))
+    assertTrue(capturedRules.stream()
+        .filter(r -> (LIFECYCLE_EXPIRATION_RULE_ID_PREFIX + "blobs").equals(r.getId()))
         .allMatch(r -> r.getExpirationInDays() == 3));
   }
 
@@ -220,8 +217,7 @@ public class BucketManagerTest
     Rule rule1 = new BucketLifecycleConfiguration.Rule()
         .withId(LIFECYCLE_EXPIRATION_RULE_ID_PREFIX + "mybucket")
         .withFilter(new LifecycleFilter(
-            new LifecycleTagPredicate(S3BlobStore.DELETED_TAG)
-        ))
+            new LifecycleTagPredicate(S3BlobStore.DELETED_TAG)))
         .withExpirationInDays(3)
         .withStatus(BucketLifecycleConfiguration.ENABLED);
     bucketCfg.setRules(ImmutableList.of(rule1));
@@ -247,8 +243,7 @@ public class BucketManagerTest
     Rule rule1 = new BucketLifecycleConfiguration.Rule()
         .withId(OLD_LIFECYCLE_EXPIRATION_RULE_ID)
         .withFilter(new LifecycleFilter(
-            new LifecycleTagPredicate(S3BlobStore.DELETED_TAG)
-        ))
+            new LifecycleTagPredicate(S3BlobStore.DELETED_TAG)))
         .withExpirationInDays(3)
         .withStatus(BucketLifecycleConfiguration.ENABLED);
     bucketCfg.setRules(ImmutableList.of(rule1));
@@ -322,8 +317,10 @@ public class BucketManagerTest
   @Test
   @Parameters(named = "ruleSetAndDeleteLifeCycleParams")
   public void itWillOnlyRemoveNxrmManagedLifeCyclesFromTheBucket(
-      List<Rule> rules, int deleteLifeCycleCallCount, int setLifeCycleCallCount
-  ) {
+      List<Rule> rules,
+      int deleteLifeCycleCallCount,
+      int setLifeCycleCallCount)
+  {
     ObjectListing listingMock = mock(ObjectListing.class);
     when(listingMock.getObjectSummaries()).thenReturn(ImmutableList.of(new S3ObjectSummary()));
     when(s3.listObjects(any(ListObjectsRequest.class))).thenReturn(listingMock);
@@ -347,7 +344,7 @@ public class BucketManagerTest
 
   @NamedParameters("ruleSetAndDeleteLifeCycleParams")
   private Object[] ruleSetAndDeleteLifeCycleParams() {
-    return new Object[] {
+    return new Object[]{
         new Object[]{
             Collections.emptyList(), 1, 0
         },
@@ -372,8 +369,9 @@ public class BucketManagerTest
   @Test
   @Parameters(named = "errorCodeAndMessageParams")
   public void errorThrownWhenBucketCannotBeCreated(
-      String errorCode, String message
-  ) {
+      String errorCode,
+      String message)
+  {
     String bucketName = "bucketName";
     when(s3.doesBucketExistV2(anyString())).thenReturn(false);
     AmazonS3Exception s3Exception = mock(AmazonS3Exception.class);
@@ -392,7 +390,7 @@ public class BucketManagerTest
 
   @NamedParameters("errorCodeAndMessageParams")
   private Object[] errorCodeAndMessageParams() {
-    return new Object[] {
+    return new Object[]{
         new Object[]{
             ACCESS_DENIED_CODE, INSUFFICIENT_PERM_CREATE_BUCKET_ERR_MSG
         },
@@ -405,8 +403,9 @@ public class BucketManagerTest
   @Test
   @Parameters(named = "errorCodeAndMessageInvalidPermissionsParams")
   public void errorCodeAndMessageInvalidPermissionsParams(
-      String errorCode, String message
-  ) {
+      String errorCode,
+      String message)
+  {
     String bucketName = "bucketName";
     AmazonS3Exception s3Exception = mock(AmazonS3Exception.class);
     when(s3Exception.getErrorCode()).thenReturn(errorCode);
@@ -424,7 +423,7 @@ public class BucketManagerTest
 
   @NamedParameters("errorCodeAndMessageInvalidPermissionsParams")
   private Object[] errorCodeAndMessageInvalidPermissionsParams() {
-    return new Object[] {
+    return new Object[]{
         new Object[]{
             "InvalidAccessKeyId", ERROR_CODE_MESSAGES.get(INVALID_ACCESS_KEY_ID_CODE)
         },
@@ -432,7 +431,8 @@ public class BucketManagerTest
             "SignatureDoesNotMatch", ERROR_CODE_MESSAGES.get(SIGNATURE_DOES_NOT_MATCH_CODE)
         },
         new Object[]{
-            "Some_Unexpected_Code", "An unexpected error occurred checking credentials. Check the logs for more details."
+            "Some_Unexpected_Code",
+            "An unexpected error occurred checking credentials. Check the logs for more details."
         }
     };
   }
@@ -440,8 +440,9 @@ public class BucketManagerTest
   @Test
   @Parameters(named = "errorCodeAndMessageUserWithoutAccessParams")
   public void errorThrownIfUserDoesNotHaveAccessToAnExistingBucket(
-      String errorCode, String message
-  ) {
+      String errorCode,
+      String message)
+  {
     String bucketName = "bucketName";
     when(s3.doesBucketExistV2(anyString())).thenReturn(true);
     AmazonS3Exception s3Exception = mock(AmazonS3Exception.class);
@@ -460,12 +461,13 @@ public class BucketManagerTest
 
   @NamedParameters("errorCodeAndMessageUserWithoutAccessParams")
   private Object[] errorCodeAndMessageUserWithoutAccessParams() {
-    return new Object[] {
+    return new Object[]{
         new Object[]{
             "AccessDenied", BUCKET_OWNERSHIP_ERR_MSG
         },
         new Object[]{
-            "Some_Unexpected_Code", "An unexpected error occurred checking bucket ownership. Check the logs for more details."
+            "Some_Unexpected_Code",
+            "An unexpected error occurred checking bucket ownership. Check the logs for more details."
         },
         new Object[]{
             "MethodNotAllowed", INVALID_IDENTITY_ERR_MSG

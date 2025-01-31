@@ -36,7 +36,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 
 import static java.util.Arrays.asList;
@@ -139,7 +138,7 @@ public class RepositoryPermissionCheckerTest
     when(selectorManager.browseActive(Arrays.asList(REPOSITORY_NAME_1, REPOSITORY_NAME_2),
         Collections.singletonList(REPOSITORY_FORMAT))).thenReturn(asList(selector));
 
-    when(securityHelper.isPermitted(same(subject), ArgumentMatchers.<Permission>any()))
+    when(securityHelper.isPermitted(same(subject), any(), any(), any()))
         .thenReturn(new boolean[] { true, false, false });
     when(securityHelper.subject()).thenReturn(subject);
 
@@ -194,7 +193,8 @@ public class RepositoryPermissionCheckerTest
   @Test
   public void testUserHasRepositoryAdminPermissionFor() {
     List<Configuration> permittedRepositories =
-        underTest.userHasRepositoryAdminPermissionFor(Arrays.asList(configuration, configuration1, configuration2), READ);
+        underTest.userHasRepositoryAdminPermissionFor(Arrays.asList(configuration, configuration1, configuration2),
+            READ);
 
     assertThat(permittedRepositories, contains(configuration));
 
@@ -237,8 +237,7 @@ public class RepositoryPermissionCheckerTest
     return permissions.toArray(new Permission[permissions.size()]);
   }
 
-  private void verifyUserAccessOf(final Function<Repository, Boolean> accessCheck)
-  {
+  private void verifyUserAccessOf(final Function<Repository, Boolean> accessCheck) {
     BiFunction<Boolean, Boolean, Boolean> userCanAccessRepositoryWhen =
         (hasRepositoryPermission, hasSelectorPermission) -> {
           setUpRepositoryPermission(hasRepositoryPermission);
@@ -253,17 +252,21 @@ public class RepositoryPermissionCheckerTest
   }
 
   private void setUpRepositoryPermission(final boolean hasPermission) {
-    Permission[] permissions = new Permission[] {new RepositoryViewPermission(REPOSITORY_FORMAT, REPOSITORY_NAME, BROWSE), new RepositoryViewPermission(REPOSITORY_FORMAT, REPOSITORY_NAME, READ)};
+    Permission[] permissions =
+        new Permission[]{new RepositoryViewPermission(REPOSITORY_FORMAT, REPOSITORY_NAME, BROWSE),
+            new RepositoryViewPermission(REPOSITORY_FORMAT, REPOSITORY_NAME, READ)};
     when(securityHelper.anyPermitted(permissions))
         .thenReturn(hasPermission);
   }
 
   private void setUpSelectorPermission(final boolean hasPermission) {
-    Permission[] permissions = new Permission[] { new RepositoryContentSelectorPermission(SELECTOR_NAME, REPOSITORY_FORMAT, REPOSITORY_NAME,
-        ImmutableList.of(BROWSE)), new RepositoryContentSelectorPermission(SELECTOR_NAME, REPOSITORY_FORMAT, REPOSITORY_NAME,
-        ImmutableList.of(READ))};
+    Permission[] permissions = new Permission[]{
+        new RepositoryContentSelectorPermission(SELECTOR_NAME, REPOSITORY_FORMAT, REPOSITORY_NAME,
+            ImmutableList.of(BROWSE)),
+        new RepositoryContentSelectorPermission(SELECTOR_NAME, REPOSITORY_FORMAT, REPOSITORY_NAME,
+            ImmutableList.of(READ))};
     when(securityHelper
         .anyPermitted(subject, permissions))
-        .thenReturn(hasPermission);
+            .thenReturn(hasPermission);
   }
 }

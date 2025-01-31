@@ -18,6 +18,7 @@ import org.sonatype.nexus.repository.config.Configuration;
 import org.sonatype.nexus.repository.config.ConfigurationStore;
 import org.sonatype.nexus.repository.rest.api.model.AbstractRepositoryApiRequest;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.sonatype.nexus.datastore.api.DataStoreManager.DEFAULT_DATASTORE_NAME;
 import static org.sonatype.nexus.repository.config.ConfigurationConstants.DATA_STORE_NAME;
 import static org.sonatype.nexus.repository.config.ConfigurationConstants.STORAGE;
@@ -27,8 +28,12 @@ import static org.sonatype.nexus.repository.config.ConfigurationConstants.STORAG
  */
 public abstract class AbstractRepositoryApiRequestToConfigurationConverter<T extends AbstractRepositoryApiRequest>
 {
-  @Inject
   protected ConfigurationStore configurationStore;
+
+  @Inject
+  public void setConfigurationStore(final ConfigurationStore configurationStore) {
+    this.configurationStore = checkNotNull(configurationStore);
+  }
 
   protected void maybeAddDataStoreName(final Configuration configuration) {
     configuration.attributes(STORAGE).set(DATA_STORE_NAME, DEFAULT_DATASTORE_NAME);

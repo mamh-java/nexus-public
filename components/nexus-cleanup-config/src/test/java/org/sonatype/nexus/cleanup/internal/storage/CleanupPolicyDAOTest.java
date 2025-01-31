@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
+import org.sonatype.goodies.testsupport.TestSupport;
 import org.sonatype.nexus.cleanup.storage.CleanupPolicy;
 import org.sonatype.nexus.datastore.api.DataSession;
 import org.sonatype.nexus.testdb.DataSessionRule;
@@ -27,7 +28,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import spock.lang.Specification;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
@@ -37,7 +37,7 @@ import static org.junit.Assert.assertFalse;
 import static org.sonatype.nexus.datastore.api.DataStoreManager.DEFAULT_DATASTORE_NAME;
 
 public class CleanupPolicyDAOTest
-    extends Specification
+    extends TestSupport
 {
   @Rule
   public DataSessionRule sessionRule = new DataSessionRule().access(CleanupPolicyDAO.class);

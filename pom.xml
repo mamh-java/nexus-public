@@ -1391,9 +1391,10 @@
                     <exclude>org.mortbay.jetty:servlet-api-2.5</exclude>
 
                     <!--
-                    Ban uber mockito.
+                    Ban uber mockito and legacy module
                     -->
                     <exclude>org.mockito:mockito-all</exclude>
+                    <exclude>org.mockito:mockito-inline</exclude>
 
                     <!--
                     Ban hamcrest so we can require compatible version (see includes).

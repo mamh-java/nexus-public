@@ -526,7 +526,8 @@ public class ProxyFacetSupportTest
 
     underTest.get(cachedContext);
 
-    verify(eventManager, times(2)).post(captor.capture());
+    verify(eventManager).post(any(ProxyRequestEvent.class));
+    verify(eventManager).post(captor.capture());
     assertThat(captor.getValue().isBlocked(), is(true));
   }
 
@@ -541,7 +542,8 @@ public class ProxyFacetSupportTest
 
     underTest.get(cachedContext);
 
-    verify(eventManager, times(2)).post(captor.capture());
+    verify(eventManager).post(any(ProxyRequestEvent.class));
+    verify(eventManager).post(captor.capture());
     assertThat(captor.getValue().isBlocked(), is(false));
   }
 }

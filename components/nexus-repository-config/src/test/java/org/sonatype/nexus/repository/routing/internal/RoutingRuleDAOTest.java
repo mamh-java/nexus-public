@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import org.sonatype.goodies.testsupport.TestSupport;
 import org.sonatype.nexus.datastore.api.DataSession;
 import org.sonatype.nexus.repository.routing.RoutingMode;
 import org.sonatype.nexus.testdb.DataSessionRule;
@@ -24,7 +25,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import spock.lang.Specification;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -36,7 +36,7 @@ import static org.sonatype.nexus.repository.routing.RoutingMode.ALLOW;
 import static org.sonatype.nexus.repository.routing.RoutingMode.BLOCK;
 
 public class RoutingRuleDAOTest
-    extends Specification
+    extends TestSupport
 {
   @Rule
   public DataSessionRule sessionRule = new DataSessionRule().access(RoutingRuleDAO.class);

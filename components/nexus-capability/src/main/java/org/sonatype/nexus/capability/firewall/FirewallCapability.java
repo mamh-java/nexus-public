@@ -59,4 +59,13 @@ public class FirewallCapability
             .enabled())
         .size();
   }
+
+  public static boolean isFirewallSupportedFormat(String format) {
+    for (FirewallSupportedFormat supportedFormat : FirewallSupportedFormat.values()) {
+      if (supportedFormat.getValue().equals(format)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

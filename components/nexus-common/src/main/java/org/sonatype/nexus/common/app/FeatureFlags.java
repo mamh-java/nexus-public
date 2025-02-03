@@ -133,6 +133,8 @@ public interface FeatureFlags
 
   String DISABLE_NORMALIZE_VERSION_TASK = "nexus.cleanup.disableNormalizeVersionTask";
 
+  String DISABLE_CREATING_COMPONENT_INDEXES_TASK = "nexus.component.index.task";
+
   String FIREWALL_QUARANTINE_FIX_ENABLED = "nexus.firewall.quarantineFix.enabled";
 
   String FIREWALL_QUARANTINE_FIX_ENABLED_NAMED = "${nexus.firewall.quarantineFix.enabled:-false}";

@@ -21,6 +21,7 @@ import javax.inject.Singleton;
 
 /**
  * Duplicates the default methods from DatabaseMigrationStep in order to make a more testable object at runtime
+ * 
  * @see DatabaseMigrationStep
  */
 @Named
@@ -38,7 +39,7 @@ public class DatabaseMigrationUtility
   public boolean tableExists(final Connection conn, final String tableName) throws SQLException {
     if (isH2(conn)) {
       try (PreparedStatement statement =
-               conn.prepareStatement("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = ?")) {
+          conn.prepareStatement("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = ?")) {
         statement.setString(1, tableName.toUpperCase());
         try (ResultSet results = statement.executeQuery()) {
           return results.next();
@@ -62,8 +63,10 @@ public class DatabaseMigrationUtility
     }
   }
 
-  public boolean columnExists(final Connection conn, final String tableName, final String columnName)
-      throws SQLException
+  public boolean columnExists(
+      final Connection conn,
+      final String tableName,
+      final String columnName) throws SQLException
   {
     String sql = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE UPPER(TABLE_NAME) = ? AND UPPER(COLUMN_NAME) = ?";
     try (PreparedStatement statement = conn.prepareStatement(sql)) {
@@ -75,9 +78,7 @@ public class DatabaseMigrationUtility
     }
   }
 
-  public boolean indexExists(final Connection conn, final String indexName)
-      throws SQLException
-  {
+  public boolean indexExists(final Connection conn, final String indexName) throws SQLException {
     if (isPostgresql(conn)) {
       String currentSchema = currentSchema(conn);
       String sql = "SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS" +
@@ -105,9 +106,30 @@ public class DatabaseMigrationUtility
     throw new UnsupportedOperationException();
   }
 
-  public String currentSchema(final Connection conn)
-      throws SQLException
+  public void createIndex(
+      final Connection conn,
+      final String indexName,
+      final String tableName,
+      final String columns) throws SQLException
   {
+    String sql = "CREATE INDEX ";
+    if (isPostgresql(conn)) {
+      sql += "CONCURRENTLY ";
+    }
+    sql += "IF NOT EXISTS " + indexName + " ON " + tableName + " (" + columns + ")";
+    try (PreparedStatement statement = conn.prepareStatement(sql)) {
+      statement.execute();
+    }
+  }
+
+  public void dropIndex(final Connection conn, final String indexName) throws SQLException {
+    String sql = "DROP INDEX IF EXISTS " + indexName;
+    try (PreparedStatement statement = conn.prepareStatement(sql)) {
+      statement.execute();
+    }
+  }
+
+  public String currentSchema(final Connection conn) throws SQLException {
     String sql = "select current_schema()";
     try (PreparedStatement statement = conn.prepareStatement(sql)) {
       try (ResultSet results = statement.executeQuery()) {

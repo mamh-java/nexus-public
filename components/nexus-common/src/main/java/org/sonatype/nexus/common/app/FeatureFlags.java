@@ -35,11 +35,6 @@ public interface FeatureFlags
   /* Docker GC Custom task enabled. Available values: true, false. Default value: false */
   String DOCKER_GC_CUSTOM_TASK_ENABLED = "nexus.docker.gc.custom.enabled";
 
-  /* Database externalization. Available values: true, false. Default value: true */
-  String DATASTORE_ENABLED = "nexus.datastore.enabled";
-
-  String DATASTORE_ENABLED_NAMED = "${nexus.datastore.enabled:-true}";
-
   /* Database externalization developers only. Available values: true, false. Default value: false */
   String DATASTORE_DEVELOPER = "nexus.datastore.developer";
 
@@ -87,8 +82,6 @@ public interface FeatureFlags
    * Enable searching components via aggregated search table.
    * Mutual exclusive with:
    * - ELASTIC_SEARCH_ENABLED;
-   * Dependent from:
-   * - DATASTORE_DEVELOPER;
    */
   String DATASTORE_TABLE_SEARCH = "nexus.datastore.table.search.enabled";
 

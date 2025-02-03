@@ -35,11 +35,6 @@
   </properties>
 
   <modules>
-    <module>nexus-docker-testsupport</module>
-    <module>nexus-repository-testsupport</module>
-    <module>nexus-repository-content-testsupport</module>
-    <module>nexus-content-suite</module>
-    <module>nexus-it-suite</module>
     <module>nexus-it-suite-data</module>
   </modules>
 
@@ -90,13 +85,6 @@
         <groupId>org.sonatype.nexus.testsuite</groupId>
         <artifactId>nexus-it-suite-data</artifactId>
         <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.sonatype.nexus.assemblies</groupId>
-        <artifactId>nexus-base-template</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
       </dependency>
 
       <dependency>

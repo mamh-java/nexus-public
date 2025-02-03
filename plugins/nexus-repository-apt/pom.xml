@@ -25,7 +25,6 @@
 
   <artifactId>nexus-repository-apt</artifactId>
   <name>${project.groupId}:${project.artifactId}</name>
-  <packaging>bundle</packaging>
 
   <dependencies>
     <dependency>
@@ -103,12 +102,4 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.karaf.tooling</groupId>
-        <artifactId>karaf-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 </project>

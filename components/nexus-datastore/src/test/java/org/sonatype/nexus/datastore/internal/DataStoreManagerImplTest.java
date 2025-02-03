@@ -83,7 +83,6 @@ public class DataStoreManagerImplTest
     when(configurationManager.load()).thenReturn(ImmutableList.of());
 
     underTest = new DataStoreManagerImpl(
-        true,
         eventManager,
         ImmutableMap.of("test", descriptorTest, "jdbc", descriptorJdbc),
         ImmutableMap.of("test", prototypeTest, "jdbc", prototypeJdbc),

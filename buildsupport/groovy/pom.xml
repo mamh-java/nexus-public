@@ -33,12 +33,6 @@
     <spock.version>2.3-groovy-3.0</spock.version>
   </properties>
 
-  <!--
-  The groovy-eclipse-compiler and groovy-eclipse-batch dependencies which are configured on
-  the maven-compiler-plugin must have versions defined in the plugin execution (in project root pom).
-  The groovy-all version and the groovy-eclipse-batch version need to be kept in-sync with compatible versions.
-  -->
-
   <dependencyManagement>
     <dependencies>
 

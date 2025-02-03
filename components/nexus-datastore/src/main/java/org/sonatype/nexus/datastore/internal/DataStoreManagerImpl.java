@@ -53,7 +53,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.Optional.ofNullable;
-import static org.sonatype.nexus.common.app.FeatureFlags.DATASTORE_ENABLED_NAMED;
 import static org.sonatype.nexus.common.app.ManagedLifecycle.Phase.STORAGE;
 import static org.sonatype.nexus.common.stateguard.StateGuardLifecycleSupport.State.STARTED;
 import static org.sonatype.nexus.common.text.Strings2.lower;
@@ -72,7 +71,9 @@ public class DataStoreManagerImpl
     extends StateGuardLifecycleSupport
     implements DataStoreManager, DataSessionSupplier
 {
-  private static final Key<Class<DataAccess>> DATA_ACCESS_KEY = new Key<Class<DataAccess>>(){/**/};
+  private static final Key<Class<DataAccess>> DATA_ACCESS_KEY = new Key<Class<DataAccess>>()
+  {
+    /**/};
 
   private static final DataAccessMediator DATA_ACCESS_MEDIATOR = new DataAccessMediator();
 
@@ -98,7 +99,6 @@ public class DataStoreManagerImpl
 
   @Inject
   public DataStoreManagerImpl(
-      @Named(DATASTORE_ENABLED_NAMED) final boolean enabled,
       final EventManager eventManager,
       final Map<String, DataStoreDescriptor> dataStoreDescriptors,
       final Map<String, Provider<DataStore<?>>> dataStorePrototypes,
@@ -107,7 +107,7 @@ public class DataStoreManagerImpl
       final DataStoreRestorer restorer,
       final BeanLocator beanLocator)
   {
-    this.enabled = enabled;
+    this.enabled = true;
 
     this.eventManager = checkNotNull(eventManager);
     this.dataStoreDescriptors = checkNotNull(dataStoreDescriptors);
@@ -365,12 +365,12 @@ public class DataStoreManagerImpl
   {
     @Override
     public void add(final BeanEntry<Named, Class<DataAccess>> entry, final DataStore<?> store) {
-        store.register(entry.getValue());
+      store.register(entry.getValue());
     }
 
     @Override
     public void remove(final BeanEntry<Named, Class<DataAccess>> entry, final DataStore<?> store) {
-        store.unregister(entry.getValue());
+      store.unregister(entry.getValue());
     }
   }
 }

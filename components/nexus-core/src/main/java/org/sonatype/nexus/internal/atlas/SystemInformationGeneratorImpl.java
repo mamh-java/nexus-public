@@ -18,7 +18,6 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.nio.file.FileStore;
 import java.nio.file.FileSystems;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,10 +32,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.karaf.bundle.core.BundleInfo;
-import org.apache.karaf.bundle.core.BundleService;
 import org.eclipse.sisu.Parameters;
-import org.osgi.framework.BundleContext;
 import org.sonatype.goodies.common.ComponentSupport;
 import org.sonatype.goodies.common.Iso8601Date;
 import org.sonatype.nexus.common.app.ApplicationDirectories;
@@ -67,10 +63,6 @@ public class SystemInformationGeneratorImpl
 
   private final Map<String, String> parameters;
 
-  private final BundleContext bundleContext;
-
-  private final BundleService bundleService;
-
   private final NodeAccess nodeAccess;
 
   private final DeploymentAccess deploymentAccess;
@@ -90,8 +82,6 @@ public class SystemInformationGeneratorImpl
       ApplicationDirectories applicationDirectories,
       ApplicationVersion applicationVersion,
       @Parameters Map<String, String> parameters,
-      BundleContext bundleContext,
-      BundleService bundleService,
       NodeAccess nodeAccess,
       DeploymentAccess deploymentAccess,
       Map<String, SystemInformationHelper> systemInformationHelpers)
@@ -99,8 +89,6 @@ public class SystemInformationGeneratorImpl
     this.applicationDirectories = checkNotNull(applicationDirectories);
     this.applicationVersion = checkNotNull(applicationVersion);
     this.parameters = checkNotNull(parameters);
-    this.bundleContext = checkNotNull(bundleContext);
-    this.bundleService = checkNotNull(bundleService);
     this.nodeAccess = checkNotNull(nodeAccess);
     this.deploymentAccess = checkNotNull(deploymentAccess);
     this.systemInformationHelpers = checkNotNull(systemInformationHelpers);
@@ -121,7 +109,6 @@ public class SystemInformationGeneratorImpl
     sections.put("nexus-node", reportNexusNode());
     sections.put("nexus-properties", reportObfuscatedProperties(parameters));
     sections.put("nexus-configuration", reportNexusConfiguration());
-    sections.put("nexus-bundles", reportNexusBundles());
 
     // Merge additional system information helpers
     sections.putAll(systemInformationHelpers);
@@ -196,27 +183,6 @@ public class SystemInformationGeneratorImpl
     data.put("workingDirectory", fileref(applicationDirectories.getWorkDirectory()));
     data.put("temporaryDirectory", fileref(applicationDirectories.getTemporaryDirectory()));
     return data;
-  }
-
-  private Map<String, Object> reportNexusBundles() {
-    return Arrays.stream(bundleContext.getBundles())
-        .collect(Collectors.toMap(
-            bundle -> Long.toString(bundleService.getInfo(bundle).getBundleId()),
-            bundle -> {
-              BundleInfo info = bundleService.getInfo(bundle);
-              // name is not set for groovy bundles
-              String name = info.getName() == null ? "" : info.getName();
-              Map<String, Object> bundleData = new HashMap<>();
-              bundleData.put("bundleId", info.getBundleId());
-              bundleData.put("name", name);
-              bundleData.put("symbolicName", info.getSymbolicName());
-              bundleData.put("location", info.getUpdateLocation());
-              bundleData.put("version", info.getVersion());
-              bundleData.put("state", info.getState().name());
-              bundleData.put("startLevel", info.getStartLevel());
-              bundleData.put("fragment", info.isFragment());
-              return bundleData;
-            }));
   }
 
   private String fileref(File file) {

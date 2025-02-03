@@ -47,7 +47,6 @@ import AzureBlobStoreActions from './components/pages/admin/BlobStores/Azure/Azu
 import GoogleBlobStoreSettings from './components/pages/admin/BlobStores/Google/GoogleBlobStoreSettings';
 import GoogleBlobStoreActions from './components/pages/admin/BlobStores/Google/GoogleBlobStoreActions';
 import IqServer from './components/pages/admin/IqServer/IqServer';
-import Bundles from './components/pages/admin/Bundles/Bundles';
 import ProprietaryRepositories from './components/pages/admin/ProprietaryRepositories/ProprietaryRepositories';
 import Api from './components/pages/admin/Api/Api';
 import Realms from './components/pages/admin/Realms/Realms';
@@ -416,17 +415,6 @@ window.plugins.push({
           }
         ],
         permissions: [Permissions.ADMIN]
-      }
-    },
-    {
-      mode: 'admin',
-      path: '/System/Bundles',
-      ...UIStrings.BUNDLES.MENU,
-      view: Bundles,
-      iconCls: 'x-fa fa-puzzle-piece',
-      visibility: {
-        bundle: 'org.sonatype.nexus.plugins.nexus-coreui-plugin',
-        permissions: [Permissions.BUNDLES.READ]
       }
     },
     {

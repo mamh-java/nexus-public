@@ -27,9 +27,6 @@ import org.sonatype.nexus.common.app.SystemInformationHelper;
 import org.sonatype.nexus.common.node.DeploymentAccess;
 import org.sonatype.nexus.common.node.NodeAccess;
 import org.apache.commons.lang.SystemUtils;
-import org.apache.karaf.bundle.core.BundleService;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 
 import java.io.IOException;
 import java.nio.file.FileStore;
@@ -67,12 +64,6 @@ public class SystemInformationGeneratorImplTest
   private ApplicationVersion applicationVersion;
 
   @Mock
-  private BundleContext bundleContext;
-
-  @Mock
-  private BundleService bundleService;
-
-  @Mock
   private NodeAccess nodeAccess;
 
   @Mock
@@ -92,7 +83,6 @@ public class SystemInformationGeneratorImplTest
     when(applicationDirectories.getInstallDirectory()).thenReturn(tempFolder.newFile());
     when(applicationDirectories.getWorkDirectory()).thenReturn(tempFolder.newFile());
     when(applicationDirectories.getTemporaryDirectory()).thenReturn(tempFolder.newFile());
-    when(bundleContext.getBundles()).thenReturn(new Bundle[0]);
   }
 
   /**
@@ -170,8 +160,6 @@ public class SystemInformationGeneratorImplTest
         applicationDirectories,
         applicationVersion,
         Collections.emptyMap(),
-        bundleContext,
-        bundleService,
         nodeAccess,
         deploymentAccess,
         systemInformationHelpers);
@@ -211,8 +199,6 @@ public class SystemInformationGeneratorImplTest
         applicationDirectories,
         applicationVersion,
         Collections.singletonMap("sun.java.command", "test.variable=1 -Dnexus.password=nxrm -Dnexus.token=123456"),
-        bundleContext,
-        bundleService,
         nodeAccess,
         deploymentAccess,
         systemInformationHelpers);
@@ -234,8 +220,6 @@ public class SystemInformationGeneratorImplTest
         applicationVersion,
         Collections.singletonMap("INSTALL4J_ADD_VM_PARAMS",
             "test.variable=1 -Dnexus.password=nxrm -Dnexus.token=123456"),
-        bundleContext,
-        bundleService,
         nodeAccess,
         deploymentAccess,
         systemInformationHelpers);

@@ -26,7 +26,6 @@ import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 
 import org.sonatype.goodies.common.ComponentSupport;
-import org.sonatype.nexus.common.app.FeatureFlag;
 import org.sonatype.nexus.common.entity.EntityId;
 import org.sonatype.nexus.common.event.EventManager;
 import org.sonatype.nexus.repository.Repository;
@@ -51,14 +50,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.prependIfMissing;
-import static org.sonatype.nexus.common.app.FeatureFlags.DATASTORE_ENABLED;
 
 /**
  * {@link UploadManager} implementation.
  *
  * @since 3.24
  */
-@FeatureFlag(name = DATASTORE_ENABLED)
 @Named
 @Singleton
 public class UploadManagerImpl
@@ -87,7 +84,8 @@ public class UploadManagerImpl
   {
     this.uploadHandlers = checkNotNull(uploadHandlers);
     this.uploadDefinitions = Collections
-        .unmodifiableList(uploadHandlers.values().stream()
+        .unmodifiableList(uploadHandlers.values()
+            .stream()
             .filter(UploadHandler::supportsApiUpload)
             .map(UploadHandler::getDefinition)
             .collect(toList()));
@@ -122,7 +120,8 @@ public class UploadManagerImpl
           uploadHandler.handle(repository, uploadHandler.getValidatingComponentUpload(upload).getComponentUpload());
 
       for (ComponentUploadExtension componentUploadExtension : componentUploadExtensions) {
-        List<EntityId> componentIds = uploadResponse.getContents().stream()
+        List<EntityId> componentIds = uploadResponse.getContents()
+            .stream()
             .map(uploadComponentProcessor::extractId)
             .filter(Optional::isPresent)
             .map(Optional::get)
@@ -131,7 +130,9 @@ public class UploadManagerImpl
       }
 
       eventManager.post(new UIUploadEvent(repository,
-          uploadResponse.getAssetPaths().stream().map(assetPath -> prependIfMissing(assetPath, "/"))
+          uploadResponse.getAssetPaths()
+              .stream()
+              .map(assetPath -> prependIfMissing(assetPath, "/"))
               .collect(toList())));
 
       return uploadResponse;
@@ -152,9 +153,7 @@ public class UploadManagerImpl
   }
 
   @Override
-  public Content handle(final ImportFileConfiguration importFileConfiguration)
-      throws IOException
-  {
+  public Content handle(final ImportFileConfiguration importFileConfiguration) throws IOException {
     UploadHandler uploadHandler = getUploadHandler(importFileConfiguration.getRepository());
 
     if (importFileConfiguration.isHardLinkingEnabled()) {
@@ -164,8 +163,7 @@ public class UploadManagerImpl
       return uploadHandler.handle(
           importFileConfiguration.getRepository(),
           importFileConfiguration.getFile(),
-          importFileConfiguration.getAssetName()
-      );
+          importFileConfiguration.getAssetName());
     }
   }
 
@@ -176,9 +174,7 @@ public class UploadManagerImpl
     uploadHandler.handleAfterImport(importResult);
   }
 
-  private ComponentUpload create(final Repository repository, final HttpServletRequest request)
-      throws IOException
-  {
+  private ComponentUpload create(final Repository repository, final HttpServletRequest request) throws IOException {
     try {
       BlobStoreMultipartForm multipartForm = multipartHelper.parse(repository, request);
       return ComponentUploadUtils.createComponentUpload(repository.getFormat().getValue(), multipartForm);
@@ -188,8 +184,7 @@ public class UploadManagerImpl
     }
   }
 
-  private UploadHandler getUploadHandler(final Repository repository)
-  {
+  private UploadHandler getUploadHandler(final Repository repository) {
     if (!(repository.getType() instanceof HostedType)) {
       throw new ValidationErrorsException(
           format("Uploading components to a '%s' type repository is unsupported, must be '%s'",
@@ -213,8 +208,15 @@ public class UploadManagerImpl
       List<AssetUpload> assetUploads = componentUpload.getAssetUploads();
 
       StringBuilder sb = new StringBuilder();
-      sb.append("Uploading component with parameters: ").append("repository").append("=\"").append(repository.getName())
-          .append("\" ").append("format").append("=\"").append(repository.getFormat().getValue()).append("\" ");
+      sb.append("Uploading component with parameters: ")
+          .append("repository")
+          .append("=\"")
+          .append(repository.getName())
+          .append("\" ")
+          .append("format")
+          .append("=\"")
+          .append(repository.getFormat().getValue())
+          .append("\" ");
       for (Entry<String, String> entry : componentFields.entrySet()) {
         sb.append(entry.getKey()).append("=\"").append(entry.getValue()).append("\" ");
       }

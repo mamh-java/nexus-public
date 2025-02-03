@@ -23,10 +23,6 @@ import org.sonatype.nexus.common.db.DatabaseCheck;
 
 import com.google.common.collect.ImmutableMap;
 
-import static org.sonatype.nexus.common.app.FeatureFlags.DATASTORE_DEVELOPER;
-import static org.sonatype.nexus.common.app.FeatureFlags.DATASTORE_DEVELOPER_NAMED;
-import static org.sonatype.nexus.common.app.FeatureFlags.DATASTORE_ENABLED;
-import static org.sonatype.nexus.common.app.FeatureFlags.DATASTORE_ENABLED_NAMED;
 import static org.sonatype.nexus.common.app.FeatureFlags.DATASTORE_IS_POSTGRESQL;
 
 @Singleton
@@ -41,22 +37,17 @@ public class DatastoreStateContributor
   private boolean isPostgresql;
 
   @Inject
-  public DatastoreStateContributor(
-      @Named(DATASTORE_ENABLED_NAMED) boolean datastoreEnabled,
-      @Named(DATASTORE_DEVELOPER_NAMED) boolean datastoreDeveloper,
-      DatabaseCheck dbCheck)
-  {
-    this.datastoreEnabled = datastoreEnabled;
-    this.datastoreDeveloper = datastoreDeveloper;
+  public DatastoreStateContributor(DatabaseCheck dbCheck) {
+    this.datastoreEnabled = true;
+    this.datastoreDeveloper = false;
     this.isPostgresql = dbCheck.isPostgresql();
   }
 
   @Override
   public Map<String, Object> getState() {
     return ImmutableMap.of(
-        DATASTORE_ENABLED, datastoreEnabled,
-        DATASTORE_DEVELOPER, datastoreDeveloper,
-        DATASTORE_IS_POSTGRESQL, isPostgresql
-    );
+        "nexus.datastore.enabled", datastoreEnabled,
+        "nexus.datastore.developer", datastoreDeveloper,
+        DATASTORE_IS_POSTGRESQL, isPostgresql);
   }
 }

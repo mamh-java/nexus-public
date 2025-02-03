@@ -24,7 +24,6 @@ import org.sonatype.nexus.blobstore.api.Blob;
 import org.sonatype.nexus.blobstore.api.BlobStore;
 import org.sonatype.nexus.blobstore.restore.datastore.BaseRestoreBlobStrategy;
 import org.sonatype.nexus.blobstore.restore.datastore.DataStoreRestoreBlobData;
-import org.sonatype.nexus.common.app.FeatureFlag;
 import org.sonatype.nexus.common.log.DryRunPrefix;
 import org.sonatype.nexus.content.raw.RawContentFacet;
 import org.sonatype.nexus.repository.Repository;
@@ -32,13 +31,11 @@ import org.sonatype.nexus.repository.manager.RepositoryManager;
 import org.sonatype.nexus.repository.view.payloads.DetachedBlobPayload;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.sonatype.nexus.common.app.FeatureFlags.DATASTORE_ENABLED;
 
 /**
  * @since 3.29
  */
 @Named("raw")
-@FeatureFlag(name = DATASTORE_ENABLED)
 @Singleton
 public class RawRestoreBlobStrategy
     extends BaseRestoreBlobStrategy<DataStoreRestoreBlobData>
@@ -55,8 +52,7 @@ public class RawRestoreBlobStrategy
   }
 
   @Override
-  protected boolean canAttemptRestore(@Nonnull final DataStoreRestoreBlobData data)
-  {
+  protected boolean canAttemptRestore(@Nonnull final DataStoreRestoreBlobData data) {
     Repository repository = data.getRepository();
 
     if (repository.optionalFacet(RawContentFacet.class).isPresent()) {
@@ -69,8 +65,7 @@ public class RawRestoreBlobStrategy
   }
 
   @Override
-  protected void createAssetFromBlob(final Blob assetBlob, final DataStoreRestoreBlobData data) throws IOException
-  {
+  protected void createAssetFromBlob(final Blob assetBlob, final DataStoreRestoreBlobData data) throws IOException {
     RawContentFacet rawContentFacet = data.getRepository().facet(RawContentFacet.class);
     rawContentFacet.put(data.getBlobName(), new DetachedBlobPayload(assetBlob));
   }
@@ -96,6 +91,6 @@ public class RawRestoreBlobStrategy
 
   @Override
   public void after(final boolean updateAssets, final Repository repository) {
-    //no-op
+    // no-op
   }
 }

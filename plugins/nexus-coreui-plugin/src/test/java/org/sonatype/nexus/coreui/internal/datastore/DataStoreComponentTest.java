@@ -71,7 +71,7 @@ public class DataStoreComponentTest
 
     when(dataStoreManager.browse()).thenReturn(asList(h2DataStore, postgresqlDataStore));
 
-    underTest = new DataStoreComponent(dataStoreManager, repositoryManager, repositoryPermissionChecker, true);
+    underTest = new DataStoreComponent(dataStoreManager, repositoryManager, repositoryPermissionChecker);
   }
 
   @Test

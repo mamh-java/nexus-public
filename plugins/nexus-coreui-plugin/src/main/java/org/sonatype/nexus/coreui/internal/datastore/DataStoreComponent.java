@@ -36,7 +36,6 @@ import com.softwarementors.extjs.djn.config.annotations.DirectMethod;
 
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
-import static org.sonatype.nexus.common.app.FeatureFlags.DATASTORE_ENABLED_NAMED;
 import static org.sonatype.nexus.security.BreadActions.READ;
 
 /**
@@ -67,13 +66,12 @@ public class DataStoreComponent
   public DataStoreComponent(
       final DataStoreManager dataStoreManager,
       final RepositoryManager repositoryManager,
-      final RepositoryPermissionChecker repositoryPermissionChecker,
-      @Named(DATASTORE_ENABLED_NAMED) final boolean enabled)
+      final RepositoryPermissionChecker repositoryPermissionChecker)
   {
     this.dataStoreManager = dataStoreManager;
     this.repositoryManager = repositoryManager;
     this.repositoryPermissionChecker = repositoryPermissionChecker;
-    this.enabled = enabled;
+    this.enabled = true;
   }
 
   @Override
@@ -89,9 +87,9 @@ public class DataStoreComponent
     repositoryPermissionChecker.ensureUserHasAnyPermissionOrAdminAccess(
         singletonList(new ApplicationPermission(DATASTORES_PERMISSION, READ)),
         READ,
-        repositoryManager.browse()
-    );
-    return StreamSupport.stream(dataStoreManager.browse().spliterator(), false).map(this::asDataStoreXO)
+        repositoryManager.browse());
+    return StreamSupport.stream(dataStoreManager.browse().spliterator(), false)
+        .map(this::asDataStoreXO)
         .collect(toList());
   }
 
@@ -102,11 +100,15 @@ public class DataStoreComponent
     repositoryPermissionChecker.ensureUserHasAnyPermissionOrAdminAccess(
         singletonList(new ApplicationPermission(DATASTORES_PERMISSION, READ)),
         READ,
-        repositoryManager.browse()
-    );
-    return StreamSupport.stream(dataStoreManager.browse().spliterator(), false).filter(
-            dataStore -> dataStore.getConfiguration().getAttributes().getOrDefault(JDBCURL_FIELD, "").startsWith("jdbc:h2:"))
-        .map(this::asDataStoreXO).collect(toList());
+        repositoryManager.browse());
+    return StreamSupport.stream(dataStoreManager.browse().spliterator(), false)
+        .filter(
+            dataStore -> dataStore.getConfiguration()
+                .getAttributes()
+                .getOrDefault(JDBCURL_FIELD, "")
+                .startsWith("jdbc:h2:"))
+        .map(this::asDataStoreXO)
+        .collect(toList());
   }
 
   private DataStoreXO asDataStoreXO(final DataStore<?> dataStore) {

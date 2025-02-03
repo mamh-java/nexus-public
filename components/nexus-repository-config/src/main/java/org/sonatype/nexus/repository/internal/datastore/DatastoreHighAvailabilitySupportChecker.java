@@ -18,15 +18,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.common.app.FeatureFlag;
 import org.sonatype.nexus.common.node.NodeAccess;
 import org.sonatype.nexus.repository.HighAvailabilitySupportChecker;
 
 import com.google.common.collect.ImmutableList;
 
-import static org.sonatype.nexus.common.app.FeatureFlags.DATASTORE_ENABLED;
-
-@FeatureFlag(name = DATASTORE_ENABLED)
 @Named
 @Singleton
 public class DatastoreHighAvailabilitySupportChecker

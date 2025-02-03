@@ -25,7 +25,6 @@
 
   <artifactId>nexus-repository-maven</artifactId>
   <name>${project.groupId}:${project.artifactId}</name>
-  <packaging>bundle</packaging>
 
   <dependencies>
     <dependency>
@@ -140,11 +139,6 @@
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.karaf.tooling</groupId>
-        <artifactId>karaf-maven-plugin</artifactId>
-      </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>

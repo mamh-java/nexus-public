@@ -25,7 +25,6 @@
 
   <artifactId>nexus-blobstore-s3</artifactId>
   <name>${project.groupId}:${project.artifactId}</name>
-  <packaging>bundle</packaging>
 
   <dependencies>
     <dependency>
@@ -114,37 +113,31 @@
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-core</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-kms</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>jmespath-java</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-cloudwatch</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-cloudwatchmetrics</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-dynamodb</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.sonatype.nexus</groupId>
@@ -155,29 +148,6 @@
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.karaf.tooling</groupId>
-        <artifactId>karaf-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <Embed-Dependency>
-              aws-java-sdk-s3,
-              aws-java-sdk-sts,
-              aws-java-sdk-core,
-              aws-java-sdk-kms,
-              jmespath-java,
-              aws-java-sdk-cloudwatch,
-              aws-java-sdk-cloudwatchmetrics,
-              aws-java-sdk-dynamodb
-            </Embed-Dependency>
-            <Embed-Transitive>true</Embed-Transitive>
-          </instructions>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.sonatype.nexus.buildsupport</groupId>
         <artifactId>extjs-maven-plugin</artifactId>

@@ -25,7 +25,9 @@ import org.sonatype.goodies.common.ComponentSupport;
 import org.sonatype.nexus.crypto.secrets.EncryptionKeyValidator;
 import org.sonatype.nexus.crypto.secrets.internal.EncryptionKeyList.SecretEncryptionKey;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.sonatype.nexus.common.app.FeatureFlags.SECRETS_FILE;
@@ -52,10 +54,18 @@ public class EncryptionKeySourceImpl
 
   @Inject
   public EncryptionKeySourceImpl(
+      @Nullable @Named("${" + SECRETS_FILE + "}") final String secretsFilePath)
+  {
+    this(secretsFilePath, JsonMapper.builder()
+        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        .build());
+  }
+
+  public EncryptionKeySourceImpl(
       @Nullable @Named("${" + SECRETS_FILE + "}") final String secretsFilePath,
       final ObjectMapper objectMapper)
   {
-    this.objectMapper = checkNotNull(objectMapper);
+    this.objectMapper = objectMapper;
     this.secretsFilePath = secretsFilePath;
     this.activeKey = Optional.empty();
 

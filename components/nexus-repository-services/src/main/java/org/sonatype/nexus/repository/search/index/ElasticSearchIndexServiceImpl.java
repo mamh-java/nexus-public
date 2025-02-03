@@ -38,6 +38,7 @@ import javax.inject.Singleton;
 
 import org.sonatype.goodies.common.ComponentSupport;
 import org.sonatype.goodies.common.Loggers;
+import org.sonatype.nexus.common.app.FeatureFlag;
 import org.sonatype.nexus.common.event.EventManager;
 import org.sonatype.nexus.repository.Repository;
 import org.sonatype.nexus.thread.NexusThreadFactory;
@@ -75,6 +76,7 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.stream.Collectors.toList;
 import static org.elasticsearch.cluster.health.ClusterHealthStatus.GREEN;
 import static org.elasticsearch.index.query.QueryBuilders.idsQuery;
+import static org.sonatype.nexus.common.app.FeatureFlags.ELASTIC_SEARCH_ENABLED;
 import static org.sonatype.nexus.repository.search.index.IndexSettingsContributor.MAPPING_JSON;
 import static org.sonatype.nexus.repository.search.index.SearchConstants.TYPE;
 import static org.sonatype.nexus.scheduling.CancelableHelper.checkCancellation;
@@ -86,6 +88,7 @@ import static org.sonatype.nexus.scheduling.CancelableHelper.checkCancellation;
  */
 @Named("default")
 @Singleton
+@FeatureFlag(name = ELASTIC_SEARCH_ENABLED, enabledByDefault = true)
 public class ElasticSearchIndexServiceImpl
     extends ComponentSupport
     implements ElasticSearchIndexService

@@ -78,8 +78,8 @@ Ext.define('NX.util.Url', {
 
   licenseUrl: function () {
     var edition = NX.State.getEdition();
-    if ('EVAL' === edition || 'OC' === edition) {
-      return NX.util.Url.urlOf('/OC-LICENSE.html')
+    if ('EVAL' === edition || 'CORE' === edition) {
+      return NX.util.Url.urlOf('/CORE-LICENSE.html')
     } else if ('COMMUNITY' === edition) {
       return NX.util.Url.urlOf('/CE-LICENSE.html')
     } else {

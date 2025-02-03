@@ -28,7 +28,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 
-import org.sonatype.nexus.common.app.FeatureFlag;
 import org.sonatype.nexus.common.entity.DetachedEntityId;
 import org.sonatype.nexus.repository.Repository;
 import org.sonatype.nexus.repository.content.Asset;
@@ -48,7 +47,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.sonatype.nexus.common.app.FeatureFlags.DATASTORE_ENABLED;
 import static org.sonatype.nexus.repository.content.rest.AssetXOBuilder.fromAsset;
 import static org.sonatype.nexus.repository.content.store.InternalIds.internalAssetId;
 import static org.sonatype.nexus.repository.content.store.InternalIds.toExternalId;
@@ -59,7 +57,6 @@ import static org.sonatype.nexus.rest.APIConstants.V1_API_PREFIX;
 /**
  * @since 3.27
  */
-@FeatureFlag(name = DATASTORE_ENABLED)
 @Named
 @Singleton
 @Path(AssetsResource.RESOURCE_URI)
@@ -97,7 +94,7 @@ public class AssetsResource
       @QueryParam("repository") final String repositoryId)
   {
     Repository repository = repositoryManagerRESTAdapter.getRepository(repositoryId);
-    List<FluentAsset> assets = browse(repository,continuationToken);
+    List<FluentAsset> assets = browse(repository, continuationToken);
     return new Page<>(toAssetXOs(repository, assets, this.assetDescriptors), nextContinuationToken(assets));
   }
 
@@ -123,10 +120,10 @@ public class AssetsResource
     maintenanceService.deleteAsset(repository, asset);
   }
 
-  private Asset getAsset(final String id, final Repository repository, final DetachedEntityId entityId)
-  {
+  private Asset getAsset(final String id, final Repository repository, final DetachedEntityId entityId) {
     try {
-      return repository.facet(ContentFacet.class).assets()
+      return repository.facet(ContentFacet.class)
+          .assets()
           .find(entityId)
           .filter(assetPermitted(repository.getFormat().getValue(), repository.getName()))
           .orElseThrow(() -> new NotFoundException("Unable to locate asset with id " + id));
@@ -137,8 +134,11 @@ public class AssetsResource
     }
   }
 
-  private static List<AssetXO> toAssetXOs(final Repository repository, final List<FluentAsset> assets,
-                                          final Map<String, AssetXODescriptor> assetDescriptors) {
+  private static List<AssetXO> toAssetXOs(
+      final Repository repository,
+      final List<FluentAsset> assets,
+      final Map<String, AssetXODescriptor> assetDescriptors)
+  {
     return assets.stream()
         .map(asset -> fromAsset(asset, repository, assetDescriptors))
         .collect(toList());

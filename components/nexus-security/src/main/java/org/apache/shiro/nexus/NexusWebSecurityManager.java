@@ -51,14 +51,15 @@ public class NexusWebSecurityManager
   private final Provider<EventManager> eventManager;
 
   @Inject
-  public NexusWebSecurityManager(final Provider<EventManager> eventManager,
-                                 final Provider<CacheHelper> cacheHelper,
-                                 @Named("${nexus.shiro.cache.defaultTimeToLive:-2m}") final Provider<Time> defaultTimeToLive)
+  public NexusWebSecurityManager(
+      final Provider<EventManager> eventManager,
+      final Provider<CacheHelper> cacheHelper,
+      @Named("${nexus.shiro.cache.defaultTimeToLive:-2m}") final Provider<Time> defaultTimeToLive)
   {
     this.eventManager = checkNotNull(eventManager);
     setCacheManager(new ShiroJCacheManagerAdapter(cacheHelper, defaultTimeToLive));
-    //explicitly disable rememberMe
-    this.setRememberMeManager(null); 
+    // explicitly disable rememberMe
+    this.setRememberMeManager(null);
   }
 
   /**
@@ -78,7 +79,7 @@ public class NexusWebSecurityManager
    */
   @Override
   public Subject login(Subject subject, final AuthenticationToken token) {
-    //anonymous user isn't allowed to authenticate
+    // anonymous user isn't allowed to authenticate
     if ("anonymous".equals(token.getPrincipal())) {
       throw new AuthenticationException("Cannot login with anonymous user");
     }
@@ -86,8 +87,11 @@ public class NexusWebSecurityManager
       subject = super.login(subject, token);
       UserIdMdcHelper.set(subject);
       post(token, true, emptySet());
-      Optional<String> realmName = subject.getPrincipals().getRealmNames().stream()
-          .filter(realm -> realm.equals("SamlRealm")).findFirst();
+      Optional<String> realmName = subject.getPrincipals()
+          .getRealmNames()
+          .stream()
+          .filter(realm -> realm.equals("SamlRealm"))
+          .findFirst();
       String principal = subject.getPrincipal().toString();
       realmName.ifPresent(realm -> eventManager.get().post(new LoginEvent(principal, realm)));
 

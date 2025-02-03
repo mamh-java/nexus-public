@@ -37,7 +37,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
-import org.sonatype.nexus.common.app.FeatureFlag;
 import org.sonatype.nexus.common.entity.DetachedEntityId;
 import org.sonatype.nexus.repository.IllegalOperationException;
 import org.sonatype.nexus.repository.Repository;
@@ -63,7 +62,6 @@ import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.sonatype.nexus.common.app.FeatureFlags.DATASTORE_ENABLED;
 import static org.sonatype.nexus.repository.content.rest.AssetXOBuilder.fromAsset;
 import static org.sonatype.nexus.repository.content.store.InternalIds.internalComponentId;
 import static org.sonatype.nexus.repository.content.store.InternalIds.toExternalId;
@@ -75,7 +73,6 @@ import static org.sonatype.nexus.rest.APIConstants.V1_API_PREFIX;
 /**
  * @since 3.24
  */
-@FeatureFlag(name = DATASTORE_ENABLED)
 @Named
 @Singleton
 @Path(ComponentsResource.RESOURCE_URI)
@@ -127,8 +124,9 @@ public class ComponentsResource
    */
   @Override
   @GET
-  public Page<ComponentXO> getComponents(@QueryParam("continuationToken") final String continuationToken,
-                                         @QueryParam("repository") final String repositoryId)
+  public Page<ComponentXO> getComponents(
+      @QueryParam("continuationToken") final String continuationToken,
+      @QueryParam("repository") final String repositoryId)
   {
     Repository repository = repositoryManagerRESTAdapter.getRepository(repositoryId);
     List<FluentComponent> components = browse(repository, continuationToken);
@@ -149,11 +147,12 @@ public class ComponentsResource
 
   private FluentComponent getComponent(final RepositoryItemIDXO repositoryItemIDXO, final Repository repository) {
     try {
-      return repository.facet(ContentFacet.class).components()
+      return repository.facet(ContentFacet.class)
+          .components()
           .find(new DetachedEntityId(repositoryItemIDXO.getId()))
           .filter(componentPermitted(repository.getFormat().getValue(), repository.getName()))
-          .orElseThrow(() ->
-              new NotFoundException("Unable to locate component with id " + repositoryItemIDXO.getValue()));
+          .orElseThrow(
+              () -> new NotFoundException("Unable to locate component with id " + repositoryItemIDXO.getValue()));
     }
     catch (IllegalArgumentException e) {
       log.debug("IllegalArgumentException caught retrieving component with id {}", repositoryItemIDXO.getId(), e);
@@ -180,9 +179,9 @@ public class ComponentsResource
   @Override
   @POST
   @Consumes(MediaType.MULTIPART_FORM_DATA)
-  public void uploadComponent(@QueryParam("repository") final String repositoryId,
-                              @Context final HttpServletRequest request)
-      throws IOException
+  public void uploadComponent(
+      @QueryParam("repository") final String repositoryId,
+      @Context final HttpServletRequest request) throws IOException
   {
     if (!uploadConfiguration.isEnabled()) {
       throw new WebApplicationException(NOT_FOUND);
@@ -196,10 +195,12 @@ public class ComponentsResource
 
     try {
       uploadManager.handle(repository, request);
-    } catch (IllegalOperationException e) {
+    }
+    catch (IllegalOperationException e) {
       throw new WebApplicationMessageException(Status.BAD_REQUEST, e.getMessage());
     }
   }
+
   private List<ComponentXO> toComponentXOs(final List<FluentComponent> components, final Repository repository) {
     return components.stream()
         .map(component -> fromComponent(component, repository))
@@ -211,7 +212,8 @@ public class ComponentsResource
 
     ComponentXO componentXO = componentXOFactory.createComponentXO();
 
-    componentXO.setAssets(component.assets().stream()
+    componentXO.setAssets(component.assets()
+        .stream()
         .filter(assetPermitted(repository))
         .map(asset -> fromAsset(asset, repository, this.assetDescriptors))
         .collect(Collectors.toList()));

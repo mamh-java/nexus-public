@@ -1,3 +1,16 @@
+@REM
+@REM Sonatype Nexus (TM) Open Source Version
+@REM Copyright (c) 2008-present Sonatype, Inc.
+@REM All rights reserved. Includes the third-party code listed at http://links.sonatype.com/products/nexus/oss/attributions.
+@REM
+@REM This program and the accompanying materials are made available under the terms of the Eclipse Public License Version 1.0,
+@REM which accompanies this distribution and is available at http://www.eclipse.org/legal/epl-v10.html.
+@REM
+@REM Sonatype Nexus (TM) Professional Version is available from Sonatype, Inc. "Sonatype" and "Sonatype Nexus" are trademarks
+@REM of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
+@REM Eclipse Foundation. All other trademarks are the property of their respective owners.
+@REM
+
 @echo off
 
 if not "%ECHO%" == "" echo %ECHO%
@@ -7,17 +20,11 @@ set DIRNAME=%~dp0%
 set PROGNAME=%~nx0%
 set ARGS=%*
 
-rem Sourcing environment settings for karaf similar to tomcats setenv
-SET KARAF_SCRIPT="karaf.bat"
-if exist "%DIRNAME%setenv.bat" (
-  call "%DIRNAME%setenv.bat"
-)
-
 rem Check console window title. Set to Karaf by default
 if not "%KARAF_TITLE%" == "" (
     title %KARAF_TITLE%
 ) else (
-    title Karaf
+    title Nexus Repository Manager 3
 )
 
 rem Check/Set up some easily accessible MIN/MAX params for JVM mem usage
@@ -92,25 +99,18 @@ if "%KARAF_LOG%" == "" (
 
 set LOCAL_CLASSPATH=%CLASSPATH%
 
-set CLASSPATH=%LOCAL_CLASSPATH%;%KARAF_BASE%\conf
+set CLASSPATH=%LOCAL_CLASSPATH%;%KARAF_BASE%\etc
 set DEFAULT_JAVA_DEBUG_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
 set DEFAULT_JAVA_DEBUGS_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005
 
 if "%LOCAL_CLASSPATH%" == "" goto :KARAF_CLASSPATH_EMPTY
-    set CLASSPATH=%LOCAL_CLASSPATH%;%KARAF_BASE%\conf
+    set CLASSPATH=%LOCAL_CLASSPATH%;%KARAF_BASE%\etc
     goto :KARAF_CLASSPATH_END
 :KARAF_CLASSPATH_EMPTY
-    set CLASSPATH=%KARAF_BASE%\conf
+    set CLASSPATH=%KARAF_BASE%\etc
 :KARAF_CLASSPATH_END
 
 set CLASSPATH_INITIAL=%CLASSPATH%
-
-rem Setup Karaf Home
-if exist "%KARAF_HOME%\conf\karaf-rc.cmd" call %KARAF_HOME%\conf\karaf-rc.cmd
-if exist "%HOME%\karaf-rc.cmd" call %HOME%\karaf-rc.cmd
-
-rem Support for loading native libraries
-set PATH=%PATH%;%KARAF_BASE%\lib;%KARAF_HOME%\lib
 
 rem Setup the Java Virtual Machine
 if not "%JAVA%" == "" goto :Check_JAVA_END
@@ -240,6 +240,17 @@ if "%KARAF_DEBUG%" == "" goto :KARAF_DEBUG_END
     call :warn Enabling Java debug options: %JAVA_DEBUG_OPTS%
 :KARAF_DEBUG_END
 
+if "%KARAF_DEBUGS%" == "" goto :KARAF_DEBUGS_END
+    if "%1" == "stop" goto :KARAF_DEBUGS_END
+    if "%1" == "client" goto :KARAF_DEBUGS_END
+    if "%1" == "status" goto :KARAF_DEBUGS_END
+    rem Use the defaults if JAVA_DEBUG_OPTS was not set
+    if "%JAVA_DEBUG_OPTS%" == "" set JAVA_DEBUG_OPTS=%DEFAULT_JAVA_DEBUGS_OPTS%
+
+    set JAVA_OPTS=%JAVA_DEBUG_OPTS% %JAVA_OPTS%
+    call :warn Enabling Java debug options: %JAVA_DEBUG_OPTS%
+:KARAF_DEBUGS_END
+
 if "%KARAF_PROFILER%" == "" goto :KARAF_PROFILER_END
     set KARAF_PROFILER_SCRIPT=%KARAF_HOME%\conf\profiler\%KARAF_PROFILER%.cmd
 
@@ -249,7 +260,7 @@ if "%KARAF_PROFILER%" == "" goto :KARAF_PROFILER_END
 :KARAF_PROFILER_END
 
 rem Setup the classpath
-pushd "%KARAF_HOME%\lib\boot"
+pushd "%KARAF_HOME%\bin"
 for %%G in (*.jar) do call:APPEND_TO_CLASSPATH %%G
 popd
 goto CLASSPATH_END
@@ -257,7 +268,7 @@ goto CLASSPATH_END
 : APPEND_TO_CLASSPATH
 set filename=%~1
 set suffix=%filename:~-4%
-if %suffix% equ .jar set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\lib\boot\%filename%
+if %suffix% equ .jar set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\bin\%filename%
 goto :EOF
 
 :CLASSPATH_END
@@ -269,8 +280,7 @@ if "%KARAF_PROFILER%" == "" goto :RUN
     call %KARAF_PROFILER_SCRIPT%
 
 :RUN
-    SET OPTS=-Dkaraf.startLocalConsole=true -Dkaraf.startRemoteShell=true
-    SET MAIN=org.sonatype.nexus.karaf.NexusMain
+    SET MAIN=org.springframework.boot.loader.launch.PropertiesLauncher
     SET SHIFT=false
 
 :RUN_LOOP
@@ -302,18 +312,15 @@ if "%KARAF_PROFILER%" == "" goto :RUN
     goto :RUN_LOOP
 
 :EXECUTE_SERVER
-    SET OPTS=-Dkaraf.startLocalConsole=false -Dkaraf.startRemoteShell=true
     shift
     goto :RUN_LOOP
 
 :EXECUTE_DAEMON
-    SET OPTS=-Dkaraf.startLocalConsole=false -Dkaraf.startRemoteShell=true
     SET KARAF_DAEMON=true
     shift
     goto :RUN_LOOP
 
 :EXECUTE_CLIENT
-    SET OPTS=-Dkaraf.startLocalConsole=true -Dkaraf.startRemoteShell=false
     shift
     goto :RUN_LOOP
 
@@ -343,25 +350,8 @@ if "%KARAF_PROFILER%" == "" goto :RUN
 
     if not "%DEBUG%" == "true" set JAVA_OPTS=%JAVA_NON_DEBUG_OPTS% %JAVA_OPTS%
 
-    rem When users want to update the lib version of, they just need to create
-    rem a lib.next directory and on the new restart, it will replace the current lib directory.
-    if exist "%KARAF_HOME%\lib.next" (
-        echo Updating libs...
-        RD /S /Q "%KARAF_HOME%\lib"
-        MOVE /Y "%KARAF_HOME%\lib.next" "%KARAF_HOME%\lib"
-
-        echo "Updating classpath..."
-        set CLASSPATH=%CLASSPATH_INITIAL%
-        pushd "%KARAF_HOME%\lib\boot"
-        for %%G in (*.jar) do call:APPEND_TO_CLASSPATH %%G
-        popd
-    )
-
     "%JAVA%" %JAVA_OPTS% %OPTS% ^
         --add-reads=java.xml=java.logging ^
-        --add-exports=java.base/org.apache.karaf.specs.locator=java.xml,ALL-UNNAMED ^
-        --patch-module java.base=%KARAF_HOME%\lib\endorsed\org.apache.karaf.specs.locator-4.3.9.jar ^
-        --patch-module java.xml=%KARAF_HOME%\lib\endorsed\org.apache.karaf.specs.java.xml-4.3.9.jar ^
         --add-opens java.base/java.security=ALL-UNNAMED ^
         --add-opens java.base/java.net=ALL-UNNAMED ^
         --add-opens java.base/java.lang=ALL-UNNAMED ^

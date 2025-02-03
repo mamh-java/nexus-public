@@ -34,9 +34,11 @@ public class OnboardingCapabilityHelper
   }
 
   public OnboardingCapability getOnboardingCapability() {
-    Optional<? extends CapabilityReference> optionalCapabilityReference = capabilityRegistry.getAll().stream()
-        .filter(reference -> reference.context().type().toString().equals(OnboardingCapability.TYPE_ID)).findFirst();
-    return (OnboardingCapability) optionalCapabilityReference
+    Optional<? extends CapabilityReference> optionalCapabilityReference = capabilityRegistry.getAll()
+        .stream()
+        .filter(reference -> reference.context().type().toString().equals(OnboardingCapability.TYPE_ID))
+        .findFirst();
+    return optionalCapabilityReference.map(reference -> reference.capabilityAs(OnboardingCapability.class))
         .orElseThrow(() -> new IllegalStateException("OnboardingCapability not found"));
   }
 }

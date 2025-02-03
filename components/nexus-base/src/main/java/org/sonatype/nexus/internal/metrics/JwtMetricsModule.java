@@ -12,9 +12,6 @@
  */
 package org.sonatype.nexus.internal.metrics;
 
-import javax.inject.Named;
-
-import org.sonatype.nexus.common.app.FeatureFlag;
 import org.sonatype.nexus.security.FilterChainModule;
 import org.sonatype.nexus.security.JwtFilter;
 import org.sonatype.nexus.security.JwtSecurityFilter;
@@ -29,15 +26,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.sonatype.nexus.common.app.FeatureFlags.JWT_ENABLED;
-
 /**
+ * This AbstractModule is PURPOSEFULLY not marked as @Named, as it is already manually added to injector via
+ * JwtWebModule.java
+ *
  * Dropwizard Metrics</a> guice configuration using {@link JwtSecurityFilter}
  *
  * @since 3.38
  */
-@Named
-@FeatureFlag(name = JWT_ENABLED)
 public class JwtMetricsModule
     extends MetricsModule
 {

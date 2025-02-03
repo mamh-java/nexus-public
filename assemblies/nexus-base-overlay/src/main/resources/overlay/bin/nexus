@@ -391,8 +391,8 @@ forceNoRoot() {
 }
 
 setupClassPath() {
-    # Add the jars in the lib dir
-    for file in "${KARAF_HOME}"/lib/boot/*.jar
+    # only the single sprintboot uberjar
+    for file in "${KARAF_HOME}"/bin/*.jar
     do
         if [ -z "${CLASSPATH}" ]; then
             CLASSPATH="${file}"
@@ -400,6 +400,7 @@ setupClassPath() {
             CLASSPATH="${CLASSPATH}:${file}"
         fi
     done
+    CLASSPATH="${CLASSPATH}:${KARAF_DATA}/etc"
 }
 
 init() {
@@ -451,9 +452,9 @@ init() {
 }
 
 run() {
-    OPTS="-Dkaraf.startLocalConsole=true -Dkaraf.startRemoteShell=true"
-    MAIN=org.sonatype.nexus.karaf.NexusMain
-    JAVA_ENDORSED_DIRS="${JAVA_HOME}/jre/lib/endorsed:${JAVA_HOME}/lib/endorsed:${KARAF_HOME}/lib/endorsed"
+    OPTS=""
+    MAIN=org.springframework.boot.loader.launch.PropertiesLauncher
+    JAVA_ENDORSED_DIRS="${JAVA_HOME}/jre/lib/endorsed:${JAVA_HOME}/lib/endorsed"
     if ${cygwin}; then
         JAVA_HOME=`cygpath --path --windows "${JAVA_HOME}"`
         JAVA_ENDORSED_DIRS=`cygpath --path --windows "${JAVA_ENDORSED_DIRS}"`
@@ -484,36 +485,21 @@ run() {
                 debugs=true
                 shift
                 ;;
-            'status')
-                MAIN=org.apache.karaf.main.Status
-                nodebug=true
-                shift
-                ;;
-            'stop')
-                MAIN=org.apache.karaf.main.Stop
-                nodebug=true
-                shift
-                ;;
             'run' | 'console')
                 shift
                 ;;
-            'start')
-                NOHUP="true"
-                OPTS="-Dkaraf.startLocalConsole=false -Dkaraf.startRemoteShell=true"
-                shift
-                ;;
             'server')
-                OPTS="-Dkaraf.startLocalConsole=false -Dkaraf.startRemoteShell=true"
+                OPTS=""
                 shift
                 ;;
             'daemon')
-                OPTS="-Dkaraf.startLocalConsole=false -Dkaraf.startRemoteShell=true"
+                OPTS=""
                 KARAF_DAEMON="true"
                 KARAF_EXEC="exec"
                 shift
                 ;;
             'client')
-                OPTS="-Dkaraf.startLocalConsole=true -Dkaraf.startRemoteShell=false"
+                OPTS=""
                 nodebug=true
                 shift
                 ;;
@@ -565,9 +551,6 @@ run() {
 
         launch "${JAVA}" ${JAVA_OPTS} \
             --add-reads=java.xml=java.logging \
-            --add-exports=java.base/org.apache.karaf.specs.locator=java.xml,ALL-UNNAMED \
-            --patch-module java.base=${KARAF_HOME}/lib/endorsed/org.apache.karaf.specs.locator-4.3.9.jar \
-            --patch-module java.xml=${KARAF_HOME}/lib/endorsed/org.apache.karaf.specs.java.xml-4.3.9.jar \
             --add-opens java.base/java.security=ALL-UNNAMED \
             --add-opens java.base/java.net=ALL-UNNAMED \
             --add-opens java.base/java.lang=ALL-UNNAMED \
@@ -589,11 +572,9 @@ run() {
             -Dkaraf.data="${KARAF_DATA}" \
             -Dkaraf.etc="${KARAF_ETC}" \
             -Dkaraf.log="${KARAF_LOG}" \
-            -Dkaraf.restart.jvm.supported=true \
             -Djava.io.tmpdir="${KARAF_DATA}/tmp" \
             -Djava.util.logging.config.file="${KARAF_BASE}/etc/java.util.logging.properties" \
-            ${KARAF_SYSTEM_OPTS} \
-            ${KARAF_OPTS} \
+            ${INSTALL4J_ADD_VM_PARAMS} \
             ${OPTS} \
             -classpath "${CLASSPATH}" \
             ${MAIN} "$@"

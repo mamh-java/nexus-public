@@ -25,7 +25,6 @@
 
   <artifactId>nexus-repository-view</artifactId>
   <name>${project.groupId}:${project.artifactId}</name>
-  <packaging>bundle</packaging>
 
   <dependencies>
     <dependency>
@@ -67,23 +66,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <!--
-            Merge at runtime with nexus-repository-content to fix a split-package issue with
-            nexus-repository. This instruction can be removed once nexus-repository is gone.
-            -->
-            <Fragment-Host>org.sonatype.nexus.repository-content</Fragment-Host>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>

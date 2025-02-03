@@ -37,7 +37,6 @@ import StatusStrings from './pages/admin/support/StatusStrings';
 import SupportZipStrings from './pages/admin/support/SupportZipStrings';
 import CleanupPoliciesStrings from './pages/admin/repository/CleanupPoliciesStrings';
 import IqServerStrings from './pages/admin/IqServerStrings';
-import BundlesStrings from './pages/admin/system/BundlesStrings';
 import ApiStrings from './pages/admin/system/ApiStrings';
 import ProprietaryRepositoriesStrings from './pages/admin/repository/ProprietaryRepositoriesStrings';
 import HttpStrings from './pages/admin/system/HttpStrings';
@@ -104,7 +103,6 @@ export default {
 
   // admin/system
   ...ApiStrings,
-  ...BundlesStrings,
   ...EmailServerStrings,
   ...HttpStrings,
   ...TasksStrings,

@@ -25,7 +25,6 @@ import org.sonatype.nexus.blobstore.api.Blob;
 import org.sonatype.nexus.blobstore.api.BlobStore;
 import org.sonatype.nexus.blobstore.restore.datastore.BaseRestoreBlobStrategy;
 import org.sonatype.nexus.blobstore.restore.datastore.DataStoreRestoreBlobData;
-import org.sonatype.nexus.common.app.FeatureFlag;
 import org.sonatype.nexus.common.log.DryRunPrefix;
 import org.sonatype.nexus.repository.Repository;
 import org.sonatype.nexus.repository.apt.AptFormat;
@@ -35,12 +34,9 @@ import org.sonatype.nexus.repository.manager.RepositoryManager;
 import org.sonatype.nexus.repository.view.Payload;
 import org.sonatype.nexus.repository.view.payloads.DetachedBlobPayload;
 
-import static org.sonatype.nexus.common.app.FeatureFlags.DATASTORE_ENABLED;
-
 /**
  * @since 3.31
  */
-@FeatureFlag(name = DATASTORE_ENABLED)
 @Named(AptFormat.NAME)
 @Singleton
 public class AptRestoreBlobStrategy
@@ -73,7 +69,8 @@ public class AptRestoreBlobStrategy
 
   @Override
   protected void createAssetFromBlob(
-      final Blob assetBlob, final DataStoreRestoreBlobData data) throws IOException
+      final Blob assetBlob,
+      final DataStoreRestoreBlobData data) throws IOException
   {
     String assetPath = getAssetPath(data);
     Payload payload = new DetachedBlobPayload(assetBlob);
@@ -89,7 +86,9 @@ public class AptRestoreBlobStrategy
 
   @Override
   protected DataStoreRestoreBlobData createRestoreData(
-      final Properties properties, final Blob blob, final BlobStore blobStore)
+      final Properties properties,
+      final Blob blob,
+      final BlobStore blobStore)
   {
     return new DataStoreRestoreBlobData(blob, properties, blobStore, repositoryManager);
   }
@@ -102,6 +101,6 @@ public class AptRestoreBlobStrategy
 
   @Override
   public void after(final boolean updateAssets, final Repository repository) {
-    //no-op
+    // no-op
   }
 }

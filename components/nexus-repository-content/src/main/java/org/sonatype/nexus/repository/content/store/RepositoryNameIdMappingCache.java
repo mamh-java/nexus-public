@@ -35,7 +35,6 @@ import org.sonatype.nexus.repository.manager.RepositoryDeletedEvent;
 import com.google.common.eventbus.Subscribe;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.sonatype.nexus.common.app.FeatureFlags.DATASTORE_ENABLED;
 import static org.sonatype.nexus.common.app.FeatureFlags.REPOSITORY_SIZE_ENABLED;
 import static org.sonatype.nexus.datastore.api.DataStoreManager.DEFAULT_DATASTORE_NAME;
 
@@ -44,7 +43,6 @@ import static org.sonatype.nexus.datastore.api.DataStoreManager.DEFAULT_DATASTOR
  */
 @Named
 @Singleton
-@FeatureFlag(name = DATASTORE_ENABLED)
 @FeatureFlag(name = REPOSITORY_SIZE_ENABLED, enabledByDefault = true)
 public class RepositoryNameIdMappingCache
     extends ComponentSupport
@@ -71,7 +69,7 @@ public class RepositoryNameIdMappingCache
 
   @Subscribe
   public void on(final RepositoryCreatedEvent event) {
-    if(!isAvailable){
+    if (!isAvailable) {
       return;
     }
     Repository repository = event.getRepository();
@@ -81,7 +79,7 @@ public class RepositoryNameIdMappingCache
 
   @Subscribe
   public void on(final RepositoryDeletedEvent event) {
-    if(!isAvailable){
+    if (!isAvailable) {
       return;
     }
     log.debug("Handling repository deleted event for {}", event.getRepository().getName());

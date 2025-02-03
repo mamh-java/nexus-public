@@ -35,6 +35,7 @@
   <modules>
     <module>commons</module>
     <module>db</module>
+    <module>feature-flag-processor</module>
     <module>goodies</module>
     <module>groovy</module>
     <module>guice</module>
@@ -45,10 +46,10 @@
     <module>logging</module>
     <module>maven</module>
     <module>metrics</module>
-    <module>osgi</module>
     <module>other</module>
     <module>rest</module>
     <module>security</module>
+    <module>spring</module>
     <module>testing</module>
     <module>ui</module>
 
@@ -56,7 +57,7 @@
     <module>all</module>
 
     <module>extjs-maven-plugin</module>
-    <module>it-deps</module>
+    <module>nexus-feature-flags</module>
   </modules>
 
   <profiles>

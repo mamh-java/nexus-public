@@ -78,7 +78,7 @@ public class WebResourceServiceImpl
     final WebResource old = resourcePaths.put(path, resource);
     if (old != null) {
       // complain if any resources overlap
-      log.warn("Overlapping resources on path {}: old={}, new={}", path, old, resource);
+      log.debug("Overlapping resources on path {}: old={}, new={}", path, old, resource);
     }
   }
 

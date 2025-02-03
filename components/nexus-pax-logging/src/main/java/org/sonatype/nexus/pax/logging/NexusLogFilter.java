@@ -38,7 +38,6 @@ import static org.sonatype.nexus.logging.task.TaskLoggingMarkers.TASK_LOG_ONLY;
  * - Must NOT have the TASK_LOG_ONLY marker. These are task log only events.
  * - Must NOT have TASK_LOG_ONLY_MDC in MDC. These are task log only events.
  *
- * @see org.ops4j.pax.logging.slf4j.Slf4jLogger#info(Marker, String)
  * @since 3.5
  */
 public class NexusLogFilter

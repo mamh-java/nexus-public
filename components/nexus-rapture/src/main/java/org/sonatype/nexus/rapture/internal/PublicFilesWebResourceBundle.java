@@ -39,7 +39,7 @@ public class PublicFilesWebResourceBundle
   private static final List<String> FILES =
       Arrays.asList("apple-touch-icon.png", "browserconfig.xml", "favicon.ico", "favicon-16x16.png",
           "favicon-32x32.png", "mstile-144x144.png", "mstile-150x150.png", "mstile-310x310.png", "mstile-70x70.png",
-          "OC-LICENSE.html", "PRO-LICENSE.html", "CE-LICENSE.html", "robots.txt", "safari-pinned-tab.svg",
+          "CORE-LICENSE.html", "PRO-LICENSE.html", "CE-LICENSE.html", "robots.txt", "safari-pinned-tab.svg",
           "license.css");
 
   private final MimeSupport mimeSupport;

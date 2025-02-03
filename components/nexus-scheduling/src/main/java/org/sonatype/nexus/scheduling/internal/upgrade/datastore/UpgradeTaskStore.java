@@ -20,18 +20,14 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.common.app.FeatureFlag;
 import org.sonatype.nexus.datastore.ConfigStoreSupport;
 import org.sonatype.nexus.datastore.api.DataSessionSupplier;
 import org.sonatype.nexus.transaction.Transactional;
 
-import static org.sonatype.nexus.common.app.FeatureFlags.DATASTORE_ENABLED;
-
-@FeatureFlag(name = DATASTORE_ENABLED)
 @Named("mybatis")
 @Singleton
 public class UpgradeTaskStore
-  extends ConfigStoreSupport<UpgradeTaskDAO>
+    extends ConfigStoreSupport<UpgradeTaskDAO>
 {
   @Inject
   public UpgradeTaskStore(final DataSessionSupplier sessionSupplier) {

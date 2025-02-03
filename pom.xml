@@ -67,6 +67,8 @@
 
     <karaf.version>4.3.9</karaf.version>
 
+    <spring-boot.version>3.3.6</spring-boot.version>
+
     <!-- Define the node and yarn versions used by the frontend-maven-plugin -->
     <node.version>v18.17.1</node.version>
     <yarn.version>v1.22.19</yarn.version>
@@ -146,6 +148,17 @@
   <dependencyManagement>
     <dependencies>
 
+      <dependency>
+        <groupId>org.sonatype.nexus.buildsupport</groupId>
+        <artifactId>feature-flag-processor</artifactId>
+        <version>3.78.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.nexus.buildsupport</groupId>
+        <artifactId>nexus-feature-flags</artifactId>
+        <version>3.78.0-SNAPSHOT</version>
+      </dependency>
+
       <!-- components -->
 
       <dependency>
@@ -186,6 +199,24 @@
 
       <dependency>
         <groupId>org.sonatype.nexus</groupId>
+        <artifactId>nexus-public-spring</artifactId>
+        <version>3.78.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.sonatype.nexus</groupId>
+        <artifactId>nexus-spring</artifactId>
+        <version>3.78.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.sonatype.nexus</groupId>
+        <artifactId>nexus-bootstrap-spring</artifactId>
+        <version>3.78.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.sonatype.nexus</groupId>
         <artifactId>nexus-capability</artifactId>
         <version>3.78.0-SNAPSHOT</version>
       </dependency>
@@ -199,12 +230,6 @@
       <dependency>
         <groupId>org.sonatype.nexus</groupId>
         <artifactId>nexus-cleanup-config</artifactId>
-        <version>3.78.0-SNAPSHOT</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.sonatype.nexus</groupId>
-        <artifactId>nexus-commands</artifactId>
         <version>3.78.0-SNAPSHOT</version>
       </dependency>
 
@@ -290,6 +315,12 @@
 
       <dependency>
         <groupId>org.sonatype.nexus</groupId>
+        <artifactId>nexus-extender-spring</artifactId>
+        <version>3.78.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.sonatype.nexus</groupId>
         <artifactId>nexus-features</artifactId>
         <version>3.78.0-SNAPSHOT</version>
       </dependency>
@@ -334,6 +365,20 @@
         <groupId>org.sonatype.nexus</groupId>
         <artifactId>nexus-mime</artifactId>
         <version>3.78.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.sonatype.nexus</groupId>
+        <artifactId>nexus-repository-core-edition</artifactId>
+        <version>3.78.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.sonatype.nexus</groupId>
+        <artifactId>nexus-repository-core-edition</artifactId>
+        <version>3.78.0-SNAPSHOT</version>
+        <classifier>features</classifier>
+        <type>xml</type>
       </dependency>
 
       <dependency>
@@ -586,13 +631,6 @@
         <type>zip</type>
       </dependency>
 
-      <dependency>
-        <groupId>org.sonatype.nexus.assemblies</groupId>
-        <artifactId>nexus-base-template</artifactId>
-        <version>3.78.0-SNAPSHOT</version>
-        <type>zip</type>
-      </dependency>
-
     </dependencies>
   </dependencyManagement>
 
@@ -607,31 +645,6 @@
 
     <pluginManagement>
       <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <dependencies>
-            <dependency>
-              <groupId>org.codehaus.groovy</groupId>
-              <artifactId>groovy-eclipse-compiler</artifactId>
-              <version>3.7.0</version>
-            </dependency>
-          </dependencies>
-          <configuration>
-            <!--
-              While these properties are the "default" compiler plugin ones,
-              we have them here explicitly for easier readability, as some
-              modules will override these properties to retain Java6 compatibility.
-            -->
-            <source>${maven.compiler.source}</source>
-            <target>${maven.compiler.target}</target>
-            <!--
-            Configure support for Groovy compilation.
-            -->
-            <compilerId>groovy-eclipse-compiler</compilerId>
-          </configuration>
-        </plugin>
-
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
@@ -705,125 +718,13 @@
           <version>0.9.0.M3</version>
           <executions>
             <execution>
+              <id>index-components</id>
               <goals>
                 <goal>main-index</goal>
                 <goal>test-index</goal>
               </goals>
             </execution>
           </executions>
-        </plugin>
-
-        <!--
-        Generate basic OSGi metadata.
-        -->
-        <plugin>
-          <groupId>org.apache.felix</groupId>
-          <artifactId>maven-bundle-plugin</artifactId>
-          <version>5.1.6</version>
-          <extensions>true</extensions>
-          <configuration>
-            <instructions>
-              <!-- relax range to account for guava versioning -->
-              <_consumer-policy>$(version;==)</_consumer-policy>
-              <!-- include all content in the output directory -->
-              <Include-Resource>
-                /=${project.build.outputDirectory},{maven-resources}
-              </Include-Resource>
-              <!-- clear default to avoid spurious !* warnings -->
-              <Private-Package/>
-              <!-- record feature-flagged classes/package-info's -->
-              <Feature-Flagged>
-                $(classes;ANNOTATED;org.sonatype.nexus.common.app.FeatureFlag)
-              </Feature-Flagged>
-              <!-- extra imports needed to extend and then proxy certain types across modules -->
-              <Import-Package>
-                $(if;$(classes;EXTENDS;*.FacetSupport);org.sonatype.nexus.repository.config),
-                $(if;$(classes;EXTENDS;*.(Blob|Data)StoreSupport);org.sonatype.nexus.transaction),
-                $(if;$(classes;EXTENDS;*.ContentFacetSupport);org.sonatype.nexus.repository.content,org.sonatype.nexus.transaction),
-                $(if;$(classes;IMPLEMENTS;*.ContentRepositoryDAO);org.sonatype.nexus.common.entity),
-                $(if;$(classes;IMPLEMENTS;*.AssetBlobDAO);org.sonatype.nexus.blobstore.api),
-                *
-              </Import-Package>
-              <!-- match previous plugin behaviour: turn off scanning for Class.forName usage -->
-              <_noclassforname>true</_noclassforname>
-            </instructions>
-          </configuration>
-        </plugin>
-
-        <!--
-        Generate Karaf feature XML.
-        -->
-        <plugin>
-          <groupId>org.apache.karaf.tooling</groupId>
-          <artifactId>karaf-maven-plugin</artifactId>
-          <version>${karaf.version}</version>
-          <extensions>true</extensions>
-          <configuration>
-            <excludedArtifactIds>
-              <!--
-              Covered by platform/other bundles
-              -->
-              <id>org.osgi.core</id>
-              <id>org.osgi.compendium</id>
-              <id>osgi.core</id>
-              <id>osgi.cmpn</id>
-              <id>org.eclipse.osgi</id>
-              <id>activation</id>
-              <id>javax.annotation</id>
-              <id>javax.annotation-api</id>
-              <id>jboss-annotations-api_1.1_spec</id>
-              <id>jboss-annotations-api_1.2_spec</id>
-              <id>jboss-annotations-api_1.3_spec</id>
-              <id>javax.inject</id>
-              <id>aopalliance</id>
-              <id>javax.ws.rs</id>
-              <id>javax.ws.rs-api</id>
-              <id>jakarta.xml.bind-api</id>
-              <id>jaxb-runtime</id>
-              <id>txw2</id>
-              <id>istack-commons-runtime</id>
-              <id>jsr250-api</id>
-              <id>jsr305</id>
-              <id>slf4j-api</id>
-              <id>jul-to-slf4j</id>
-              <id>jcl-over-slf4j</id>
-              <id>log4j-over-slf4j</id>
-              <id>logback-core</id>
-              <id>logback-classic</id>
-              <id>jboss-logging</id>
-              <id>bcprov-jdk15to18</id>
-              <id>bcpkix-jdk15to18</id>
-              <id>bcpg-jdk15to18</id>
-              <id>bcutil-jdk15to18</id>
-              <id>directjngine</id>
-              <id>validation-api</id>
-              <!--
-              Need special wrapping/fragments
-              -->
-              <id>jakarta.el</id>
-              <id>jakarta.validation-api</id>
-              <id>jetty-util</id>
-              <id>paranamer</id>
-              <id>httpcore</id>
-              <id>httpclient</id>
-              <id>shiro-guice</id>
-              <id>metrics-guice</id>
-              <id>simpleclient_dropwizard</id>
-              <id>quartz</id>
-              <id>resteasy-jaxrs</id>
-              <id>resteasy-atom-provider</id>
-              <id>resteasy-jackson2-provider</id>
-              <id>resteasy-jaxb-provider</id>
-              <id>resteasy-multipart-provider</id>
-              <id>resteasy-validator-provider</id>
-              <id>resteasy-client</id>
-              <id>jackson-coreutils</id>
-              <id>json-patch</id>
-              <id>jsoup</id>
-              <id>swagger-core</id>
-              <id>swagger-jaxrs</id>
-            </excludedArtifactIds>
-          </configuration>
         </plugin>
 
         <!--
@@ -991,6 +892,10 @@
                   -->
                   <exclude>.mvn/**</exclude>
                   <!--
+                  Exclude IDEA run configurations.
+                  -->
+                  <exclude>.run/**</exclude>
+                  <!--
                   Exclude optional private bits.
                   -->
                   <exclude>private/**</exclude>
@@ -1126,26 +1031,14 @@
                   -->
                   <exclude>**/nexus-licenses/src/main/licenses/**</exclude>
                   <!--
-                  Exclude functional-testsuite overlay resources
-                  -->
-                  <exclude>**/functional-testsuite/src/test/ft-resources/testsuite-lib/siesta/**</exclude>
-                  <!--
                   Exclude testsuite data resources
                   -->
                   <exclude>**/nexus-testsuite-data/src/main/resources/**</exclude>
-                  <!--
-                  Exclude stress testsuite scripts
-                  -->
-                  <exclude>**/nexus-stress-testsuite/scripts/**</exclude>
                   <!--
                   Exclude installer resources
                   -->
                   <exclude>**/nexus-installer/src/main/installer/**</exclude>
                   <exclude>**/nexus-installer/*.sh</exclude>
-                  <!--
-                  Exclude selenide forked classes
-                  -->
-                  <exclude>**/selenide-functional-tests/src/test/java/com/sonatype/nexus/com/codeborne/selenide/**</exclude>
                   <!--
                   Excludes for specific classes which have compatible, yet different licenses.
                   -->
@@ -1170,6 +1063,11 @@
         <plugin>
           <artifactId>maven-gpg-plugin</artifactId>
           <version>3.0.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <version>${spring-boot.version}</version>
         </plugin>
 
         <plugin>
@@ -1491,7 +1389,7 @@
 
               <!-- separate from build.timestamp, which uses a less precise format defined in buildsupport parent -->
               <timestampPropertyName>build.when</timestampPropertyName>
-              <timestampFormat>{0,date,yyyy-MM-dd-HHmm-ssS}</timestampFormat>
+              <timestampFormat>yyyy-MM-dd-HHmm-ssS</timestampFormat>
             </configuration>
           </execution>
         </executions>
@@ -1526,17 +1424,6 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <dependencies>
-              <dependency>
-                <groupId>org.codehaus.groovy</groupId>
-                <artifactId>groovy-eclipse-batch</artifactId>
-                <version>3.0.13-02</version>
-              </dependency>
-            </dependencies>
-          </plugin>
-          <plugin>
             <!-- the default behavior is to run the apply goal, which will apply linting to edited files -->
             <groupId>com.diffplug.spotless</groupId>
             <artifactId>spotless-maven-plugin</artifactId>
@@ -1558,26 +1445,6 @@
           <name>public</name>
         </property>
       </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <dependencies>
-              <!--
-                To support building nexus-public, we have to select the last version of groovy-eclipse-batch available
-                in Maven Central. This comes with a downside, as this compiler won't support the use of the parallel
-                build options in maven (e.g. `-T 1C`).
-               -->
-              <dependency>
-                <groupId>org.codehaus.groovy</groupId>
-                <artifactId>groovy-eclipse-batch</artifactId>
-                <version>3.0.8-01</version>
-              </dependency>
-            </dependencies>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
 
     <!--
@@ -1599,97 +1466,6 @@
       </properties>
     </profile>
 
-    <!--
-    This is to be used when running the nexuspro-performance-testsuite, adding the External referrence
-    was just to override excludedGroups with something valid but not used.
-    The performance tests should be invoked on the nexuspro-performance-testsuite module directly and not
-    the whole testsuite
-    -->
-    <profile>
-      <id>performance-tests</id>
-      <properties>
-        <it.excludedGroups>
-          org.sonatype.goodies.testsupport.group.External,
-          org.sonatype.goodies.testsupport.group.Unstable
-        </it.excludedGroups>
-      </properties>
-    </profile>
-
-    <!--
-    This profile is used when running in-code performance tests , since we have orient-only performance tests and orient/postgres
-    performance tests , this profile will ignore the orient-only ones ,allowing us to run valid tests when using newdb
-     -->
-    <profile>
-      <id>newdb-synthetic-performance-tests</id>
-      <properties>
-        <it.includedGroups>
-          org.sonatype.goodies.testsupport.group.Perf,
-        </it.includedGroups>
-        <it.excludedGroups>
-          org.sonatype.goodies.testsupport.group.External,
-          org.sonatype.goodies.testsupport.group.Unstable
-        </it.excludedGroups>
-      </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>io.fabric8</groupId>
-            <artifactId>docker-maven-plugin</artifactId>
-            <configuration>
-              <showLogs>false</showLogs>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <!--
-    This profile is used when running in-code performance tests , since the above one runs new-db supported performance tests,
-    this one runs all the orient supported performance tests.
-     -->
-    <profile>
-      <id>orient-synthetic-performance-tests</id>
-      <properties>
-        <it.includedGroups>
-          org.sonatype.goodies.testsupport.group.Perf,
-        </it.includedGroups>
-        <it.excludedGroups>
-          org.sonatype.goodies.testsupport.group.External,
-          org.sonatype.goodies.testsupport.group.Unstable
-        </it.excludedGroups>
-      </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>io.fabric8</groupId>
-            <artifactId>docker-maven-plugin</artifactId>
-            <configuration>
-              <showLogs>false</showLogs>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <!--
-    When this profile is used it is intended to run tests that are flaky / unstable
-    Any ITs that fail often should be annotated with
-    <code>@Category(org.sonatype.goodies.testsupport.group.Unstable)</code> until they can be worked on and improved.
-    This makes it clear which tests are likely to fail regardless of your changes and also makes it easier to rerun
-    only those tests which sometimes fail.
-    -->
-    <profile>
-      <id>unstable-tests</id>
-      <properties>
-        <it.includedGroups>
-          org.sonatype.goodies.testsupport.group.Unstable
-        </it.includedGroups>
-        <it.excludedGroups>
-          org.sonatype.goodies.testsupport.group.Perf,
-          org.sonatype.goodies.testsupport.group.External
-        </it.excludedGroups>
-      </properties>
-    </profile>
 
     <profile>
       <id>orient-h2-unit-tests</id>
@@ -1802,26 +1578,6 @@
       </activation>
       <modules>
         <module>private</module>
-      </modules>
-    </profile>
-
-    <!--
-    Includes building of thirdparty bundles when the recipes are present.
-
-    Deselect this profile when you don't want to continually rebuild them,
-    or as a workaround to https://youtrack.jetbrains.com/issue/IDEA-126596
-    (where IDEA adds red markers to code that refers to thirdparty classes
-     because it can't see the shaded/rebundled content.)
-    -->
-    <profile>
-      <id>include-thirdparty-bundles</id>
-      <activation>
-        <file>
-          <exists>thirdparty-bundles/pom.xml</exists>
-        </file>
-      </activation>
-      <modules>
-        <module>thirdparty-bundles</module>
       </modules>
     </profile>
 
@@ -2074,21 +1830,6 @@
                     </pluginExecution>
                     <pluginExecution>
                       <pluginExecutionFilter>
-                        <groupId>org.apache.karaf.tooling</groupId>
-                        <artifactId>karaf-maven-plugin</artifactId>
-                        <versionRange>[3.0.0,)</versionRange>
-                        <goals>
-                          <goal>features-generate-descriptor</goal>
-                          <goal>install-kars</goal>
-                          <goal>assembly</goal>
-                        </goals>
-                      </pluginExecutionFilter>
-                      <action>
-                        <ignore/>
-                      </action>
-                    </pluginExecution>
-                    <pluginExecution>
-                      <pluginExecutionFilter>
                         <groupId>org.codehaus.gmavenplus</groupId>
                         <artifactId>gmavenplus-plugin</artifactId>
                         <versionRange>[1.13.1,)</versionRange>
@@ -2151,19 +1892,6 @@
                       </pluginExecutionFilter>
                       <action>
                         <execute/>
-                      </action>
-                    </pluginExecution>
-                    <pluginExecution>
-                      <pluginExecutionFilter>
-                        <groupId>org.apache.karaf.tooling</groupId>
-                        <artifactId>karaf-maven-plugin</artifactId>
-                        <versionRange>[4.2.6,)</versionRange>
-                        <goals>
-                          <goal>verify</goal>
-                        </goals>
-                      </pluginExecutionFilter>
-                      <action>
-                        <ignore/>
                       </action>
                     </pluginExecution>
                     <pluginExecution>

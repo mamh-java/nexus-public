@@ -184,7 +184,7 @@ public class MyBatisDataStore
 
   private Configuration mybatisConfig;
 
-  private  H2VersionUpgrader h2VersionUpgrader;
+  private H2VersionUpgrader h2VersionUpgrader;
 
   private Optional<Configuration> previousConfig = empty();
 
@@ -196,12 +196,13 @@ public class MyBatisDataStore
   private boolean orientWarning;
 
   @Inject
-  public MyBatisDataStore(@Named("mybatis") final PbeCipher databaseCipher,
-                          @Named("nexus-uber") final ClassLoader classLoader,
-                          final PasswordHelper passwordHelper,
-                          final ApplicationDirectories directories,
-                          final BeanLocator beanLocator,
-                          final LogManager logManager)
+  public MyBatisDataStore(
+      @Named("mybatis") final PbeCipher databaseCipher,
+      @Named("nexus-uber") final ClassLoader classLoader,
+      final PasswordHelper passwordHelper,
+      final ApplicationDirectories directories,
+      final BeanLocator beanLocator,
+      final LogManager logManager)
   {
     checkState(databaseCipher instanceof MyBatisCipher);
     this.uberClassLoader = checkNotNull(classLoader);
@@ -215,7 +216,9 @@ public class MyBatisDataStore
 
     // any DAO types in plugins are bound by DataAccessModule so we can locate them here
     // (the same bindings are used to drive store registration in DataStoreManagerImpl)
-    this.declaredAccessTypes = beanLocator.locate(new Key<Class<DataAccess>>() {});
+    this.declaredAccessTypes = beanLocator.locate(new Key<Class<DataAccess>>()
+    {
+    });
   }
 
   @VisibleForTesting
@@ -244,7 +247,7 @@ public class MyBatisDataStore
     // We also have to null-check because there is a constructor just for testing that will break otherwise, which is
     // a terrible idea but apparently somebody thought it made sense.
     LoggerLevel originalHikariPoolLogLevel = LoggerLevel.DEFAULT;
-    if (logManager!=null) {
+    if (logManager != null) {
       originalHikariPoolLogLevel = logManager.getLoggerLevel(HikariPool.class.getName());
       logManager.setLoggerLevelDirect(HikariPool.class.getName(), LoggerLevel.OFF);
     }
@@ -257,7 +260,8 @@ public class MyBatisDataStore
 
     try {
       dataSource = new HikariDataSource(hikariConfig);
-    }catch (Exception exception) {
+    }
+    catch (Exception exception) {
       if (isH2UnsupportedDatabaseVersion(exception)) {
         dataSource = h2VersionUpgrader.upgradeH2Database(storeName, hikariConfig);
       }
@@ -266,7 +270,7 @@ public class MyBatisDataStore
       }
     }
 
-    if (logManager!=null) {
+    if (logManager != null) {
       // Re-enable Hikari logging
       logManager.setLoggerLevelDirect(HikariPool.class.getName(), originalHikariPoolLogLevel);
     }
@@ -276,7 +280,8 @@ public class MyBatisDataStore
     if (previousConfig.isPresent()) {
       mybatisConfig = previousConfig.get();
       mybatisConfig.setEnvironment(environment);
-    } else {
+    }
+    else {
       mybatisConfig = configureMyBatis(environment);
 
       registerCommonTypeHandlers();
@@ -421,8 +426,10 @@ public class MyBatisDataStore
 
   private void verifyOrientDatabaseDoesNotExist() throws Exception {
     if (orientWarning && isOrientDbPresent() && (isSqlDbConfigured())) {
-      log.warn("Database directory contains unsupported legacy database files; remove legacy files as soon as possible.");
-    } else if (orientWarning && isOrientDbPresent() && !(isSqlDbConfigured())) {
+      log.warn(
+          "Database directory contains unsupported legacy database files; remove legacy files as soon as possible.");
+    }
+    else if (orientWarning && isOrientDbPresent() && !(isSqlDbConfigured())) {
       StringBuilder buf = new StringBuilder();
       buf.append("\n-------------------------------------------------------------------------------------------" +
           "----------------------------------------------------------------------------------\n\n");
@@ -434,8 +441,9 @@ public class MyBatisDataStore
           "------------------------------------------------------------------------------------\n\n");
       log.error(buf.toString());
       managedLifecycleManager.shutdownWithExitCode(1);
-      throw new StatePrerequisitesInvalidException("An unsupported orient database is present in the database directory, " +
-          "you need to migrate your data before running this version of nexus");
+      throw new StatePrerequisitesInvalidException(
+          "An unsupported orient database is present in the database directory, " +
+              "you need to migrate your data before running this version of nexus");
     }
   }
 
@@ -471,15 +479,16 @@ public class MyBatisDataStore
 
     try (InputStream input = Files.newInputStream(nexusStorePropertiesPath)) {
       properties.load(input);
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       return false;
     }
 
-    return properties.getProperty("jdbcUrl").startsWith("jdbc:postgresql");
+    return properties.getProperty(JDBC_URL).startsWith("jdbc:postgresql");
   }
 
   private boolean isSqlDbConfigured() {
-    return isJdbcUrlSet() || isH2DbPresent() ||  checkNexusStorePropertyExists();
+    return isJdbcUrlSet() || isH2DbPresent() || checkNexusStorePropertyExists();
   }
 
   /**
@@ -489,7 +498,12 @@ public class MyBatisDataStore
     Properties properties = new Properties();
     properties.put("poolName", storeName);
     properties.putAll(attributes);
-
+    if (properties.getProperty(JDBC_URL, "").contains("${karaf.data}")) {
+      String jdbcUrl = properties.getProperty(JDBC_URL);
+      jdbcUrl = jdbcUrl.replace("${karaf.data}", directories.getWorkDirectory("db", true).toString());
+      log.info("jdbcUrl updated to {}", jdbcUrl);
+      properties.setProperty(JDBC_URL, jdbcUrl);
+    }
     // Parse and unflatten advanced attributes
     Object advanced = properties.remove(ADVANCED);
     if (advanced instanceof String) {
@@ -753,20 +767,19 @@ public class MyBatisDataStore
     }
   }
 
-
-  private boolean isH2UnsupportedDatabaseVersion(Exception exception){
+  private boolean isH2UnsupportedDatabaseVersion(Exception exception) {
     int unsupportedDatabaseErrorCode = 90048;
     return exception.getCause() instanceof JdbcSQLNonTransientConnectionException &&
-        ((JdbcSQLNonTransientConnectionException) exception.getCause()).getErrorCode() ==
-            unsupportedDatabaseErrorCode ;
+        ((JdbcSQLNonTransientConnectionException) exception.getCause()).getErrorCode() == unsupportedDatabaseErrorCode;
   }
 
   /**
    * Finds the expected access type for the expected template type, given the current access and template types.
    */
-  private Class expectedAccessType(final Class currentAccessType,
-                                   final Class currentTemplateType,
-                                   final Class expectedTemplateType)
+  private Class expectedAccessType(
+      final Class currentAccessType,
+      final Class currentTemplateType,
+      final Class expectedTemplateType)
   {
     String currentTemplateName = currentTemplateType.getSimpleName();
     String expectedTemplateName = expectedTemplateType.getSimpleName();
@@ -898,7 +911,7 @@ public class MyBatisDataStore
 
     @Override
     public void add(final BeanEntry<Named, TypeHandler> entry, final MyBatisDataStore store) {
-        store.register(entry.getValue());
+      store.register(entry.getValue());
     }
 
     @Override
@@ -929,7 +942,7 @@ public class MyBatisDataStore
       String proxyFactoryName = "org.apache.ibatis.javassist.util.proxy.ProxyFactory";
       Class<?> proxyFactoryClass = myBatisLoader.loadClass(proxyFactoryName);
       String classLoaderProviderName = proxyFactoryName + "$ClassLoaderProvider";
-      Class<?>[] classLoaderProviderApi = { myBatisLoader.loadClass(classLoaderProviderName) };
+      Class<?>[] classLoaderProviderApi = {myBatisLoader.loadClass(classLoaderProviderName)};
       Field classLoaderProviderField = proxyFactoryClass.getField("classLoaderProvider");
 
       classLoaderProviderField.set(null, Proxy.newProxyInstance(myBatisLoader,

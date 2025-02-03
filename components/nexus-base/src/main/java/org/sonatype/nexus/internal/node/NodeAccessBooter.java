@@ -31,7 +31,7 @@ import static org.sonatype.nexus.common.app.ManagedLifecycle.Phase.STORAGE;
  */
 @Named
 @ManagedLifecycle(phase = STORAGE)
-@Priority(Integer.MAX_VALUE) // make sure this starts first
+@Priority(Integer.MAX_VALUE - 1) // make sure this starts first
 @Singleton
 public class NodeAccessBooter
     implements Lifecycle

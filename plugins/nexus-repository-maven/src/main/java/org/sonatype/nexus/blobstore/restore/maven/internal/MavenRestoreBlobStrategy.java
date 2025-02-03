@@ -24,7 +24,6 @@ import javax.inject.Singleton;
 import org.sonatype.nexus.blobstore.api.Blob;
 import org.sonatype.nexus.blobstore.api.BlobStore;
 import org.sonatype.nexus.blobstore.restore.datastore.BaseRestoreBlobStrategy;
-import org.sonatype.nexus.common.app.FeatureFlag;
 import org.sonatype.nexus.common.log.DryRunPrefix;
 import org.sonatype.nexus.content.maven.MavenContentFacet;
 import org.sonatype.nexus.repository.Repository;
@@ -35,12 +34,10 @@ import org.sonatype.nexus.repository.maven.internal.Maven2Format;
 import org.sonatype.nexus.repository.view.payloads.DetachedBlobPayload;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.sonatype.nexus.common.app.FeatureFlags.DATASTORE_ENABLED;
 
 /**
  * @since 3.29
  */
-@FeatureFlag(name = DATASTORE_ENABLED)
 @Named(Maven2Format.NAME)
 @Singleton
 public class MavenRestoreBlobStrategy
@@ -115,6 +112,6 @@ public class MavenRestoreBlobStrategy
 
   @Override
   public void after(final boolean updateAssets, final Repository repository) {
-    //no-op
+    // no-op
   }
 }

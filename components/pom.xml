@@ -33,11 +33,10 @@
     <module>nexus-blobstore</module>
     <module>nexus-blobstore-api</module>
     <module>nexus-blobstore-file</module>
-    <module>nexus-bootstrap</module>
+    <module>nexus-bootstrap-spring</module>
     <module>nexus-capability</module>
     <module>nexus-cleanup</module>
     <module>nexus-cleanup-config</module>
-    <module>nexus-commands</module>
     <module>nexus-common</module>
     <module>nexus-core</module>
     <module>nexus-crypto</module>
@@ -49,19 +48,17 @@
     <module>nexus-elasticsearch</module>
     <module>nexus-email</module>
     <module>nexus-extdirect</module>
-    <module>nexus-extender</module>
-    <module>nexus-features</module>
+    <module>nexus-extender-spring</module>
     <module>nexus-httpclient</module>
     <module>nexus-jmx</module>
     <module>nexus-scheduling</module>
     <module>nexus-formfields</module>
     <module>nexus-guice-servlet</module>
-    <module>nexus-main</module>
     <module>nexus-mime</module>
-    <module>nexus-open-core-edition</module>
-    <module>nexus-pax-exam</module>
+    <module>nexus-repository-core-edition</module>
     <module>nexus-pax-logging</module>
     <module>nexus-plugin-api</module>
+	<module>nexus-public-spring</module>
     <module>nexus-quartz</module>
     <module>nexus-rapture</module>
     <module>nexus-repository-config</module>
@@ -76,6 +73,7 @@
     <module>nexus-selector</module>
     <module>nexus-servlet</module>
     <module>nexus-siesta</module>
+    <module>nexus-spring</module>
     <module>nexus-ssl</module>
     <module>nexus-supportzip-api</module>
     <module>nexus-swagger</module>
@@ -94,9 +92,6 @@
 
   <dependencyManagement>
     <dependencies>
-
-      <!-- IMPORTS -->
-
       <dependency>
         <groupId>org.sonatype.nexus.buildsupport</groupId>
         <artifactId>nexus-buildsupport-all</artifactId>
@@ -104,28 +99,42 @@
         <version>3.78.0-SNAPSHOT</version>
         <scope>import</scope>
       </dependency>
-
-      <dependency>
-        <groupId>org.sonatype.nexus.bundles</groupId>
-        <artifactId>nexus-thirdparty-bundles</artifactId>
-        <type>pom</type>
-        <version>3.78.0-SNAPSHOT</version>
-        <scope>import</scope>
-      </dependency>
-
     </dependencies>
   </dependencyManagement>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.sonatype.nexus.buildsupport</groupId>
+      <artifactId>feature-flag-processor</artifactId>
+    </dependency>
+  </dependencies>
+
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <compilerId>javac</compilerId>
+            <annotationProcessorPaths>
+              <annotationProcessorPath>
+                <groupId>org.sonatype.nexus.buildsupport</groupId>
+                <artifactId>feature-flag-processor</artifactId>
+                <version>${project.version}</version>
+              </annotationProcessorPath>
+            </annotationProcessorPaths>
+            <annotationProcessors>
+              <annotationProcessor>org.sonatype.nexus.inject.FeatureFlagAnnotationProcessor</annotationProcessor>
+            </annotationProcessors>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.eclipse.sisu</groupId>
         <artifactId>sisu-maven-plugin</artifactId>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

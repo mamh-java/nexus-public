@@ -30,7 +30,7 @@ public class DatastoreStateContributorTest
     DatabaseCheck dbCheck = mock(DatabaseCheck.class);
     when(dbCheck.isPostgresql()).thenReturn(true);
 
-    DatastoreStateContributor contributor = new DatastoreStateContributor(false, false, dbCheck);
+    DatastoreStateContributor contributor = new DatastoreStateContributor(dbCheck);
 
     assertThat(contributor.getState().get("datastore.isPostgresql"), is(true));
   }

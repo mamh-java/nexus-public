@@ -117,25 +117,7 @@ public class DependencyResolver<T extends DependencySource<T>>
         // register source with graph
         graph.addVertex(label);
 
-        // scan for satisfied dependencies
-        for (Dependency<T> dependency : source.getDependencies()) {
-          boolean satisfied = false;
-
-          for (Map.Entry<String, T> innerEntry : sources.entrySet()) {
-            T _source = innerEntry.getValue();
-            // skip originating source from checking its own dependencies
-            if (_source != source && dependency.satisfiedBy(_source)) {
-              log.debug("{} depends on {}", source, _source);
-              graph.addEdge(label, innerEntry.getKey());
-              satisfied = true;
-            }
-          }
-
-          if (!satisfied) {
-            log.warn("{} requires {}", source, dependency);
-            unresolved.put(source, dependency);
-          }
-        }
+        scanForSatisfiedDependencies(source, label, graph, unresolved);
       }
     }
     catch (CycleDetectedException e) {
@@ -181,13 +163,40 @@ public class DependencyResolver<T extends DependencySource<T>>
     return new Resolution<>(TopologicalSorter.sort(graph).stream().map(sources::get).toList(), dependsOn);
   }
 
+  private void scanForSatisfiedDependencies(
+      T source,
+      String label,
+      DAG graph,
+      Multimap<DependencySource<?>, Dependency<?>> unresolved) throws CycleDetectedException
+  {
+    // scan for satisfied dependencies
+    for (Dependency<T> dependency : source.getDependencies()) {
+      boolean satisfied = false;
+
+      for (Map.Entry<String, T> innerEntry : sources.entrySet()) {
+        T _source = innerEntry.getValue();
+        // skip originating source from checking its own dependencies
+        if (_source != source && dependency.satisfiedBy(_source)) {
+          log.debug("{} depends on {}", source, _source);
+          graph.addEdge(label, innerEntry.getKey());
+          satisfied = true;
+        }
+      }
+
+      if (!satisfied) {
+        log.warn("{} requires {}", source, dependency);
+        unresolved.put(source, dependency);
+      }
+    }
+  }
+
   /**
    * Thrown when a cycle is detected.
    */
   public static class CyclicDependencyException
       extends RuntimeException
   {
-    private final List<?> cycle;
+    private final transient List<?> cycle;
 
     CyclicDependencyException(final List<?> cycle) {
       this.cycle = ImmutableList.copyOf(cycle);
@@ -205,7 +214,7 @@ public class DependencyResolver<T extends DependencySource<T>>
   public static class UnresolvedDependencyException
       extends RuntimeException
   {
-    private final Multimap<DependencySource<?>, Dependency<?>> unresolved;
+    private final transient Multimap<DependencySource<?>, Dependency<?>> unresolved;
 
     UnresolvedDependencyException(final Multimap<DependencySource<?>, Dependency<?>> unresolved) {
       this.unresolved = ImmutableMultimap.copyOf(unresolved);

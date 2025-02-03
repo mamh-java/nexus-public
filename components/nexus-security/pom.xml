@@ -26,7 +26,6 @@
 
   <artifactId>nexus-security</artifactId>
   <name>${project.groupId}:${project.artifactId}</name>
-  <packaging>bundle</packaging>
 
   <!--
   dependencyManagement blocks are typically reserved for the POMs found within buildsupport.
@@ -186,4 +185,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
 </project>

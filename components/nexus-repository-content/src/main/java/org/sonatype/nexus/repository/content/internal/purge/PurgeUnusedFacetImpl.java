@@ -14,7 +14,6 @@ package org.sonatype.nexus.repository.content.internal.purge;
 
 import javax.inject.Named;
 
-import org.sonatype.nexus.common.app.FeatureFlag;
 import org.sonatype.nexus.common.stateguard.Guarded;
 import org.sonatype.nexus.repository.FacetSupport;
 import org.sonatype.nexus.repository.content.facet.ContentFacet;
@@ -24,13 +23,11 @@ import org.sonatype.nexus.repository.content.store.ComponentStore;
 import org.sonatype.nexus.repository.purge.PurgeUnusedFacet;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.sonatype.nexus.common.app.FeatureFlags.DATASTORE_ENABLED;
 import static org.sonatype.nexus.repository.FacetSupport.State.STARTED;
 
 /**
  * @since 3.24
  */
-@FeatureFlag(name = DATASTORE_ENABLED)
 @Named
 public class PurgeUnusedFacetImpl
     extends FacetSupport

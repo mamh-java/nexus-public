@@ -16,7 +16,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.common.app.FeatureFlag;
 import org.sonatype.nexus.common.app.ManagedLifecycle;
 import org.sonatype.nexus.common.stateguard.StateGuardLifecycleSupport;
 import org.sonatype.nexus.security.config.CPrivilege;
@@ -27,7 +26,6 @@ import org.sonatype.nexus.security.config.SecurityConfiguration;
 import org.sonatype.nexus.security.config.SecurityConfigurationSource;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.sonatype.nexus.common.app.FeatureFlags.DATASTORE_ENABLED;
 import static org.sonatype.nexus.common.app.ManagedLifecycle.Phase.SCHEMAS;
 
 /**
@@ -37,7 +35,6 @@ import static org.sonatype.nexus.common.app.ManagedLifecycle.Phase.SCHEMAS;
  */
 @Named("default")
 @ManagedLifecycle(phase = SCHEMAS)
-@FeatureFlag(name = DATASTORE_ENABLED)
 @Singleton
 public class SecurityConfigurationSourceImpl
     extends StateGuardLifecycleSupport

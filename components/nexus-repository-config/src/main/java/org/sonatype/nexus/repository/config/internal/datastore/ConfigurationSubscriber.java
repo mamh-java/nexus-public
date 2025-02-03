@@ -17,7 +17,6 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.sonatype.goodies.common.ComponentSupport;
-import org.sonatype.nexus.common.app.FeatureFlag;
 import org.sonatype.nexus.common.event.EventAware;
 import org.sonatype.nexus.common.event.EventConsumer;
 import org.sonatype.nexus.repository.config.ConfigurationCreatedEvent;
@@ -29,12 +28,10 @@ import org.sonatype.nexus.repository.manager.RepositoryManager;
 import com.google.common.eventbus.Subscribe;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.sonatype.nexus.common.app.FeatureFlags.DATASTORE_ENABLED;
 
 /**
  * Repository configuration subscriber on DB events like CREATE/UPDATE/DELETE.
  */
-@FeatureFlag(name = DATASTORE_ENABLED)
 @Named
 @Singleton
 public class ConfigurationSubscriber
@@ -50,15 +47,15 @@ public class ConfigurationSubscriber
 
   @Subscribe
   public void on(final ConfigurationCreatedEvent event) {
-    handleReplication(event, e ->
-        repositoryManager.create(repositoryManager.retrieveConfigurationByName(e.getRepositoryName())
+    handleReplication(event,
+        e -> repositoryManager.create(repositoryManager.retrieveConfigurationByName(e.getRepositoryName())
             .orElseThrow(() -> new RuntimeException("Missing configuration: " + e.getRepositoryName()))));
   }
 
   @Subscribe
   public void on(final ConfigurationUpdatedEvent event) {
-    handleReplication(event, e ->
-        repositoryManager.update(repositoryManager.retrieveConfigurationByName(e.getRepositoryName())
+    handleReplication(event,
+        e -> repositoryManager.update(repositoryManager.retrieveConfigurationByName(e.getRepositoryName())
             .orElseThrow(() -> new RuntimeException("Missing configuration: " + e.getRepositoryName()))));
   }
 

@@ -30,6 +30,10 @@ public class UiUtil
   public static String getPathForFile(final String filename, final ClassSpace space) {
     for (Enumeration<URL> e = space.findEntries("static", filename, true); e.hasMoreElements();) {
       URL url = e.nextElement();
+      String fullPath = url.getPath();
+      if (fullPath.contains("/static")) {
+        return fullPath.substring(fullPath.indexOf("/static"));
+      }
       return url.getPath();
     }
     return null;

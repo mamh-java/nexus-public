@@ -94,9 +94,9 @@ public class SystemInformationManagerImpl
 
   private Map<String, Object> generateReport() {
     Map<String, Object> report = systemInformationGenerator.report();
-    return report.entrySet().stream().filter(e -> !"nexus-bundles".equals(e.getKey()))
-        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    return report.entrySet().stream().collect(Collectors.toMap(Entry::getKey, Entry::getValue));
   }
+
   @Override
   protected void doStop() {
     maybeDestroyCache();

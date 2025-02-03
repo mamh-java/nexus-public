@@ -12,9 +12,6 @@
  */
 package org.sonatype.nexus.internal.metrics;
 
-import javax.inject.Named;
-
-import org.sonatype.nexus.common.app.FeatureFlag;
 import org.sonatype.nexus.security.FilterChainModule;
 import org.sonatype.nexus.security.SecurityFilter;
 import org.sonatype.nexus.security.anonymous.AnonymousFilter;
@@ -29,9 +26,10 @@ import com.google.inject.AbstractModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.sonatype.nexus.common.app.FeatureFlags.SESSION_ENABLED;
-
 /**
+ * This AbstractModule is PURPOSEFULLY not marked as @Named, as it is already manually added to injector via
+ * WebModule.java
+ *
  * <a href="http://metrics.dropwizard.io">Dropwizard Metrics</a> guice configuration.
  * 
  * Installs servlet endpoints:
@@ -48,8 +46,6 @@ import static org.sonatype.nexus.common.app.FeatureFlags.SESSION_ENABLED;
  * 
  * @since 2.5
  */
-@Named
-@FeatureFlag(name = SESSION_ENABLED)
 public class MetricsModule
     extends AbstractModule
 {

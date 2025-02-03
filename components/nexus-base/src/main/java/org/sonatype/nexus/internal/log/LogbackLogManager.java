@@ -66,7 +66,6 @@ import org.eclipse.sisu.Mediator;
 import org.eclipse.sisu.inject.BeanLocator;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
-import org.slf4j.impl.StaticLoggerBinder;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Objects.requireNonNull;
@@ -557,7 +556,7 @@ public class LogbackLogManager
     }
     // Pax-Logging registers a custom implementation of ILoggerFactory which hides logback; as a workaround
     // we set org.ops4j.pax.logging.StaticLogbackContext=true in system.properties and access it statically
-    return (LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory();
+    return (LoggerContext) LoggerFactory.getILoggerFactory();
   }
 
   /**

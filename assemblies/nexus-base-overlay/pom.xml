@@ -28,92 +28,9 @@
   <name>${project.groupId}:${project.artifactId}</name>
   <packaging>pom</packaging>
 
-  <dependencies>
-    <!--
-    Custom launcher for Nexus
-    -->
-    <dependency>
-      <groupId>org.sonatype.nexus</groupId>
-      <artifactId>nexus-main</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <!--
-    Our preferred OSGi runtime
-    -->
-    <dependency>
-      <groupId>org.apache.felix</groupId>
-      <artifactId>org.apache.felix.framework</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <!--
-    Framework/startup features (compile-scope)
-    -->
-    <dependency>
-      <groupId>org.apache.karaf.features</groupId>
-      <artifactId>framework</artifactId>
-      <type>kar</type>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.karaf.features</groupId>
-      <artifactId>standard</artifactId>
-      <classifier>features</classifier>
-      <type>xml</type>
-    </dependency>
-
-    <dependency>
-      <groupId>org.sonatype.nexus.assemblies</groupId>
-      <artifactId>nexus-startup-feature</artifactId>
-      <classifier>features</classifier>
-      <type>xml</type>
-    </dependency>
-
-    <!--
-    Installed/boot features (runtime-scope)
-    -->
-    <dependency>
-      <groupId>org.sonatype.nexus.assemblies</groupId>
-      <artifactId>nexus-boot-feature</artifactId>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.sonatype.nexus.assemblies</groupId>
-      <artifactId>nexus-base-feature</artifactId>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.sonatype.nexus</groupId>
-      <artifactId>nexus-open-core-edition</artifactId>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.sonatype.nexus.assemblies</groupId>
-      <artifactId>nexus-core-feature</artifactId>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.sonatype.nexus</groupId>
-      <artifactId>nexus-datastore-mybatis</artifactId>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
-
-  </dependencies>
+  <properties>
+    <maven.build.cache.enabled>false</maven.build.cache.enabled>
+  </properties>
 
   <build>
     <plugins>
@@ -155,44 +72,6 @@
             </goals>
             <configuration>
               <target>
-                <!-- install additional boot jars -->
-                <copy file="${org.sonatype.nexus:nexus-main:jar}"
-                      tofile="${project.build.directory}/assembly/lib/boot/nexus-main.jar"/>
-                <copy file="${javax.activation:activation:jar}"
-                      todir="${project.build.directory}/assembly/lib/boot"/>
-                <copy file="${jakarta.xml.bind:jakarta.xml.bind-api:jar}"
-                      todir="${project.build.directory}/assembly/lib/boot"/>
-                <copy file="${org.glassfish.jaxb:jaxb-runtime:jar}"
-                      todir="${project.build.directory}/assembly/lib/boot"/>
-                <copy file="${org.glassfish.jaxb:txw2:jar}"
-                      todir="${project.build.directory}/assembly/lib/boot"/>
-                <copy file="${com.sun.istack:istack-commons-runtime:jar}"
-                      todir="${project.build.directory}/assembly/lib/boot"/>
-
-                <!-- install additional framework jars -->
-                <copy file="${javax.annotation:javax.annotation-api:jar}"
-                      todir="${project.build.directory}/assembly/lib"/>
-                <copy file="${com.google.errorprone:error_prone_annotations:jar}"
-                      todir="${project.build.directory}/assembly/lib"/>
-                <copy file="${com.google.code.findbugs:jsr305:jar}"
-                      todir="${project.build.directory}/assembly/lib"/>
-                <copy file="${org.bouncycastle:bcprov-jdk15to18:jar}"
-                      todir="${project.build.directory}/assembly/lib"/>
-                <copy file="${org.bouncycastle:bcpkix-jdk15to18:jar}"
-                      todir="${project.build.directory}/assembly/lib"/>
-                <copy file="${org.bouncycastle:bcpg-jdk15to18:jar}"
-                      todir="${project.build.directory}/assembly/lib"/>
-                <copy file="${org.bouncycastle:bcutil-jdk15to18:jar}"
-                      todir="${project.build.directory}/assembly/lib"/>
-
-                <!-- identify the specific pax-logging API bundle used by nexus-pax-logging backend -->
-                <loadresource property="pax-logging-api">
-                  <string>${org.ops4j.pax.logging:pax-logging-api:jar}</string>
-                  <filterchain>
-                    <replacestring from="${file.separator}" to="/"/>
-                    <replaceregex pattern=".*(pax-logging-api/[^/]*)/.*" replace="\1"/>
-                  </filterchain>
-                </loadresource>
 
                 <!-- overlay customizations -->
                 <copy todir="${project.build.directory}/assembly" overwrite="true">

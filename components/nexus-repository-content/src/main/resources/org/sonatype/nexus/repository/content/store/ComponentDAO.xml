@@ -39,6 +39,9 @@
          REFERENCES ${format}_content_repository (repository_id)
     );
 
+    -- This index was added via an uprade step task, see CoordinateMigrationStep_2_13, hence why this is commented out
+    -- CREATE INDEX IF NOT EXISTS idx_${format}_component_coordinate ON ${format}_component (repository_id, namespace, name, version);
+
     CREATE INDEX IF NOT EXISTS idx_${format}_component_kind ON ${format}_component (kind);
 
     --Note: adding create clause for clarity , the alter clause will be executed when
@@ -61,9 +64,6 @@
     --Note: index intentionally not added because this column is intended to be used
     -- with the component_id which is indexed
     ALTER TABLE ${format}_component ADD COLUMN IF NOT EXISTS entity_version INT;
-
-    <!-- Performance optimisation for cleanup -->
-    CREATE INDEX IF NOT EXISTS idx_${format}_component_set ON ${format}_component (repository_id, namespace, name);
   </insert>
 
   <sql id="componentNamespaceMatch">

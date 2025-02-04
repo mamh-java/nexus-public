@@ -37,7 +37,6 @@ import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import com.softwarementors.extjs.djn.config.annotations.DirectAction;
 import com.softwarementors.extjs.djn.config.annotations.DirectMethod;
-import groovy.transform.PackageScope;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 
@@ -107,7 +106,6 @@ class TrustStoreComponent
     trustStore.removeTrustCertificate(id);
   }
 
-  @PackageScope
   static CertificateXO asCertificateXO(final Certificate certificate, final boolean inTrustStore) throws Exception {
     String fingerprint = calculateFingerprint(certificate);
 

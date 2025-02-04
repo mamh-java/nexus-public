@@ -14,17 +14,17 @@ package org.sonatype.nexus.internal.httpclient;
 
 import java.util.Map;
 
+import org.sonatype.goodies.common.Time;
+import org.sonatype.nexus.crypto.secrets.SecretsService;
+import org.sonatype.nexus.httpclient.config.ConnectionConfiguration;
+import org.sonatype.nexus.repository.httpclient.internal.HttpClientFacetImpl;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import groovy.json.JsonSlurper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.sonatype.goodies.common.Time;
-import org.sonatype.nexus.crypto.secrets.SecretsService;
-import org.sonatype.nexus.httpclient.config.ConnectionConfiguration;
-import org.sonatype.nexus.repository.httpclient.internal.HttpClientFacetImpl;
 
 import static org.junit.Assert.assertEquals;
 
@@ -58,8 +58,7 @@ public class HttpClientConfigurationObjectMapperCustomizerTest
 
     // When: Serializing that with ObjectMapper
     String json = objectMapper.writeValueAsString(config);
-    JsonSlurper jsonSlurper = new JsonSlurper();
-    Map<String, Object> map = (Map<String, Object>) jsonSlurper.parseText(json);
+    Map<String, Object> map = new ObjectMapper().readValue(json, Map.class);
     Map<String, Object> innermap = (Map<String, Object>) map.get("connection");
     // Then: We can confirm that the timeout is set to a number
     assertEquals(1, innermap.get("timeout"));

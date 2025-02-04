@@ -27,11 +27,10 @@ import org.sonatype.nexus.script.ScriptManager;
 import org.sonatype.nexus.script.ScriptUpdatedEvent;
 
 import com.google.common.collect.ImmutableList;
-import groovy.transform.CompileStatic;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.sonatype.nexus.common.app.ManagedLifecycle.Phase.SERVICES;
 import static org.sonatype.nexus.common.stateguard.StateGuardLifecycleSupport.State.STARTED;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Default {@link ScriptManager}.
@@ -41,7 +40,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Named
 @ManagedLifecycle(phase = SERVICES)
 @Singleton
-@CompileStatic
 public class ScriptManagerImpl
     extends StateGuardLifecycleSupport
     implements ScriptManager

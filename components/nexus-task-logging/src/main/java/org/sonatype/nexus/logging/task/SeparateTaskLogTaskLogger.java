@@ -59,13 +59,13 @@ public class SeparateTaskLogTaskLogger
   }
 
   private void logTaskInfo() {
-    // dump task details to task log
-    log.info(TASK_LOG_ONLY, "Task information:");
-    log.info(TASK_LOG_ONLY, " ID: {}", taskLogInfo.getId());
-    log.info(TASK_LOG_ONLY, " Type: {}", taskLogInfo.getTypeId());
-    log.info(TASK_LOG_ONLY, " Name: {}", taskLogInfo.getName());
-    log.info(TASK_LOG_ONLY, " Description: {}", taskLogInfo.getMessage());
-    log.debug(TASK_LOG_ONLY, "Task configuration: {}", taskLogInfo);
+    // dump task details to task log and nexus log
+    log.info("Task information:");
+    log.info(" ID: {}", taskLogInfo.getId());
+    log.info(" Type: {}", taskLogInfo.getTypeId());
+    log.info(" Name: {}", taskLogInfo.getName());
+    log.info(" Description: {}", taskLogInfo.getMessage());
+    log.info("Task configuration: {}", taskLogInfo);
 
     writeLogFileNameToNexusLog();
   }

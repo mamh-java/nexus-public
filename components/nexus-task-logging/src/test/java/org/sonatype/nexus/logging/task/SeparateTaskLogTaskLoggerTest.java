@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
-import org.slf4j.Marker;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -29,7 +28,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.sonatype.nexus.logging.task.TaskLogger.LOGBACK_TASK_DISCRIMINATOR_ID;
 import static org.sonatype.nexus.logging.task.TaskLogger.TASK_LOG_ONLY_MDC;
-import static org.sonatype.nexus.logging.task.TaskLoggingMarkers.TASK_LOG_ONLY;
 
 public class SeparateTaskLogTaskLoggerTest
     extends ProgressTaskLoggerTest
@@ -48,12 +46,12 @@ public class SeparateTaskLogTaskLoggerTest
     underTest = new SeparateTaskLogTaskLogger(mockLogger, taskLogInfo);
     underTest.start();
 
-    verifyLog(TASK_LOG_ONLY, "Task information:");
-    verifyLog(TASK_LOG_ONLY, " ID: {}", taskLogInfo.getId());
-    verifyLog(TASK_LOG_ONLY, " Type: {}", taskLogInfo.getTypeId());
-    verifyLog(TASK_LOG_ONLY, " Name: {}", taskLogInfo.getName());
-    verifyLog(TASK_LOG_ONLY, " Description: {}", taskLogInfo.getMessage());
-    verify(mockLogger).debug(TASK_LOG_ONLY, "Task configuration: {}", taskLogInfo);
+    verifyLog("Task information:");
+    verifyLog(" ID: {}", taskLogInfo.getId());
+    verifyLog(" Type: {}", taskLogInfo.getTypeId());
+    verifyLog(" Name: {}", taskLogInfo.getName());
+    verifyLog(" Description: {}", taskLogInfo.getMessage());
+    verifyLog("Task configuration: {}", taskLogInfo);
 
     // assert the discriminator ID.
     assertThat(MDC.get(LOGBACK_TASK_DISCRIMINATOR_ID).matches("typeId-\\d{17}\\b"), is(true));
@@ -120,11 +118,11 @@ public class SeparateTaskLogTaskLoggerTest
     };
   }
 
-  private void verifyLog(Marker m, final String s) {
-    verify(mockLogger).info(m, s);
+  private void verifyLog(final String s) {
+    verify(mockLogger).info(s);
   }
 
-  private void verifyLog(final Marker m, final String s, final Object arg) {
-    verify(mockLogger).info(m, s, arg);
+  private void verifyLog(final String s, final Object arg) {
+    verify(mockLogger).info(s, arg);
   }
 }

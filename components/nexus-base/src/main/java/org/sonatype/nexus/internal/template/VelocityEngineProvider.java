@@ -23,6 +23,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Throwables;
 import org.apache.velocity.app.VelocityEngine;
 
+import static org.apache.velocity.runtime.RuntimeConstants.PARSER_POOL_SIZE;
 import static org.apache.velocity.runtime.RuntimeConstants.RESOURCE_LOADERS;
 import static org.apache.velocity.runtime.RuntimeConstants.RESOURCE_LOADER_CACHE;
 import static org.apache.velocity.runtime.RuntimeConstants.RESOURCE_LOADER_CHECK_INTERVAL;
@@ -44,8 +45,13 @@ public class VelocityEngineProvider
 {
   private final VelocityEngine engine;
 
+  private final int velocityParserPoolSize;
+
   @Inject
-  public VelocityEngineProvider() {
+  public VelocityEngineProvider(
+      @Named("${nexus.velocity." + PARSER_POOL_SIZE + ":-20}") final int velocityParserPoolSize)
+  {
+    this.velocityParserPoolSize = velocityParserPoolSize;
     this.engine = create();
   }
 
@@ -77,6 +83,8 @@ public class VelocityEngineProvider
 
     // to force templates having inline local scope for VM definitions
     engine.setProperty(VM_PERM_INLINE_LOCAL, "true");
+
+    engine.setProperty(PARSER_POOL_SIZE, velocityParserPoolSize);
 
     log.debug("Initializing: {}", engine);
     try {

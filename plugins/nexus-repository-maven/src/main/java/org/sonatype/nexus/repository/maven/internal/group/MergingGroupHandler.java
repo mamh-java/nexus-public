@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -43,12 +42,9 @@ import org.sonatype.nexus.transaction.RetryDeniedException;
 import com.google.common.base.Predicate;
 
 import static com.google.common.base.Predicates.or;
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-import static org.sonatype.nexus.common.app.FeatureFlags.DATASTORE_CLUSTERED_ENABLED_NAMED;
 
 /**
  * Maven2 specific group handler: calls into {@link MavenGroupFacet} to get some content from members, cache it, and
@@ -68,66 +64,18 @@ public class MergingGroupHandler
 
   @Inject
   public MergingGroupHandler(
-      final Cooperation2Factory cooperationFactory,
-      @Nullable @Named("local") Cooperation2Factory defaultCooperationFactory,
-      @Named(DATASTORE_CLUSTERED_ENABLED_NAMED) final boolean clustered,
+      @Named Cooperation2Factory cooperationFactory,
       @Named("${nexus.maven.group.cooperation.enabled:-true}") final boolean cooperationEnabled,
       @Named("${nexus.maven.group.cooperation.majorTimeout:-0s}") final Duration majorTimeout,
       @Named("${nexus.maven.group.cooperation.minorTimeout:-30s}") final Duration minorTimeout,
-      @Named("${nexus.maven.group.cooperation.threadsPerKey:-100}") final int threadsPerKey,
-      @Named("${nexus.proxy.clustered.cooperation.enabled:-false}") final boolean proxyClusteredCooperationEnabled,
-      @Nullable @Named("${nexus.group.clustered.cooperation.enabled}") final Boolean groupClusteredCooperationEnabled)
+      @Named("${nexus.maven.group.cooperation.threadsPerKey:-100}") final int threadsPerKey)
   {
-    Cooperation2Factory currentCooperationFactory;
-
-    if (clustered) {
-      currentCooperationFactory =
-          getEnabledCooperation(
-              groupClusteredCooperationEnabled,
-              proxyClusteredCooperationEnabled,
-              cooperationFactory,
-              defaultCooperationFactory);
-    }
-    else {
-      currentCooperationFactory = defaultCooperationFactory;
-    }
-
-    this.metadataCooperation = currentCooperationFactory.configure()
+    this.metadataCooperation = cooperationFactory.configure()
         .majorTimeout(majorTimeout)
         .minorTimeout(minorTimeout)
         .threadsPerKey(threadsPerKey)
         .enabled(cooperationEnabled)
         .build(getClass());
-  }
-
-  /**
-   * we have 2 properties to look at here, if the group property isn't set to true or false (thus null) the proxy
-   * property will be used, allowing user to set 1 flag (the proxy flag) to completely disable clustered cooperation for
-   * both proxy and group repositories. If group property IS set, it will override the propxy property, allowing user
-   * to enable/disable group cooperation seperately from proxy
-   **/
-  private Cooperation2Factory getEnabledCooperation(
-      final Boolean groupEnabled,
-      final boolean proxyEnabled,
-      final Cooperation2Factory cooperationFactory,
-      final Cooperation2Factory defaultCooperationFactory)
-  {
-    if (TRUE.equals(groupEnabled)) {
-      log.debug("Using distributed cooperation for group repositories");
-      return cooperationFactory;
-    }
-    else if (FALSE.equals(groupEnabled)) {
-      log.debug("Using local cooperation for group repositories");
-      return defaultCooperationFactory;
-    }
-    else if (proxyEnabled) {
-      log.debug("Using distributed cooperation for group repositories");
-      return cooperationFactory;
-    }
-    else {
-      log.debug("Using local cooperation for group repositories");
-      return defaultCooperationFactory;
-    }
   }
 
   protected Response doGetHash(@Nonnull final Context context) throws Exception {

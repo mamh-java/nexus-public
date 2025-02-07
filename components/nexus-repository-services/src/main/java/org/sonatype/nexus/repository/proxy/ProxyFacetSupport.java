@@ -71,7 +71,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static java.lang.Boolean.TRUE;
 import static java.util.Objects.isNull;
-import static org.sonatype.nexus.common.app.FeatureFlags.DATASTORE_CLUSTERED_ENABLED_NAMED;
 
 /**
  * A support class which implements basic payload logic; subclasses provide format-specific operations.
@@ -175,35 +174,13 @@ public abstract class ProxyFacetSupport
    */
   @Inject
   protected void configureCooperation(
-      final Cooperation2Factory cooperationFactory,
-      @Nullable @Named("local") Cooperation2Factory defaultCooperationFactory,
-      @Named("${nexus.proxy.clustered.cooperation.enabled:-false}") final boolean proxyClusteredCooperationEnabled,
-      @Named(DATASTORE_CLUSTERED_ENABLED_NAMED) final boolean clustered,
+      @Named final Cooperation2Factory cooperationFactory,
       @Named("${nexus.proxy.cooperation.enabled:-true}") final boolean cooperationEnabled,
       @Named("${nexus.proxy.cooperation.majorTimeout:-0s}") final Duration majorTimeout,
       @Named("${nexus.proxy.cooperation.minorTimeout:-30s}") final Duration minorTimeout,
       @Named("${nexus.proxy.cooperation.threadsPerKey:-100}") final int threadsPerKey)
   {
-    Cooperation2Factory currentCooperationFactory;
-    if (clustered && !proxyClusteredCooperationEnabled) {
-      if (defaultCooperationFactory == null) // will be initialized on datastore mode only
-      {
-        log.error("Can't select cooperation factory, fallback to default");
-        currentCooperationFactory = cooperationFactory;
-      }
-      else {
-        // keep cooperation enabled but disable distributed implementation for proxy repositories in case of issue with
-        // performance based on property nexus.proxy.clustered.cooperation.enabled
-        log.debug("Disable distributed cooperation for proxy repositories");
-        currentCooperationFactory = defaultCooperationFactory;
-      }
-    }
-    else {
-      // automatically injected, DistributedCooperation2Factory if clustered mode enabled
-      currentCooperationFactory = cooperationFactory;
-    }
-
-    this.cooperationBuilder = currentCooperationFactory.configure()
+    this.cooperationBuilder = cooperationFactory.configure()
         .enabled(cooperationEnabled)
         .majorTimeout(majorTimeout)
         .minorTimeout(minorTimeout)

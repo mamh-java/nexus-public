@@ -12,50 +12,43 @@
  */
 package org.sonatype.nexus.spring.application.classpath.walker;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
-import org.sonatype.nexus.spring.application.classpath.components.MybatisDAOComponentSet;
+import java.io.InputStreamReader;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.stream.Collectors.toSet;
 
-@Named
-@Singleton
-public class MybatisDAOClasspathVisitor
-    extends AbstractClasspathVisitor
+public abstract class AbstractClasspathVisitor
     implements ClasspathVisitor
 {
-  private static final Logger LOG = LoggerFactory.getLogger(MybatisDAOClasspathVisitor.class);
-
-  private final MybatisDAOComponentSet mybatisDAOComponentSet;
-
-  @Inject
-  public MybatisDAOClasspathVisitor(final MybatisDAOComponentSet mybatisDAOComponentSet) {
-    this.mybatisDAOComponentSet = checkNotNull(mybatisDAOComponentSet);
-  }
+  private static final Logger LOG = LoggerFactory.getLogger(AbstractClasspathVisitor.class);
 
   @Override
-  public String name() {
-    return "MyBatis DAO Classpath Visitor";
-  }
-
-  @Override
-  protected void doVisit(
+  public boolean visit(
       final String path,
       final String applicationJarPath,
       final InputStream applicationJarInputStream)
   {
-    mybatisDAOComponentSet.addComponent(path);
-    LOG.debug("Adding DAO class to cache: {}", path);
+    if (applies(path)) {
+      doVisit(path, applicationJarPath, applicationJarInputStream);
+      return true;
+    }
+    return false;
   }
 
-  @Override
-  protected boolean applies(final String path) {
-    return path.endsWith("DAO.class");
+  protected Set<String> toSimpleStringSet(final InputStream applicationJarInputStream) {
+    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(applicationJarInputStream));
+    return bufferedReader.lines().collect(toSet());
   }
+
+  protected abstract boolean applies(final String path);
+
+  protected abstract void doVisit(
+      final String path,
+      final String applitcationJarPath,
+      final InputStream applicationJarInputStream);
 }

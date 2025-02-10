@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 
-import org.sonatype.nexus.spring.application.NexusProperties;
 import org.sonatype.nexus.spring.application.PropertyMap;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -37,40 +36,38 @@ public class NexusEditionPropertiesConfigurer
 
   private static final String FALSE = Boolean.FALSE.toString();
 
-  public NexusProperties getPropertiesFromConfiguration() throws IOException {
-    NexusProperties result = new NexusProperties();
-    PropertyMap properties = result.get();
-    properties.putAll(System.getProperties());
+  public void applyPropertiesFromConfiguration(final PropertyMap nexusProperties) throws IOException {
+    nexusProperties.putAll(System.getProperties());
 
     // Ensure required properties exist
-    requireProperty(properties, "karaf.base");
-    requireProperty(properties, "karaf.data");
+    requireProperty(nexusProperties, "karaf.base");
+    requireProperty(nexusProperties, "karaf.data");
 
-    Path workDirPath = new File(properties.get("karaf.data")).getCanonicalFile().toPath();
+    Path workDirPath = new File(nexusProperties.get("karaf.data")).getCanonicalFile().toPath();
     // DirectoryHelper.mkdir(workDirPath);
 
-    NexusEditionFactory.selectActiveEdition(properties, workDirPath);
+    NexusEditionFactory.selectActiveEdition(nexusProperties, workDirPath);
 
-    selectDatastoreFeature(properties);
-    selectAuthenticationFeature(properties);
-    readEnvironmentVariables(properties);
+    selectDatastoreFeature(nexusProperties);
+    selectAuthenticationFeature(nexusProperties);
+    readEnvironmentVariables(nexusProperties);
 
-    requireProperty(properties, NEXUS_EDITION);
-    requireProperty(properties, NEXUS_DB_FEATURE);
+    requireProperty(nexusProperties, NEXUS_EDITION);
+    requireProperty(nexusProperties, NEXUS_DB_FEATURE);
     ensureHACIsDisabled();
-
-    return result;
   }
 
   private void readEnvironmentVariables(final PropertyMap properties) {
 
     if (properties.get(CHANGE_REPO_BLOBSTORE_TASK_ENABLED) == null) {
-      properties.put(CHANGE_REPO_BLOBSTORE_TASK_ENABLED,
+      properties.put(
+          CHANGE_REPO_BLOBSTORE_TASK_ENABLED,
           Boolean.toString(parseBoolean(System.getenv("CHANGE_REPO_BLOBSTORE_TASK_ENABLED"))));
     }
 
     if (properties.get(FIREWALL_QUARANTINE_FIX_ENABLED) == null) {
-      properties.put(FIREWALL_QUARANTINE_FIX_ENABLED,
+      properties.put(
+          FIREWALL_QUARANTINE_FIX_ENABLED,
           Boolean.toString(parseBoolean(System.getenv("FIREWALL_QUARANTINE_FIX_ENABLED"))));
     }
 
@@ -97,7 +94,8 @@ public class NexusEditionPropertiesConfigurer
 
   private void selectDatastoreFeature(final PropertyMap properties) {
     // table search should only be turned on via clustered flag
-    if (parseBoolean(properties.get(DATASTORE_CLUSTERED_ENABLED,
+    if (parseBoolean(properties.get(
+        DATASTORE_CLUSTERED_ENABLED,
         Optional.ofNullable(System.getenv("DATASTORE_CLUSTERED_ENABLED")).orElse(FALSE)))) {
       // As we read the ENV variable we need to enable feature flagged classes using in-memory properties hashtable
       properties.put(DATASTORE_CLUSTERED_ENABLED, TRUE);

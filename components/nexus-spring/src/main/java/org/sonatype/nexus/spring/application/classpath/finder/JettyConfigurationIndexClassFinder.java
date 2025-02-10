@@ -12,21 +12,37 @@
  */
 package org.sonatype.nexus.spring.application.classpath.finder;
 
-import java.io.File;
 import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
-import org.sonatype.nexus.spring.application.NexusProperties;
+import org.sonatype.nexus.spring.application.classpath.components.JettyConfigurationComponentSet;
 
 import org.eclipse.sisu.space.ClassFinder;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+@Named
+@Singleton
 public class JettyConfigurationIndexClassFinder
     extends AbstractIndexClassFinder
     implements ClassFinder
 {
-  public JettyConfigurationIndexClassFinder(final File indexCacheDirectory, final NexusProperties nexusProperties) {
-    super(
-        indexCacheDirectory,
-        "jetty/configuration.index",
-        List.of(FeatureFlagEnabledClassFinderFilter.instance(indexCacheDirectory, nexusProperties)));
+  private final JettyConfigurationComponentSet jettyConfigurationComponentSet;
+
+  @Inject
+  public JettyConfigurationIndexClassFinder(
+      final JettyConfigurationComponentSet jettyConfigurationComponentSet,
+      final FeatureFlagEnabledClassFinderFilter featureFlagEnabledClassFinderFilter)
+  {
+    super(List.of(featureFlagEnabledClassFinderFilter));
+    this.jettyConfigurationComponentSet = checkNotNull(jettyConfigurationComponentSet);
+  }
+
+  @Override
+  protected Set<String> getClassnames() {
+    return jettyConfigurationComponentSet.getComponents();
   }
 }

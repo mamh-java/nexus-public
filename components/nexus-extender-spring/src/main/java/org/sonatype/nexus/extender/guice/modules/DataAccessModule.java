@@ -12,13 +12,11 @@
  */
 package org.sonatype.nexus.extender.guice.modules;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
 
 import org.sonatype.nexus.datastore.api.DataAccess;
-import org.sonatype.nexus.spring.application.NexusProperties;
 import org.sonatype.nexus.spring.application.classpath.finder.NexusMybatisDAOIndexClassFinder;
 
 import com.google.inject.AbstractModule;
@@ -42,11 +40,11 @@ public class DataAccessModule
 
   private final ClassFinder classFinder;
 
-  public DataAccessModule(final NexusProperties nexusProperties, final ClassSpace classSpace) throws IOException {
-    this.classFinder =
-        new NexusMybatisDAOIndexClassFinder(
-            new File(new File(nexusProperties.get().get("karaf.data")), "cache"),
-            nexusProperties);
+  public DataAccessModule(
+      final NexusMybatisDAOIndexClassFinder nexusMybatisDAOIndexClassFinder,
+      final ClassSpace classSpace) throws IOException
+  {
+    this.classFinder = nexusMybatisDAOIndexClassFinder;
     this.classSpace = classSpace;
   }
 
@@ -73,9 +71,9 @@ public class DataAccessModule
 
   /**
    * Resolving a class name from the URL is dependent on how the application is started.
-   *
-   * When running "java -jar " on the uber jar, the URL will include the nesting of jars.
-   * When running inside the IDE, the URL will be to a classes directory in one of the maven modules of the project.
+   * <p>
+   * When running "java -jar " on the uber jar, the URL will include the nesting of jars. When running inside the IDE,
+   * the URL will be to a classes directory in one of the maven modules of the project.
    *
    * @param classFileUrl
    * @return the fully qualified class name

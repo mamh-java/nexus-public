@@ -12,22 +12,23 @@
  */
 package org.sonatype.nexus.spring.application.classpath.walker;
 
-import java.util.List;
+import java.util.Set;
+
+import org.sonatype.nexus.spring.application.classpath.components.SisuComponentMap;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 
 public class SisuAggregatedIndexClasspathVisitorTest
     extends AbstractClasspathVisitorTest<SisuAggregatedIndexClasspathVisitor>
 {
-  @Override
-  protected SisuAggregatedIndexClasspathVisitor newInstance() {
-    return new SisuAggregatedIndexClasspathVisitor();
-  }
+  private SisuComponentMap sisuComponentMap;
 
   @Override
-  protected String getCacheFileName() {
-    return "cache/sisu/component.index";
+  protected SisuAggregatedIndexClasspathVisitor newInstance() {
+    sisuComponentMap = new SisuComponentMap();
+    return new SisuAggregatedIndexClasspathVisitor(sisuComponentMap);
   }
 
   @Override
@@ -46,22 +47,30 @@ public class SisuAggregatedIndexClasspathVisitorTest
   }
 
   @Override
-  protected void assertAllNestedComponentsAggregatedIndex(final List<String> lines) {
-    assertThat(lines.size(), is(131));
-    assertThat(lines.get(0), is("- BOOT-INF/lib/nested-test1.jar"));
-    // just validating first and last class, as opposed to every single line item
-    assertThat(lines.get(1), is("org.sonatype.nexus.internal.analytics.AnalyticsSecurityContributor"));
-    assertThat(lines.get(120), is("org.sonatype.nexus.utils.httpclient.UserAgentGenerator"));
-    assertThat(lines.get(121), is("- BOOT-INF/lib/nested-test2.jar"));
-    assertThat(lines.get(122), is("org.sonatype.nexus.crypto.internal.CryptoHelperImpl"));
-    assertThat(lines.get(130), is("org.sonatype.nexus.crypto.secrets.internal.SecretsServiceImpl"));
+  protected void assertAllNestedComponentsAggregatedIndex() {
+    Set<String> components = sisuComponentMap.getComponents("BOOT-INF/lib/nested-test1.jar");
+    assertThat(components.size(), is(120));
+    assertThat(components, hasItem("org.sonatype.nexus.internal.analytics.AnalyticsSecurityContributor"));
+    assertThat(components, hasItem("org.sonatype.nexus.utils.httpclient.UserAgentGenerator"));
+    components = sisuComponentMap.getComponents("BOOT-INF/lib/nested-test2.jar");
+    assertThat(components.size(), is(9));
+    assertThat(components, hasItem("org.sonatype.nexus.crypto.internal.CryptoHelperImpl"));
+    assertThat(components, hasItem("org.sonatype.nexus.crypto.secrets.internal.SecretsServiceImpl"));
+    assertThat(sisuComponentMap.getComponents().size(), is(129));
   }
 
   @Override
-  protected void assertSomeNestedComponentsAggregatedIndex(final List<String> lines) {
-    assertThat(lines.size(), is(10));
-    assertThat(lines.get(0), is("- BOOT-INF/lib/nested-test2.jar"));
-    assertThat(lines.get(1), is("org.sonatype.nexus.crypto.internal.CryptoHelperImpl"));
-    assertThat(lines.get(9), is("org.sonatype.nexus.crypto.secrets.internal.SecretsServiceImpl"));
+  protected void assertSomeNestedComponentsAggregatedIndex() {
+    Set<String> components = sisuComponentMap.getComponents("BOOT-INF/lib/nested-test2.jar");
+    assertThat(components.size(), is(9));
+    assertThat(components, hasItem("org.sonatype.nexus.crypto.internal.CryptoHelperImpl"));
+    assertThat(components, hasItem("org.sonatype.nexus.crypto.secrets.internal.SecretsServiceImpl"));
+    assertThat(sisuComponentMap.getComponents().size(), is(9));
+  }
+
+  @Override
+  protected void assertNoNestedComponentsAggregatedIndex() {
+    Set<String> components = sisuComponentMap.getComponents();
+    assertThat(components.size(), is(0));
   }
 }

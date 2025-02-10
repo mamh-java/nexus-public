@@ -12,16 +12,15 @@
  */
 package org.sonatype.nexus.spring.application.classpath.finder;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Paths;
+import java.util.Set;
 
 import org.sonatype.nexus.spring.application.NexusProperties;
 import org.sonatype.nexus.spring.application.PropertyMap;
+import org.sonatype.nexus.spring.application.classpath.components.FeatureFlagComponentMap;
 
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -30,18 +29,22 @@ import static org.mockito.Mockito.when;
 
 public class FeatureFlagEnabledClassFinderFilterTest
 {
-  @Test
-  public void testControl() throws URISyntaxException, IOException {
-    String pathToResource = getClass().getPackageName().replace(".", "/") + "/control";
-    URL resource = getClass().getClassLoader().getResource(pathToResource);
-    File resourceFile = Paths.get(resource.toURI()).toFile();
+  private FeatureFlagComponentMap featureFlagComponentMap;
 
+  @BeforeEach
+  public void setup() {
+    featureFlagComponentMap = mock(FeatureFlagComponentMap.class);
+    when(featureFlagComponentMap.getComponents()).thenReturn(Set.of(
+        "org.sonatype.nexus.test.MyFakeClassName/nexus.test/false/false"));
+  }
+
+  @Test
+  public void testControl() throws IOException {
     NexusProperties nexusProperties = mock(NexusProperties.class);
     PropertyMap properties = new PropertyMap();
     when(nexusProperties.get()).thenReturn(properties);
     FeatureFlagEnabledClassFinderFilter filter =
-        FeatureFlagEnabledClassFinderFilter.instance(resourceFile, nexusProperties);
-    filter.parseFeatureFlagCacheFile();
+        new FeatureFlagEnabledClassFinderFilter(featureFlagComponentMap, nexusProperties);
 
     assertThat(filter.allowed("org.sonatype.nexus.test.MyFakeClassName"), is(true));
   }

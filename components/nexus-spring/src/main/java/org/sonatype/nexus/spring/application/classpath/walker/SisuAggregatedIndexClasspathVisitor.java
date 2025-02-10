@@ -13,23 +13,32 @@
 package org.sonatype.nexus.spring.application.classpath.walker;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import org.sonatype.nexus.spring.application.classpath.components.SisuComponentMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 @Named
 @Singleton
 public class SisuAggregatedIndexClasspathVisitor
-    extends AbstractClassnameIndexingClasspathVisitor
+    extends AbstractClasspathVisitor
     implements ClasspathVisitor
 {
   private static final Logger LOG = LoggerFactory.getLogger(SisuAggregatedIndexClasspathVisitor.class);
 
-  private final List<String> indexedComponents = new ArrayList<>();
+  private final SisuComponentMap sisuComponentMap;
+
+  @Inject
+  public SisuAggregatedIndexClasspathVisitor(final SisuComponentMap sisuComponentMap) {
+    this.sisuComponentMap = checkNotNull(sisuComponentMap);
+  }
 
   @Override
   public String name() {
@@ -42,23 +51,13 @@ public class SisuAggregatedIndexClasspathVisitor
       final String applicationJarPath,
       final InputStream applicationJarInputStream)
   {
-    List<String> components = toSimpleStringList(applicationJarPath, applicationJarInputStream);
+    Set<String> components = toSimpleStringSet(applicationJarInputStream);
     LOG.debug("Found indexed components: {}", components);
-    indexedComponents.addAll(components);
+    sisuComponentMap.addComponents(applicationJarPath, components);
   }
 
   @Override
   protected boolean applies(final String path) {
     return path.endsWith("META-INF/sisu/javax.inject.Named");
-  }
-
-  @Override
-  protected String getCacheFileName() {
-    return "sisu/component.index";
-  }
-
-  @Override
-  protected List<String> getCachedFileContent() {
-    return indexedComponents;
   }
 }

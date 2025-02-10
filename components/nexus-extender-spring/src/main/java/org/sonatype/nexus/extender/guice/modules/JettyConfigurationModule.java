@@ -12,14 +12,12 @@
  */
 package org.sonatype.nexus.extender.guice.modules;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Objects;
 
 import org.sonatype.nexus.datastore.api.DataAccess;
-import org.sonatype.nexus.spring.application.NexusProperties;
 import org.sonatype.nexus.spring.application.classpath.finder.JettyConfigurationIndexClassFinder;
 
 import com.google.inject.AbstractModule;
@@ -41,13 +39,10 @@ public class JettyConfigurationModule
   private final ClassFinder classFinder;
 
   public JettyConfigurationModule(
-      final NexusProperties nexusProperties,
+      final JettyConfigurationIndexClassFinder jettyConfigurationIndexClassFinder,
       final ClassSpace classSpace) throws IOException
   {
-    this.classFinder =
-        new JettyConfigurationIndexClassFinder(
-            new File(new File(nexusProperties.get().get("karaf.data")), "cache"),
-            nexusProperties);
+    this.classFinder = jettyConfigurationIndexClassFinder;
     this.classSpace = classSpace;
   }
 

@@ -12,26 +12,42 @@
  */
 package org.sonatype.nexus.spring.application.classpath.finder;
 
-import java.io.File;
 import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
-import org.sonatype.nexus.spring.application.NexusProperties;
+import org.sonatype.nexus.spring.application.classpath.components.SisuComponentMap;
 
 import org.eclipse.sisu.space.ClassFinder;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+@Named
+@Singleton
 public class NexusSisuAggregatedIndexClassFinder
     extends AbstractIndexClassFinder
     implements ClassFinder
 {
-  public NexusSisuAggregatedIndexClassFinder(final File indexCacheDirectory, final NexusProperties nexusProperties) {
-    super(
-        indexCacheDirectory,
-        "sisu/component.index",
-        List.of(FeatureFlagEnabledClassFinderFilter.instance(indexCacheDirectory, nexusProperties)));
+  private final SisuComponentMap sisuComponentMap;
+
+  @Inject
+  public NexusSisuAggregatedIndexClassFinder(
+      final SisuComponentMap sisuComponentMap,
+      final FeatureFlagEnabledClassFinderFilter featureFlagEnabledClassFinderFilter)
+  {
+    super(List.of(featureFlagEnabledClassFinderFilter));
+    this.sisuComponentMap = checkNotNull(sisuComponentMap);
   }
 
   @Override
   protected String postProcessLine(final String line) {
     return line.replace(".", "/") + ".class";
+  }
+
+  @Override
+  protected Set<String> getClassnames() {
+    return sisuComponentMap.getComponents();
   }
 }

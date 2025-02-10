@@ -51,18 +51,7 @@ public class ClasspathWalker
     this.applicationJarFilter = applicationJarFilter;
   }
 
-  public void walk(final File base, final File dataDirectory) throws Exception {
-    // Visitors MUST be initialized prior to ANY other usages
-    for (ClasspathVisitor classpathVisitor : classpathVisitors) {
-      classpathVisitor.init(dataDirectory);
-    }
-
-    // If all visitors have cache available, skip the classpath walk, save a LOT of time
-    if (isFullVisitorCacheAvailable()) {
-      LOG.debug("Skipping classpath walk as all visitors have cache available");
-      return;
-    }
-
+  public void walk(final File base) throws Exception {
     LOG.debug("Building the IoC classpath index(es) from: {}", base);
     List<String> applicationJarPaths = getApplicationJarPaths(base);
 
@@ -71,9 +60,6 @@ public class ClasspathWalker
       if (base.isFile()) {
         try (JarFile baseJar = new JarFile(base)) {
           visitJarEntries(applicationJarPath, baseJar);
-        }
-        for (ClasspathVisitor classpathVisitor : classpathVisitors) {
-          classpathVisitor.done();
         }
       }
     }
@@ -94,16 +80,6 @@ public class ClasspathWalker
         nestedJarEntry = applicationJarInputStream.getNextJarEntry();
       }
     }
-  }
-
-  private boolean isFullVisitorCacheAvailable() {
-    for (ClasspathVisitor classpathVisitor : classpathVisitors) {
-      if (classpathVisitor.needToVisit()) {
-        LOG.debug("Classpath visitor needs to rebuild its cache {}", classpathVisitor.name());
-        return false;
-      }
-    }
-    return true;
   }
 
   private List<String> getApplicationJarPaths(final File base) throws IOException {

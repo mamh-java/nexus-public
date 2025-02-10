@@ -14,14 +14,17 @@ package org.sonatype.nexus.spring.application;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.sonatype.nexus.bootstrap.edition.NexusEditionPropertiesConfigurer;
 import org.sonatype.nexus.common.app.FeatureFlags;
 
 import org.codehaus.plexus.interpolation.EnvarBasedValueSource;
@@ -79,6 +82,7 @@ public class NexusProperties
 
       resolveAnyImplicitDefaults(nexusProperties);
       LOG.info("nexus.properties: {}", nexusProperties);
+      new NexusEditionPropertiesConfigurer().applyPropertiesFromConfiguration(nexusProperties);
     }
     return nexusProperties;
   }
@@ -86,7 +90,11 @@ public class NexusProperties
   private void applyClasspathProperties(final PropertyMap nexusProperties) throws IOException {
     URL resource = getClass().getResource(INTERNAL_DEFAULT_PATH);
     if (resource != null) {
-      nexusProperties.load(resource);
+      Properties properties = new Properties();
+      try (InputStream inputStream = resource.openStream()) {
+        properties.load(inputStream);
+      }
+      nexusProperties.putAll(properties);
       LOG.debug("nexus.properties after loading from classpath {}: {}", INTERNAL_DEFAULT_PATH, nexusProperties);
     }
   }
@@ -196,12 +204,14 @@ public class NexusProperties
     }
     else if (nexusProperties.containsKey(FeatureFlags.SESSION_ENABLED)
         && !nexusProperties.containsKey(FeatureFlags.JWT_ENABLED)) {
-      nexusProperties.put(FeatureFlags.JWT_ENABLED,
+      nexusProperties.put(
+          FeatureFlags.JWT_ENABLED,
           String.valueOf(!Boolean.parseBoolean(nexusProperties.get(FeatureFlags.SESSION_ENABLED))));
     }
     else if (nexusProperties.containsKey(FeatureFlags.JWT_ENABLED)
         && !nexusProperties.containsKey(FeatureFlags.SESSION_ENABLED)) {
-      nexusProperties.put(FeatureFlags.SESSION_ENABLED,
+      nexusProperties.put(
+          FeatureFlags.SESSION_ENABLED,
           String.valueOf(!Boolean.parseBoolean(nexusProperties.get(FeatureFlags.JWT_ENABLED))));
     }
 

@@ -13,23 +13,31 @@
 package org.sonatype.nexus.spring.application.classpath.walker;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import org.sonatype.nexus.spring.application.classpath.components.JettyConfigurationComponentSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 @Named
 @Singleton
 public class JettyConfigurationClasspathVisitor
-    extends AbstractClassnameIndexingClasspathVisitor
+    extends AbstractClasspathVisitor
     implements ClasspathVisitor
 {
   private static final Logger LOG = LoggerFactory.getLogger(JettyConfigurationClasspathVisitor.class);
 
-  private final List<String> jettyConfigurationComponents = new ArrayList<>();
+  private final JettyConfigurationComponentSet jettyConfigurationComponentSet;
+
+  @Inject
+  public JettyConfigurationClasspathVisitor(final JettyConfigurationComponentSet jettyConfigurationComponentSet) {
+    this.jettyConfigurationComponentSet = checkNotNull(jettyConfigurationComponentSet);
+  }
 
   @Override
   public String name() {
@@ -42,7 +50,7 @@ public class JettyConfigurationClasspathVisitor
       final String applicationJarPath,
       final InputStream applicationJarInputStream)
   {
-    jettyConfigurationComponents.add(path);
+    jettyConfigurationComponentSet.addComponent(path);
     LOG.debug("Adding Jetty configuration class to cache: {}", path);
   }
 
@@ -50,15 +58,5 @@ public class JettyConfigurationClasspathVisitor
   protected boolean applies(final String path) {
     return path.endsWith("ConnectorConfiguration.class") &&
         !path.endsWith("org/sonatype/nexus/bootstrap/jetty/ConnectorConfiguration.class");
-  }
-
-  @Override
-  protected String getCacheFileName() {
-    return "jetty/configurations.index";
-  }
-
-  @Override
-  protected List<String> getCachedFileContent() {
-    return jettyConfigurationComponents;
   }
 }

@@ -12,22 +12,23 @@
  */
 package org.sonatype.nexus.spring.application.classpath.walker;
 
-import java.util.List;
+import java.util.Set;
+
+import org.sonatype.nexus.spring.application.classpath.components.JettyConfigurationComponentSet;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 
 public class JettyConfigurationClasspathVisitorTest
     extends AbstractClasspathVisitorTest<JettyConfigurationClasspathVisitor>
 {
-  @Override
-  protected JettyConfigurationClasspathVisitor newInstance() {
-    return new JettyConfigurationClasspathVisitor();
-  }
+  private JettyConfigurationComponentSet jettyConfigurationComponentSet;
 
   @Override
-  protected String getCacheFileName() {
-    return "cache/jetty/configurations.index";
+  protected JettyConfigurationClasspathVisitor newInstance() {
+    jettyConfigurationComponentSet = new JettyConfigurationComponentSet();
+    return new JettyConfigurationClasspathVisitor(jettyConfigurationComponentSet);
   }
 
   @Override
@@ -46,18 +47,32 @@ public class JettyConfigurationClasspathVisitorTest
   }
 
   @Override
-  protected void assertSomeNestedComponentsAggregatedIndex(final List<String> lines) {
-    assertThat(lines.size(), is(2));
-    assertThat(lines.get(0), is("org/sonatype/nexus/jetty/AnotherTest1ConnectorConfiguration.class"));
-    assertThat(lines.get(1), is("org/sonatype/nexus/jetty/AnotherTest2ConnectorConfiguration.class"));
+  protected void assertSomeNestedComponentsAggregatedIndex() {
+    Set<String> components = jettyConfigurationComponentSet.getComponents();
+    assertThat(components.size(), is(2));
+    assertThat(
+        components,
+        containsInAnyOrder(
+            "org/sonatype/nexus/jetty/AnotherTest1ConnectorConfiguration.class",
+            "org/sonatype/nexus/jetty/AnotherTest2ConnectorConfiguration.class"));
   }
 
   @Override
-  protected void assertAllNestedComponentsAggregatedIndex(final List<String> lines) {
-    assertThat(lines.size(), is(4));
-    assertThat(lines.get(0), is("org/sonatype/nexus/jetty/Test1ConnectorConfiguration.class"));
-    assertThat(lines.get(1), is("org/sonatype/nexus/jetty/Test2ConnectorConfiguration.class"));
-    assertThat(lines.get(2), is("org/sonatype/nexus/jetty/AnotherTest1ConnectorConfiguration.class"));
-    assertThat(lines.get(3), is("org/sonatype/nexus/jetty/AnotherTest2ConnectorConfiguration.class"));
+  protected void assertAllNestedComponentsAggregatedIndex() {
+    Set<String> components = jettyConfigurationComponentSet.getComponents();
+    assertThat(components.size(), is(4));
+    assertThat(
+        components,
+        containsInAnyOrder(
+            "org/sonatype/nexus/jetty/Test1ConnectorConfiguration.class",
+            "org/sonatype/nexus/jetty/Test2ConnectorConfiguration.class",
+            "org/sonatype/nexus/jetty/AnotherTest1ConnectorConfiguration.class",
+            "org/sonatype/nexus/jetty/AnotherTest2ConnectorConfiguration.class"));
+  }
+
+  @Override
+  protected void assertNoNestedComponentsAggregatedIndex() {
+    Set<String> components = jettyConfigurationComponentSet.getComponents();
+    assertThat(components.size(), is(0));
   }
 }

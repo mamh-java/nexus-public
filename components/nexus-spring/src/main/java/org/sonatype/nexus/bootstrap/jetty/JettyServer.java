@@ -51,7 +51,14 @@ public class JettyServer
 
   private ConnectorManager connectorManager;
 
-  public JettyServer(final ClassLoader classLoader, final Map<String, String> properties, final String[] args) {
+  private final Map<String, Object> objectsForContext;
+
+  public JettyServer(
+      final ClassLoader classLoader,
+      final Map<String, String> properties,
+      final String[] args,
+      @Nullable final Map<String, Object> objectsForContext)
+  {
     if (classLoader == null) {
       throw new NullPointerException();
     }
@@ -66,6 +73,8 @@ public class JettyServer
       throw new NullPointerException();
     }
     this.args = args;
+
+    this.objectsForContext = objectsForContext;
   }
 
   private Exception propagateThrowable(final Throwable e) throws Exception {
@@ -96,8 +105,8 @@ public class JettyServer
   /**
    * Starts Jetty, in sync or async mode, depending on value of {@code waitForServer} parameter.
    *
-   * @param waitForServer if {@code true}, method will block until Jetty is fully started, otherwise will
-   *          return immediately.
+   * @param waitForServer if {@code true}, method will block until Jetty is fully started, otherwise will return
+   *          immediately.
    * @param callback optional, callback executed immediately after Jetty is fully started up.
    */
   public synchronized void start(final boolean waitForServer, @Nullable final Runnable callback) throws Exception {
@@ -165,6 +174,7 @@ public class JettyServer
     for (Object object : components) {
       if (object instanceof Server) {
         server = (Server) object;
+        initializeContext(server, objectsForContext);
         break;
       }
     }
@@ -192,6 +202,18 @@ public class JettyServer
     }
   }
 
+  private void initializeContext(final Server server, final Map<String, Object> objectsForContext) {
+    ContextHandler contextHandler = server.getChildHandlerByClass(ContextHandler.class);
+    if (contextHandler != null) {
+      Context context = contextHandler.getServletContext();
+      if (context != null) {
+        if (objectsForContext != null) {
+          objectsForContext.forEach(context::setAttribute);
+        }
+      }
+    }
+  }
+
   private void doStop() throws Exception {
     if (thread == null) {
       throw new IllegalStateException("Not started");
@@ -207,9 +229,9 @@ public class JettyServer
 
   /**
    * Jetty thread used to start components, wait for the server's threads to join and stop components.
-   *
-   * Needed so that once {@link JettyServer#stop()} returns that we know that the server has actually stopped,
-   * which is required for embedding.
+   * <p>
+   * Needed so that once {@link JettyServer#stop()} returns that we know that the server has actually stopped, which is
+   * required for embedding.
    */
   private static class JettyMainThread
       extends Thread
@@ -309,7 +331,7 @@ public class JettyServer
       stopped.await();
     }
 
-    private static void logStartupBanner(Server server) {
+    private static void logStartupBanner(final Server server) {
       Object banner = null;
 
       ContextHandler contextHandler = server.getChildHandlerByClass(ContextHandler.class);

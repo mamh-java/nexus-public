@@ -12,21 +12,37 @@
  */
 package org.sonatype.nexus.spring.application.classpath.finder;
 
-import java.io.File;
 import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
-import org.sonatype.nexus.spring.application.NexusProperties;
+import org.sonatype.nexus.spring.application.classpath.components.MybatisDAOComponentSet;
 
 import org.eclipse.sisu.space.ClassFinder;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+@Named
+@Singleton
 public class NexusMybatisDAOIndexClassFinder
     extends AbstractIndexClassFinder
     implements ClassFinder
 {
-  public NexusMybatisDAOIndexClassFinder(final File indexCacheDirectory, final NexusProperties nexusProperties) {
-    super(
-        indexCacheDirectory,
-        "mybatis/daos.index",
-        List.of(FeatureFlagEnabledClassFinderFilter.instance(indexCacheDirectory, nexusProperties)));
+  private final MybatisDAOComponentSet mybatisDAOComponentSet;
+
+  @Inject
+  public NexusMybatisDAOIndexClassFinder(
+      final MybatisDAOComponentSet mybatisDAOComponentSet,
+      final FeatureFlagEnabledClassFinderFilter featureFlagEnabledClassFinderFilter)
+  {
+    super(List.of(featureFlagEnabledClassFinderFilter));
+    this.mybatisDAOComponentSet = checkNotNull(mybatisDAOComponentSet);
+  }
+
+  @Override
+  protected Set<String> getClassnames() {
+    return mybatisDAOComponentSet.getComponents();
   }
 }

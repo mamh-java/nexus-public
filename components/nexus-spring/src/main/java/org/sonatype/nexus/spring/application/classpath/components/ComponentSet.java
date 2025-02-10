@@ -10,16 +10,13 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-package org.sonatype.nexus.spring.application.classpath.walker;
+package org.sonatype.nexus.spring.application.classpath.components;
 
-import java.io.InputStream;
+import java.util.Set;
 
-/**
- * A visitor that will be called for each entry in the classpath
- */
-public interface ClasspathVisitor
+public interface ComponentSet<T>
 {
-  String name();
+  void addComponent(T component);
 
-  boolean visit(final String path, final String applicationJarPath, final InputStream applicationJarInputStream);
+  Set<T> getComponents();
 }

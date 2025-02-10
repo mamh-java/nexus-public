@@ -15,13 +15,11 @@ package org.sonatype.nexus.extender;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.EnumSet;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.sonatype.nexus.bootstrap.application.DelegatingFilter;
-import org.sonatype.nexus.bootstrap.edition.NexusEditionPropertiesConfigurer;
 import org.sonatype.nexus.common.app.ManagedLifecycle.Phase;
 import org.sonatype.nexus.common.app.ManagedLifecycleManager;
 import org.sonatype.nexus.extender.guice.NexusLifecycleManager;
@@ -65,10 +63,6 @@ public class NexusServletContextListener
 
   private Phase startupPhase;
 
-  private final NexusEditionPropertiesConfigurer propertiesConfigurer = new NexusEditionPropertiesConfigurer();
-
-  private NexusProperties nexusProperties;
-
   @Override
   public void contextInitialized(final ServletContextEvent event) {
     checkNotNull(event);
@@ -78,14 +72,13 @@ public class NexusServletContextListener
     servletContext = event.getServletContext();
 
     try {
-      nexusProperties = propertiesConfigurer.getPropertiesFromConfiguration();
-      injector = Guice.createInjector(new NexusExtenderModule(nexusProperties, servletContext));
+      injector = Guice.createInjector(new NexusExtenderModule(servletContext));
 
       MutableBeanLocator locator = injector.getInstance(MutableBeanLocator.class);
       locator.add(new InjectorBindings(injector));
 
       lifecycleManager = new NexusLifecycleManager(locator);
-      checkStartupPhase();
+      checkStartupPhase((NexusProperties) servletContext.getAttribute("nexusProperties"));
 
       // Push to the last phase in lifecycle, this will of course process each phase in between en route to TASKS phase
       moveToPhase(TASKS);
@@ -128,7 +121,7 @@ public class NexusServletContextListener
   /**
    * Checks whether we should limit application startup to a particular lifecycle phase.
    */
-  private void checkStartupPhase() throws IOException {
+  private void checkStartupPhase(final NexusProperties nexusProperties) throws IOException {
     String startupPhaseValue = nexusProperties.get().get(NEXUS_LIFECYCLE_STARTUP_PHASE);
     if (!isEmpty(startupPhaseValue)) {
       try {

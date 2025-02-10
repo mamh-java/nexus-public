@@ -12,7 +12,6 @@
  */
 package org.sonatype.nexus.extender.guice.modules;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -24,6 +23,10 @@ import javax.servlet.ServletContext;
 import org.sonatype.nexus.common.log.LogManager;
 import org.sonatype.nexus.extender.sisu.modules.SisuAggregatedIndexModule;
 import org.sonatype.nexus.spring.application.NexusProperties;
+import org.sonatype.nexus.spring.application.classpath.components.MybatisDAOComponentSet;
+import org.sonatype.nexus.spring.application.classpath.components.SisuComponentMap;
+import org.sonatype.nexus.spring.application.classpath.finder.FeatureFlagEnabledClassFinderFilter;
+import org.sonatype.nexus.spring.application.classpath.finder.NexusMybatisDAOIndexClassFinder;
 import org.sonatype.nexus.spring.application.classpath.finder.NexusSisuAggregatedIndexClassFinder;
 import org.sonatype.nexus.validation.ValidationModule;
 
@@ -56,16 +59,23 @@ public class NexusExtenderModule
 
   private final NexusProperties nexusProperties;
 
+  private final SisuComponentMap sisuComponentMap;
+
+  private final MybatisDAOComponentSet mybatisDAOComponentSet;
+
+  private final FeatureFlagEnabledClassFinderFilter featureFlagEnabledClassFinderFilter;
+
   private final NexusServletContextModule nexusServletContextModule;
 
   private static final Logger LOG = LoggerFactory.getLogger(NexusExtenderModule.class);
 
-  public NexusExtenderModule(
-      final NexusProperties nexusProperties,
-      final ServletContext servletContext) throws IOException
-  {
+  public NexusExtenderModule(final ServletContext servletContext) throws IOException {
     this.space = new URLClassSpace(getClass().getClassLoader());
-    this.nexusProperties = nexusProperties;
+    this.nexusProperties = (NexusProperties) servletContext.getAttribute("nexusProperties");
+    this.sisuComponentMap = (SisuComponentMap) servletContext.getAttribute("sisuComponentMap");
+    this.mybatisDAOComponentSet = (MybatisDAOComponentSet) servletContext.getAttribute("mybatisDAOComponentSet");
+    this.featureFlagEnabledClassFinderFilter = (FeatureFlagEnabledClassFinderFilter) servletContext.getAttribute(
+        "featureFlagEnabledClassFinderFilter");
     this.nexusServletContextModule = new NexusServletContextModule(servletContext, nexusProperties.get());
     this.metricsRegistryModule = new MetricsRegistryModule(this.nexusProperties.get());
     this.securityFilterModule = new SecurityFilterModule(this.nexusProperties.get());
@@ -82,13 +92,16 @@ public class NexusExtenderModule
         properties.put(BeanScanning.class.getName(), BeanScanning.GLOBAL_INDEX.name());
       }
 
-      // this classfinder will handle resolving what classes are available vs what are needed via feature flags
-      NexusSisuAggregatedIndexClassFinder nexusSisuAggregatedIndexClassFinder =
-          new NexusSisuAggregatedIndexClassFinder(new File(nexusProperties.get().get("karaf.data"), "cache"),
-              nexusProperties);
-
-      modules.add(new DataAccessModule(nexusProperties, space));
-      modules.add(new SisuAggregatedIndexModule(space, nexusSisuAggregatedIndexClassFinder));
+      modules.add(new DataAccessModule(
+          new NexusMybatisDAOIndexClassFinder(
+              mybatisDAOComponentSet,
+              featureFlagEnabledClassFinderFilter),
+          space));
+      modules.add(new SisuAggregatedIndexModule(
+          space,
+          new NexusSisuAggregatedIndexClassFinder(
+              sisuComponentMap,
+              featureFlagEnabledClassFinderFilter)));
       modules.add(securityFilterModule);
       modules.add(nexusServletContextModule);
       modules.add(metricsRegistryModule);

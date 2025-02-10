@@ -13,23 +13,32 @@
 package org.sonatype.nexus.spring.application.classpath.walker;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import org.sonatype.nexus.spring.application.classpath.components.FeatureFlagComponentMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 @Named
 @Singleton
 public class FeatureFlagAggregatedIndexClasspathVisitor
-    extends AbstractClassnameIndexingClasspathVisitor
+    extends AbstractClasspathVisitor
     implements ClasspathVisitor
 {
   private static final Logger LOG = LoggerFactory.getLogger(SisuAggregatedIndexClasspathVisitor.class);
 
-  private final List<String> featureFlaggedComponents = new ArrayList<>();
+  private final FeatureFlagComponentMap featureFlagComponentSet;
+
+  @Inject
+  public FeatureFlagAggregatedIndexClasspathVisitor(final FeatureFlagComponentMap featureFlagComponentSet) {
+    this.featureFlagComponentSet = checkNotNull(featureFlagComponentSet);
+  }
 
   @Override
   public String name() {
@@ -42,19 +51,9 @@ public class FeatureFlagAggregatedIndexClasspathVisitor
       final String applicationJarPath,
       final InputStream applicationJarInputStream)
   {
-    List<String> components = toSimpleStringList(applicationJarPath, applicationJarInputStream);
+    Set<String> components = toSimpleStringSet(applicationJarInputStream);
     LOG.debug("Found feature flagged components: {}", components);
-    featureFlaggedComponents.addAll(components);
-  }
-
-  @Override
-  protected String getCacheFileName() {
-    return "sisu/feature-flags.index";
-  }
-
-  @Override
-  protected List<String> getCachedFileContent() {
-    return featureFlaggedComponents;
+    featureFlagComponentSet.addComponents(applicationJarPath, components);
   }
 
   @Override

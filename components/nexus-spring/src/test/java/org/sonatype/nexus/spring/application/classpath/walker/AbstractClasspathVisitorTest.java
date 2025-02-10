@@ -13,15 +13,11 @@
 package org.sonatype.nexus.spring.application.classpath.walker;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import static java.util.Collections.singletonList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 
 public abstract class AbstractClasspathVisitorTest<T extends ClasspathVisitor>
 {
@@ -30,57 +26,37 @@ public abstract class AbstractClasspathVisitorTest<T extends ClasspathVisitor>
 
   private T underTest;
 
-  private File dataDir;
-
-  private File aggregatedIndex;
-
-  private ApplicationJarFilter applicationJarFilter = new AllowAllApplicationJarFilter();
+  private final ApplicationJarFilter applicationJarFilter = new AllowAllApplicationJarFilter();
 
   @Before
   public void setup() {
-    dataDir = new File("target");
     underTest = newInstance();
-    underTest.init(dataDir);
-    aggregatedIndex = new File(dataDir, getCacheFileName());
-    if (aggregatedIndex.exists()) {
-      aggregatedIndex.delete();
-    }
   }
 
   @Test
   public void testCacheAggregatedIndex_allNestedComponentJars() throws Exception {
     File testJar = new File(CACHE_FILE_BASE + getAllNestedComponentsJarName());
-    new ClasspathWalker(singletonList(underTest), applicationJarFilter).walk(testJar, dataDir);
+    new ClasspathWalker(singletonList(underTest), applicationJarFilter).walk(testJar);
 
-    File aggregatedIndex = new File(dataDir, getCacheFileName());
-    assertThat(aggregatedIndex.exists(), is(true));
-    List<String> lines = Files.readAllLines(aggregatedIndex.toPath());
-    assertAllNestedComponentsAggregatedIndex(lines);
+    assertAllNestedComponentsAggregatedIndex();
   }
 
   @Test
   public void testCacheAggregatedIndex_someNestedComponentJars() throws Exception {
     File testJar = new File(CACHE_FILE_BASE + getSomeNestedComponentsJarName());
-    new ClasspathWalker(singletonList(underTest), applicationJarFilter).walk(testJar, dataDir);
-
-    File aggregatedIndex = new File(dataDir, getCacheFileName());
-    assertThat(aggregatedIndex.exists(), is(true));
-    List<String> lines = Files.readAllLines(aggregatedIndex.toPath());
-    assertSomeNestedComponentsAggregatedIndex(lines);
+    new ClasspathWalker(singletonList(underTest), applicationJarFilter).walk(testJar);
+    assertSomeNestedComponentsAggregatedIndex();
   }
 
   @Test
   public void testCacheAggregatedIndex_noNestedComponentJars() throws Exception {
     File testJar = new File(CACHE_FILE_BASE + getNoNestedComponentsJarName());
-    new ClasspathWalker(singletonList(underTest), applicationJarFilter).walk(testJar, dataDir);
+    new ClasspathWalker(singletonList(underTest), applicationJarFilter).walk(testJar);
 
-    File aggregatedIndex = new File(dataDir, getCacheFileName());
-    assertThat(aggregatedIndex.exists(), is(false));
+    assertNoNestedComponentsAggregatedIndex();
   }
 
   protected abstract T newInstance();
-
-  protected abstract String getCacheFileName();
 
   protected abstract String getAllNestedComponentsJarName();
 
@@ -88,7 +64,9 @@ public abstract class AbstractClasspathVisitorTest<T extends ClasspathVisitor>
 
   protected abstract String getNoNestedComponentsJarName();
 
-  protected abstract void assertAllNestedComponentsAggregatedIndex(final List<String> lines);
+  protected abstract void assertAllNestedComponentsAggregatedIndex();
 
-  protected abstract void assertSomeNestedComponentsAggregatedIndex(final List<String> lines);
+  protected abstract void assertSomeNestedComponentsAggregatedIndex();
+
+  protected abstract void assertNoNestedComponentsAggregatedIndex();
 }

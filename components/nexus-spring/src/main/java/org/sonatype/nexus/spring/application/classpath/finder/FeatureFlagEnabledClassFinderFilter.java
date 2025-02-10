@@ -12,75 +12,81 @@
  */
 package org.sonatype.nexus.spring.application.classpath.finder;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.sonatype.nexus.spring.application.NexusProperties;
+import org.sonatype.nexus.spring.application.classpath.components.FeatureFlagComponentMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Character.isLowerCase;
 
 /**
  * Filter for class finder that filters out classes based on feature flags being enabled for any class that has a
  * FeatureFlag annotation, or any class in a package that has a FeatureFlag annotation.
  */
+@Named
+@Singleton
 public class FeatureFlagEnabledClassFinderFilter
     implements ClassFinderFilter
 {
   protected static final Logger LOG = LoggerFactory.getLogger(FeatureFlagEnabledClassFinderFilter.class);
 
-  private final File featureFlagCacheFile;
+  private Map<String, FeatureFlagEntry> featureFlagEntryMap;
+
+  private List<String> featureFlagDisabledPackages;
+
+  private List<String> featureFlagDisabledClasses;
 
   private final NexusProperties nexusProperties;
 
-  private final Map<String, FeatureFlagEntry> featureFlagEntryMap = new HashMap<>();
+  private final FeatureFlagComponentMap featureFlagComponentMap;
 
-  private final List<String> featureFlagDisabledPackages = new ArrayList<>();
-
-  private final List<String> featureFlagDisabledClasses = new ArrayList<>();
-
-  private static FeatureFlagEnabledClassFinderFilter instance;
-
-  public static FeatureFlagEnabledClassFinderFilter instance(
-      final File indexCacheDirectory,
+  @Inject
+  public FeatureFlagEnabledClassFinderFilter(
+      final FeatureFlagComponentMap featureFlagComponentMap,
       final NexusProperties nexusProperties)
   {
-    if (instance == null) {
-      instance = new FeatureFlagEnabledClassFinderFilter(indexCacheDirectory, nexusProperties);
-    }
-
-    return instance;
+    this.featureFlagComponentMap = checkNotNull(featureFlagComponentMap);
+    this.nexusProperties = checkNotNull(nexusProperties);
   }
 
-  /**
-   * Use the static instance() method to get an instance of this class. Since injection isn't available at this point
-   * we need to manually treat this class as a singleton
-   */
-  private FeatureFlagEnabledClassFinderFilter(final File indexCacheDirectory, final NexusProperties nexusProperties) {
-    this.featureFlagCacheFile = new File(indexCacheDirectory, "sisu/feature-flags.index");
-    this.nexusProperties = nexusProperties;
-    parseFeatureFlagCacheFile();
+  @Override
+  public boolean allowed(final String path) {
+    if (featureFlagEntryMap == null) {
+      featureFlagEntryMap = new HashMap<>();
+      featureFlagDisabledPackages = new ArrayList<>();
+      featureFlagDisabledClasses = new ArrayList<>();
+      parseFeatureFlags();
+    }
+    String[] segments = path.split("!");
+    String className = "/" + segments[segments.length - 1];
+    if (isFeatureFlaggedClassEnabled(className)) {
+      LOG.debug(
+          "Not filtering out class {}, it's @FeatureFlag (or a parent package @FeatureFlag) is enabled",
+          className);
+      return true;
+    }
+    LOG.debug(
+        "Filtering out class {}, it's @FeatureFlag (or a parent package @FeatureFlag) is NOT enabled",
+        className);
+    return false;
   }
 
-  protected void parseFeatureFlagCacheFile() {
-    try {
-      List<String> featureFlags = Files.readAllLines(this.featureFlagCacheFile.toPath());
-      for (String line : featureFlags) {
-        if (line.startsWith("-")) {
-          continue;
-        }
-        initializeFeatureFlag(new FeatureFlagEntry(line));
-      }
-    }
-    catch (IOException e) {
-      throw new RuntimeException("Failed to read feature flag cache " + featureFlagCacheFile, e);
+  protected void parseFeatureFlags() {
+    Set<String> featureFlags = featureFlagComponentMap.getComponents();
+    for (String line : featureFlags) {
+      initializeFeatureFlag(new FeatureFlagEntry(line));
     }
   }
 
@@ -101,7 +107,7 @@ public class FeatureFlagEnabledClassFinderFilter
       }
     }
     catch (IOException e) {
-      throw new RuntimeException("Failed to initialize feature flag cache " + featureFlagCacheFile, e);
+      throw new RuntimeException("Failed to initialize feature flag cache", e);
     }
   }
 
@@ -143,22 +149,6 @@ public class FeatureFlagEnabledClassFinderFilter
       boolean result = Boolean.parseBoolean(featureFlagEntryValue);
       return featureFlagEntry.inverse != result;
     }
-  }
-
-  @Override
-  public boolean allowed(final String path) {
-    String[] segments = path.split("!");
-    String className = "/" + segments[segments.length - 1];
-    if (isFeatureFlaggedClassEnabled(className)) {
-      LOG.debug(
-          "Not filtering out class {}, it's @FeatureFlag (or a parent package @FeatureFlag) is enabled",
-          className);
-      return true;
-    }
-    LOG.debug(
-        "Filtering out class {}, it's @FeatureFlag (or a parent package @FeatureFlag) is NOT enabled",
-        className);
-    return false;
   }
 
   private boolean isFeatureFlaggedClassEnabled(final String className) {

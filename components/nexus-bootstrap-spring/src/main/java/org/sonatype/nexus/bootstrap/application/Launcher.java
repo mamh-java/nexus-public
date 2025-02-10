@@ -16,6 +16,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.security.CodeSource;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
@@ -27,6 +28,10 @@ import org.sonatype.nexus.bootstrap.jetty.JettyServer;
 import org.sonatype.nexus.spring.application.NexusProperties;
 import org.sonatype.nexus.spring.application.PropertyMap;
 import org.sonatype.nexus.spring.application.ShutdownHelper;
+import org.sonatype.nexus.spring.application.classpath.components.JettyConfigurationComponentSet;
+import org.sonatype.nexus.spring.application.classpath.components.MybatisDAOComponentSet;
+import org.sonatype.nexus.spring.application.classpath.components.SisuComponentMap;
+import org.sonatype.nexus.spring.application.classpath.finder.FeatureFlagEnabledClassFinderFilter;
 import org.sonatype.nexus.spring.application.classpath.walker.ClasspathWalker;
 
 import ch.qos.logback.classic.Level;
@@ -41,7 +46,6 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class Launcher
 {
-
   private static final String LOGGING_OVERRIDE_PREFIX = "nexus.logging.level.";
 
   public static final String IGNORE_SHUTDOWN_HELPER = ShutdownHelper.class.getName() + ".ignore";
@@ -54,8 +58,17 @@ public class Launcher
 
   private final JettyServer server;
 
+  private final JettyConfigurationComponentSet jettyConfigurationComponentSet;
+
   @Inject
-  public Launcher(final NexusProperties nexusProperties, final ClasspathWalker classpathWalker) throws Exception {
+  public Launcher(
+      final NexusProperties nexusProperties,
+      final ClasspathWalker classpathWalker,
+      final FeatureFlagEnabledClassFinderFilter featureFlagEnabledClassFinderFilter,
+      final SisuComponentMap sisuComponentMap,
+      final MybatisDAOComponentSet mybatisDAOComponentSet,
+      final JettyConfigurationComponentSet jettyConfigurationComponentSet) throws Exception
+  {
     configureLogging();
 
     ClassLoader cl = getClass().getClassLoader();
@@ -92,9 +105,17 @@ public class Launcher
 
     configureInitialLoggingOverrides(nexusPropertiesMap);
 
-    classpathWalker.walk(getBase(), new File(nexusPropertiesMap.get(KARAF_DATA)));
+    classpathWalker.walk(getBase());
 
-    this.server = new JettyServer(cl, nexusPropertiesMap, args.split(","));
+    Map<String, Object> objectsForContext = new HashMap<>();
+    objectsForContext.put("nexusProperties", nexusProperties);
+    objectsForContext.put("sisuComponentMap", sisuComponentMap);
+    objectsForContext.put("mybatisDAOComponentSet", mybatisDAOComponentSet);
+    objectsForContext.put("jettyConfigurationComponentSet", jettyConfigurationComponentSet);
+    objectsForContext.put("featureFlagEnabledClassFinderFilter", featureFlagEnabledClassFinderFilter);
+
+    this.server = new JettyServer(cl, nexusPropertiesMap, args.split(","), objectsForContext);
+    this.jettyConfigurationComponentSet = jettyConfigurationComponentSet;
   }
 
   public JettyServer getServer() {

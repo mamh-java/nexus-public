@@ -12,6 +12,7 @@
  */
 package org.sonatype.nexus.repository.maven.rest;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.Path;
@@ -30,4 +31,11 @@ public class MavenProxyRepositoriesApiResourceV1
     extends MavenProxyRepositoriesApiResource
 {
   static final String RESOURCE_URI = RepositoriesApiResourceV1.RESOURCE_URI + "/maven/proxy";
+
+  @Inject
+  public void setConfigurationConverter(
+      final MavenProxyRepositoryApiRequestToConfigurationConverter configurationConverter)
+  {
+    super.setConfigurationConverter(configurationConverter);
+  }
 }

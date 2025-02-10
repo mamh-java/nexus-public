@@ -12,6 +12,7 @@
  */
 package org.sonatype.nexus.repository.apt.rest;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.Path;
@@ -30,4 +31,11 @@ public class AptProxyRepositoriesApiResourceV1
     extends AptProxyRepositoriesApiResource
 {
   static final String RESOURCE_URI = RepositoriesApiResourceV1.RESOURCE_URI + "/apt/proxy";
+
+  @Inject
+  public void setConfigurationConverter(
+      final AptProxyRepositoryApiRequestToConfigurationConverter configurationConverter)
+  {
+    super.setConfigurationConverter(configurationConverter);
+  }
 }

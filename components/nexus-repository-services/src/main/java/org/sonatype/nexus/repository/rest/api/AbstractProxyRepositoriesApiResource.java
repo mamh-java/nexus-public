@@ -12,11 +12,13 @@
  */
 package org.sonatype.nexus.repository.rest.api;
 
+import javax.inject.Inject;
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import org.sonatype.nexus.repository.config.Configuration;
 import org.sonatype.nexus.repository.rest.api.model.AbstractApiRepository;
 import org.sonatype.nexus.repository.rest.api.model.ProxyRepositoryApiRequest;
 import org.sonatype.nexus.repository.rest.api.model.SimpleApiProxyRepository;
@@ -30,6 +32,20 @@ import io.swagger.annotations.ApiParam;
 public class AbstractProxyRepositoriesApiResource<T extends ProxyRepositoryApiRequest>
     extends AbstractRepositoriesApiResource<T>
 {
+  protected ProxyRepositoryApiRequestToConfigurationConverter<T> configurationConverter;
+
+  @Inject
+  public void setConfigurationConverter(
+      final ProxyRepositoryApiRequestToConfigurationConverter<T> configurationConverter)
+  {
+    this.configurationConverter = configurationConverter;
+  }
+
+  @Override
+  public Configuration adapt(final T request) {
+    return configurationConverter.convert(request);
+  }
+
   @GET
   @Path("/{repositoryName}")
   @ApiOperation(value = "Get repository", response = SimpleApiProxyRepository.class)

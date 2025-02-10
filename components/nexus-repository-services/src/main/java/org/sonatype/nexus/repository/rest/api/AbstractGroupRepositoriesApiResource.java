@@ -27,7 +27,9 @@ import javax.ws.rs.core.Response;
 
 import org.sonatype.nexus.common.app.ApplicationVersion;
 import org.sonatype.nexus.repository.Repository;
+import org.sonatype.nexus.repository.config.Configuration;
 import org.sonatype.nexus.repository.group.GroupHandler;
+import org.sonatype.nexus.repository.rest.GroupRepositoryApiRequestToConfigurationConverter;
 import org.sonatype.nexus.repository.rest.api.model.AbstractApiRepository;
 import org.sonatype.nexus.repository.rest.api.model.GroupAttributes;
 import org.sonatype.nexus.repository.rest.api.model.GroupDeployAttributes;
@@ -56,6 +58,8 @@ public abstract class AbstractGroupRepositoriesApiResource<T extends GroupReposi
 
   private ApplicationVersion applicationVersion;
 
+  protected GroupRepositoryApiRequestToConfigurationConverter<T> configurationConverter;
+
   @Inject
   public void setConstraintViolationFactory(final ConstraintViolationFactory constraintViolationFactory) {
     this.constraintViolationFactory = checkNotNull(constraintViolationFactory);
@@ -64,6 +68,18 @@ public abstract class AbstractGroupRepositoriesApiResource<T extends GroupReposi
   @Inject
   public void setApplicationVersion(final ApplicationVersion applicationVersion) {
     this.applicationVersion = applicationVersion;
+  }
+
+  @Inject
+  public void setConfigurationConverter(
+      final GroupRepositoryApiRequestToConfigurationConverter<T> configurationConverter)
+  {
+    this.configurationConverter = configurationConverter;
+  }
+
+  @Override
+  public Configuration adapt(final T request) {
+    return configurationConverter.convert(request);
   }
 
   @POST

@@ -75,8 +75,6 @@ public abstract class AbstractRepositoriesApiResource<T extends AbstractReposito
 
   protected BlobStoreManager blobStoreManager;
 
-  private AbstractRepositoryApiRequestToConfigurationConverter<T> configurationAdapter;
-
   private Map<String, ApiRepositoryAdapter> convertersByFormat;
 
   private ApiRepositoryAdapter defaultAdapter;
@@ -106,13 +104,6 @@ public abstract class AbstractRepositoriesApiResource<T extends AbstractReposito
   }
 
   @Inject
-  public void setConfigurationAdapter(
-      final AbstractRepositoryApiRequestToConfigurationConverter<T> configurationAdapter)
-  {
-    this.configurationAdapter = checkNotNull(configurationAdapter);
-  }
-
-  @Inject
   public void setConvertersByFormat(final Map<String, ApiRepositoryAdapter> convertersByFormat) {
     this.convertersByFormat = checkNotNull(convertersByFormat);
   }
@@ -127,15 +118,23 @@ public abstract class AbstractRepositoriesApiResource<T extends AbstractReposito
     this.recipesByFormat = checkNotNull(recipesByFormat);
   }
 
+  /**
+   * Adapts the request to a configuration object.
+   * 
+   * @param request
+   * @return the request as a configuration object.
+   */
+  public abstract Configuration adapt(final T request);
+
   @POST
   @RequiresAuthentication
   @Validate
   public Response createRepository(@NotNull @Valid final T request) {
     verifyAPIEnabled(request.getFormat());
     try {
-      Configuration configuration = configurationAdapter.convert(request);
+      Configuration configuration = adapt(request);
       validateRequest(configuration, configuration.getRepositoryName());
-      authorizingRepositoryManager.create(configurationAdapter.convert(request));
+      authorizingRepositoryManager.create(configuration);
       return Response.status(Status.CREATED).build();
     }
     catch (AuthorizationException | AuthenticationException | ConstraintViolationException e) {
@@ -162,7 +161,7 @@ public abstract class AbstractRepositoriesApiResource<T extends AbstractReposito
       @PathParam("repositoryName") final String repositoryName)
   {
     try {
-      Configuration newConfiguration = configurationAdapter.convert(request);
+      Configuration newConfiguration = adapt(request);
       validateRequest(newConfiguration, repositoryName);
       boolean updated = authorizingRepositoryManager.update(newConfiguration);
 
@@ -259,4 +258,5 @@ public abstract class AbstractRepositoriesApiResource<T extends AbstractReposito
       throw new ValidationErrorsException("This format is not currently enabled");
     }
   }
+
 }

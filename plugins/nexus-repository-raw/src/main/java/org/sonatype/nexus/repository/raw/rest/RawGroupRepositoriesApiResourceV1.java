@@ -12,6 +12,7 @@
  */
 package org.sonatype.nexus.repository.raw.rest;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.Path;
@@ -30,4 +31,11 @@ public class RawGroupRepositoriesApiResourceV1
     extends RawGroupRepositoriesApiResource
 {
   static final String RESOURCE_URI = RepositoriesApiResourceV1.RESOURCE_URI + "/raw/group";
+
+  @Inject
+  public void setConfigurationConverter(
+      final RawGroupRepositoryApiRequestToConfigurationConverter configurationConverter)
+  {
+    super.setConfigurationConverter(configurationConverter);
+  }
 }

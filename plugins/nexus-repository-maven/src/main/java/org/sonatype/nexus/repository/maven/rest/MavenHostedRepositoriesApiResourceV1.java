@@ -12,6 +12,7 @@
  */
 package org.sonatype.nexus.repository.maven.rest;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.Path;
@@ -30,4 +31,11 @@ public class MavenHostedRepositoriesApiResourceV1
     extends MavenHostedRepositoriesApiResource
 {
   static final String RESOURCE_URI = RepositoriesApiResourceV1.RESOURCE_URI + "/maven/hosted";
+
+  @Inject
+  public void setConfigurationConverter(
+      final MavenHostedRepositoryApiRequestToConfigurationConverter configurationConverter)
+  {
+    super.setConfigurationConverter(configurationConverter);
+  }
 }

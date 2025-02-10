@@ -12,6 +12,7 @@
  */
 package org.sonatype.nexus.repository.apt.rest;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.Path;
@@ -26,7 +27,7 @@ import static org.sonatype.nexus.repository.apt.rest.AptProxyRepositoriesApiReso
 /**
  * @since 3.26
  * @deprecated the 'beta' prefix is being phased out, prefer starting new APIs with {@link APIConstants#V1_API_PREFIX}
- * instead. Support backward compatibility.
+ *             instead. Support backward compatibility.
  */
 @Api(hidden = true)
 @Named
@@ -37,4 +38,11 @@ public class AptProxyRepositoriesApiResourceBeta
     extends AptProxyRepositoriesApiResource
 {
   static final String RESOURCE_URI = RepositoriesApiResourceBeta.RESOURCE_URI + "/apt/proxy";
+
+  @Inject
+  public void setConfigurationConverter(
+      final AptProxyRepositoryApiRequestToConfigurationConverter configurationConverter)
+  {
+    super.setConfigurationConverter(configurationConverter);
+  }
 }

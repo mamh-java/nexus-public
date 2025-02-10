@@ -12,6 +12,7 @@
  */
 package org.sonatype.nexus.repository.raw.rest;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.Path;
@@ -30,4 +31,11 @@ public class RawProxyRepositoriesApiResourceV1
     extends RawProxyRepositoriesApiResource
 {
   static final String RESOURCE_URI = RepositoriesApiResourceV1.RESOURCE_URI + "/raw/proxy";
+
+  @Inject
+  public void setConfigurationConverter(
+      final RawProxyRepositoryApiRequestToConfigurationConverter configurationConverter)
+  {
+    super.setConfigurationConverter(configurationConverter);
+  }
 }

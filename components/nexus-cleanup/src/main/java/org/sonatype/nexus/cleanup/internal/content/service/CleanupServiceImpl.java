@@ -82,13 +82,14 @@ public class CleanupServiceImpl
   private final CleanupFeatureCheck cleanupFeatureCheck;
 
   @Inject
-  public CleanupServiceImpl(final RepositoryManager repositoryManager,
-                            final CleanupPolicyStorage cleanupPolicyStorage,
-                            final CleanupMethod cleanupMethod,
-                            final GroupType groupType,
-                            @Named("${nexus.cleanup.retries:-3}") final int cleanupRetryLimit,
-                            final CleanupBrowseServiceFactory browseServiceFactory,
-                            @Nullable final CleanupFeatureCheck cleanupFeatureCheck)
+  public CleanupServiceImpl(
+      final RepositoryManager repositoryManager,
+      final CleanupPolicyStorage cleanupPolicyStorage,
+      final CleanupMethod cleanupMethod,
+      final GroupType groupType,
+      @Named("${nexus.cleanup.retries:-3}") final int cleanupRetryLimit,
+      final CleanupBrowseServiceFactory browseServiceFactory,
+      @Nullable final CleanupFeatureCheck cleanupFeatureCheck)
   {
     this.repositoryManager = checkNotNull(repositoryManager);
     this.cleanupMethod = checkNotNull(cleanupMethod);
@@ -120,57 +121,66 @@ public class CleanupServiceImpl
     return deleted.get();
   }
 
-  protected Long deleteByPolicy(final Repository repository,
-                                final CleanupPolicy policy,
-                                final BooleanSupplier cancelledCheck,
-                                CleanupComponentBrowse browseService)
+  protected Long deleteByPolicy(
+      final Repository repository,
+      final CleanupPolicy policy,
+      final BooleanSupplier cancelledCheck,
+      final CleanupComponentBrowse browseService)
   {
     log.info("Deleting components and assets in repository {} using policy {}", repository.getName(), policy.getName());
 
     DeletionProgress deletionProgress = new DeletionProgress(cleanupRetryLimit);
 
     // Skip the policy if it somehow has exclusion criteria but exclusion (retain) is not supported by the format.
-    if (hasExclusionCriteria(policy.getCriteria()) &&
-            (cleanupFeatureCheck==null || !cleanupFeatureCheck.isRetainSupported(repository.getFormat().getValue()))) {
-      log.warn("Skipping policy {} in repository {} since exclusion criteria is not currently supported.",
-          repository.getName(), policy.getName());
-
+    if (shouldSkip(repository, policy)) {
       return 0L;
     }
 
-    if (!policy.getCriteria().isEmpty()) {
-      do {
-        try {
-          Stream<FluentComponent> componentsToDelete = browseService.browse(policy, repository);
-          DeletionProgress currentProgress = cleanupMethod.run(repository, componentsToDelete, cancelledCheck);
-          deletionProgress.update(currentProgress);
-        }
-        catch (Exception e) {
-          deletionProgress.setAttempts(deletionProgress.getAttempts() + 1);
-          deletionProgress.setFailed(true);
-          if (ExceptionUtils.getRootCause(e) instanceof SearchContextMissingException) {
-            log.warn("Search scroll timed out, continuing with new scrollId.", log.isDebugEnabled() ? e : null);
-          }
-          else {
-            log.error("Failed to delete components.", e);
-          }
-        }
-      } while (!deletionProgress.isFinished());
-
-      if (deletionProgress.isFailed()) {
-        log.warn("Deletion attempts exceeded for repository {}", repository.getName());
-      }
-      return deletionProgress.getComponentCount();
-    }
-    else {
+    if (policy.getCriteria().isEmpty()) {
       log.info("Policy {} has no criteria and will therefore be ignored (i.e. no components will be deleted)",
           policy.getName());
       return 0L;
     }
+
+    do {
+      try {
+        Stream<FluentComponent> componentsToDelete = browseService.browse(policy, repository);
+        DeletionProgress currentProgress = cleanupMethod.run(repository, componentsToDelete, cancelledCheck);
+        deletionProgress.update(currentProgress);
+      }
+      catch (Exception e) {
+        deletionProgress.setAttempts(deletionProgress.getAttempts() + 1);
+        deletionProgress.setFailed(true);
+        logException(e);
+      }
+    }
+    while (!deletionProgress.isFinished());
+
+    if (deletionProgress.isFailed()) {
+      log.warn("Deletion attempts exceeded for repository {}", repository.getName());
+    }
+    return deletionProgress.getComponentCount();
   }
 
-  private boolean hasExclusionCriteria(final Map<String, String> criteria) {
-    return criteria.containsKey(RETAIN_KEY) || criteria.containsKey(RETAIN_SORT_BY_KEY);
+  private void logException(final Exception e) {
+    if (ExceptionUtils.getRootCause(e) instanceof SearchContextMissingException) {
+      log.warn("Search scroll timed out, continuing with new scrollId.", log.isDebugEnabled() ? e : null);
+    }
+    else {
+      log.error("Failed to delete components.", e);
+    }
+  }
+
+  private boolean shouldSkip(final Repository repository, final CleanupPolicy policy) {
+    // Check for exclusion criteria and whether it is supported
+    Map<String, String> criteria = policy.getCriteria();
+    if ((criteria.containsKey(RETAIN_KEY) || criteria.containsKey(RETAIN_SORT_BY_KEY))
+        && (cleanupFeatureCheck == null || !cleanupFeatureCheck.isRetainSupported(repository.getFormat().getValue()))) {
+      log.warn("Skipping policy {} in repository {} since exclusion criteria is not currently supported.",
+          repository.getName(), policy.getName());
+      return true;
+    }
+    return false;
   }
 
   @SuppressWarnings("unchecked")
@@ -179,7 +189,8 @@ public class CleanupServiceImpl
 
     Collection<String> policyNames = Optional.ofNullable(repository.getConfiguration().getAttributes())
         .map(attributes -> attributes.get(CLEANUP_ATTRIBUTES_KEY))
-        .map(cleanupAttr -> (Collection<String>) cleanupAttr.get(CLEANUP_NAME_KEY)).orElseGet(Collections::emptySet);
+        .map(cleanupAttr -> (Collection<String>) cleanupAttr.get(CLEANUP_NAME_KEY))
+        .orElseGet(Collections::emptySet);
 
     policyNames.stream().filter(Predicates.notNull()).forEach(policyName -> {
       CleanupPolicy cleanupPolicy = cleanupPolicyStorage.get(policyName);

@@ -963,34 +963,33 @@ public class FileBlobStore
   void doCompactWithDeletedBlobIndex(@Nullable final BlobStoreUsageChecker inUseChecker) throws IOException {
     log.info("Begin deleted blobs processing");
     // only process each blob once (in-use blobs may be re-added to the index)
-    ProgressLogIntervalHelper progressLogger = new ProgressLogIntervalHelper(log, INTERVAL_IN_SECONDS);
-    for (int counter = 0, numBlobs = blobDeletionIndex.size(); counter < numBlobs; counter++) {
-      log.debug("Processing record {} of {}", counter + 1, numBlobs);
-      BlobId nextAvailableRecord = blobDeletionIndex.getNextAvailableRecord();
-      if (Objects.isNull(nextAvailableRecord)) {
-        log.info("Deleted blobs not found");
-        return;
-      }
-      FileBlob blob = liveBlobs.getIfPresent(nextAvailableRecord);
-      log.debug("Next available record for compaction: {}", nextAvailableRecord);
-      if (Objects.isNull(blob) || blob.isStale()) {
-        log.debug("Compacting...");
-        maybeCompactBlob(inUseChecker, nextAvailableRecord);
-        blobDeletionIndex.deleteRecord(nextAvailableRecord);
-      }
-      else {
-        log.debug("Still in use to deferring");
-        // still in use, so move it to end of the queue
-        blobDeletionIndex.deleteRecord(nextAvailableRecord);
-        blobDeletionIndex.createRecord(nextAvailableRecord);
-      }
+    try (ProgressLogIntervalHelper progressLogger = new ProgressLogIntervalHelper(log, INTERVAL_IN_SECONDS)) {
+      for (int counter = 0, numBlobs = blobDeletionIndex.size(); counter < numBlobs; counter++) {
+        log.debug("Processing record {} of {}", counter + 1, numBlobs);
+        BlobId nextAvailableRecord = blobDeletionIndex.getNextAvailableRecord();
+        if (Objects.isNull(nextAvailableRecord)) {
+          log.info("Deleted blobs not found");
+          return;
+        }
+        FileBlob blob = liveBlobs.getIfPresent(nextAvailableRecord);
+        log.debug("Next available record for compaction: {}", nextAvailableRecord);
+        if (Objects.isNull(blob) || blob.isStale()) {
+          log.debug("Compacting...");
+          maybeCompactBlob(inUseChecker, nextAvailableRecord);
+          blobDeletionIndex.deleteRecord(nextAvailableRecord);
+        }
+        else {
+          log.debug("Still in use to deferring");
+          // still in use, so move it to end of the queue
+          blobDeletionIndex.deleteRecord(nextAvailableRecord);
+          blobDeletionIndex.createRecord(nextAvailableRecord);
+        }
 
-      progressLogger.info("Elapsed time: {}, processed: {}/{}", progressLogger.getElapsed(),
-          counter + 1, numBlobs);
+        progressLogger.info("Elapsed time: {}, processed: {}/{}", progressLogger.getElapsed(), counter + 1, numBlobs);
+      }
+      // once done removing stuff, clean any empty directories left around in the directpath area
+      pruneEmptyDirectories(progressLogger, contentDir.resolve(DIRECT_PATH_ROOT));
     }
-    // once done removing stuff, clean any empty directories left around in the directpath area
-    pruneEmptyDirectories(progressLogger, contentDir.resolve(DIRECT_PATH_ROOT));
-    progressLogger.flush();
   }
 
   private void pruneEmptyDirectories(final ProgressLogIntervalHelper progressLogger, final Path directPathDir) {
@@ -1018,52 +1017,51 @@ public class FileBlobStore
     // performed
     blobDeletionIndex.deleteAllRecords();
 
-    ProgressLogIntervalHelper progressLogger = new ProgressLogIntervalHelper(log, INTERVAL_IN_SECONDS);
-    AtomicInteger count = new AtomicInteger(0);
+    try (ProgressLogIntervalHelper progressLogger = new ProgressLogIntervalHelper(log, INTERVAL_IN_SECONDS)) {
+      AtomicInteger count = new AtomicInteger(0);
 
-    // rather than using the blobId stream here, need to use a different means of walking the file tree, as
-    // we are deleting items on the way through, and apparently on *nix systems, deleting files that you are about to
-    // walk over causes a FileNotFoundException to be thrown and the walking stops. Overridding the visitFileFailed
-    // method allows us to get past that
-    Files.walkFileTree(contentDir, EnumSet.of(FOLLOW_LINKS), Integer.MAX_VALUE, new SimpleFileVisitor<Path>()
-    {
-      @Override
-      public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
-        try {
-          checkCancellation();
-        }
-        catch (TaskInterruptedException e) {
-          log.info("Cancel request received, terminating compact process.");
-          return FileVisitResult.TERMINATE;
-        }
+      // rather than using the blobId stream here, need to use a different means of walking the file tree, as
+      // we are deleting items on the way through, and apparently on *nix systems, deleting files that you are about to
+      // walk over causes a FileNotFoundException to be thrown and the walking stops. Overridding the visitFileFailed
+      // method allows us to get past that
+      Files.walkFileTree(contentDir, EnumSet.of(FOLLOW_LINKS), Integer.MAX_VALUE, new SimpleFileVisitor<Path>()
+      {
+        @Override
+        public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
+          try {
+            checkCancellation();
+          }
+          catch (TaskInterruptedException e) {
+            log.info("Cancel request received, terminating compact process.");
+            return FileVisitResult.TERMINATE;
+          }
 
-        if (!isNonTemporaryAttributeFile(file)) {
+          if (!isNonTemporaryAttributeFile(file)) {
+            return FileVisitResult.CONTINUE;
+          }
+
+          BlobId blobId = getBlobIdFromAttributeFilePath(new FileAttributesLocation(file));
+          if (blobId != null) {
+            FileBlobAttributes attributes = getFileBlobAttributes(blobId);
+
+            if (attributes != null && attributes.isDeleted()) {
+              compactByAttributes(attributes, inUseChecker, count, progressLogger);
+            }
+          }
+
           return FileVisitResult.CONTINUE;
         }
 
-        BlobId blobId = getBlobIdFromAttributeFilePath(new FileAttributesLocation(file));
-        if (blobId != null) {
-          FileBlobAttributes attributes = getFileBlobAttributes(blobId);
-
-          if (attributes != null && attributes.isDeleted()) {
-            compactByAttributes(attributes, inUseChecker, count, progressLogger);
-          }
+        @Override
+        public FileVisitResult visitFileFailed(final Path file, final IOException exc) throws IOException {
+          log.debug("Visit file failed {}, continuing to next.", file);
+          return FileVisitResult.CONTINUE;
         }
+      });
 
-        return FileVisitResult.CONTINUE;
-      }
-
-      @Override
-      public FileVisitResult visitFileFailed(final Path file, final IOException exc) throws IOException {
-        log.debug("Visit file failed {}, continuing to next.", file);
-        return FileVisitResult.CONTINUE;
-      }
-    });
-
-    // Do this check one final time, to preserve the functionality of throwing an exception when interrupted
-    checkCancellation();
-
-    progressLogger.flush();
+      // Do this check one final time, to preserve the functionality of throwing an exception when interrupted
+      checkCancellation();
+    }
   }
 
   private void compactByAttributes(

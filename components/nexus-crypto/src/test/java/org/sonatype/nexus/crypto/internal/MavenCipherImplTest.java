@@ -33,25 +33,25 @@ import static org.hamcrest.Matchers.notNullValue;
 public class MavenCipherImplTest
     extends TestSupport
 {
-  private static final String passPhrase = "foofoo";
+  private final String passPhrase = "foofoo";
 
-  private static final String plaintext = "my testing phrase";
+  private final String plaintext = "my testing phrase";
 
-  private static final String plaintext_mixed = "{" + plaintext + "}";
+  private final String plaintext_mixed = "{" + plaintext + "}";
 
-  private static final String plaintext_spec_char_xtrabracket = plaintext_mixed + "}";
+  private final String plaintext_spec_char_xtrabracket = plaintext_mixed + "}";
 
-  private static final String plaintext_random = "{specialpass word ][4^$$}}";
+  private final String plaintext_random = "{specialpass word ][4^$$}}";
 
-  private static final String plaintext_special_char = "{.}-";
+  private final String plaintext_special_char = "{.}-";
 
-  private static final String plaintext_one_bracket = "{CFUju8n8eKQHj8u0HI9uQMRm";
+  private final String plaintext_one_bracket = "{CFUju8n8eKQHj8u0HI9uQMRm";
 
-  private static final String encrypted = "{5FjvnZvhNDMHHnxXoPu1a0WcgZzaArKRCnGBnsA83R7rYQHKGFrprtAM4Qyr4diV}";
+  private final String encrypted = "{5FjvnZvhNDMHHnxXoPu1a0WcgZzaArKRCnGBnsA83R7rYQHKGFrprtAM4Qyr4diV}";
 
-  private static final String plaintext_mixed_encrypted = "{b9Xrnp7OFSUHmJ09eD5CA+dpbHnAHepZNJOVeR7SPiDTZ0kHFSvQLpiQolqJuHWO}";
+  private final String plaintext_mixed_encrypted = "{b9Xrnp7OFSUHmJ09eD5CA+dpbHnAHepZNJOVeR7SPiDTZ0kHFSvQLpiQolqJuHWO}";
 
-  private static final String plaintext_special_encrypted = "{ggrGm3B7H4QH0cJbjfEle2b5b3Lp7WvFEBUadBSK764=}";
+  private final String plaintext_special_encrypted = "{ggrGm3B7H4QH0cJbjfEle2b5b3Lp7WvFEBUadBSK764=}";
 
   private MavenCipherImpl testSubject;
 
@@ -125,7 +125,7 @@ public class MavenCipherImplTest
     assertThat(minimalCase, equalTo(plaintext_special_char));
   }
 
-  @Test (expected = IllegalArgumentException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void decrypt_NonEncrypted_with_Brackets() throws Exception {
     testSubject.decrypt(plaintext_mixed, passPhrase);
   }

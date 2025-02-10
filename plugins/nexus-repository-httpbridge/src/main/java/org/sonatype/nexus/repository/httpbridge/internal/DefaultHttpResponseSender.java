@@ -15,7 +15,6 @@ package org.sonatype.nexus.repository.httpbridge.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
@@ -43,15 +42,15 @@ public class DefaultHttpResponseSender
     implements HttpResponseSender
 {
   @Override
-  public void send(@Nullable final Request request, final Response response, final HttpServletResponse httpResponse)
-      throws ServletException, IOException
+  public void send(
+      @Nullable final Request request,
+      final Response response,
+      final HttpServletResponse httpResponse) throws ServletException, IOException
   {
     log.debug("Sending response: {}", response);
 
     // add response headers
-    for (Map.Entry<String, String> header : response.getHeaders()) {
-      httpResponse.addHeader(header.getKey(), header.getValue());
-    }
+    response.getHeaders().forEach(header -> httpResponse.addHeader(header.getKey(), header.getValue()));
 
     // add status followed by payload if we have one
     Status status = response.getStatus();
@@ -63,25 +62,23 @@ public class DefaultHttpResponseSender
       else {
         httpResponse.setStatus(status.getCode(), statusMessage);
       }
-      if (status.isSuccessful() || payload != null) {
-        if (payload != null) {
-          log.trace("Attaching payload: {}", payload);
+      if (payload != null) {
+        log.trace("Attaching payload: {}", payload);
 
-          if (payload.getContentType() != null) {
-            httpResponse.setContentType(payload.getContentType());
-          }
-          if (payload.getSize() != Payload.UNKNOWN_SIZE) {
-            httpResponse.setContentLengthLong(payload.getSize());
-          }
+        if (payload.getContentType() != null) {
+          httpResponse.setContentType(payload.getContentType());
+        }
+        if (payload.getSize() != Payload.UNKNOWN_SIZE) {
+          httpResponse.setContentLengthLong(payload.getSize());
+        }
 
-          if (request != null && !HttpMethods.HEAD.equals(request.getAction())) {
-            try (InputStream input = payload.openInputStream(); OutputStream output = httpResponse.getOutputStream()) {
-              payload.copy(input, output);
-            }
+        if (request != null && !HttpMethods.HEAD.equals(request.getAction())) {
+          try (InputStream input = payload.openInputStream(); OutputStream output = httpResponse.getOutputStream()) {
+            payload.copy(input, output);
           }
         }
       }
-      else {
+      else if (!status.isSuccessful()) {
         httpResponse.sendError(status.getCode(), statusMessage);
       }
     }

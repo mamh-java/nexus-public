@@ -13,12 +13,11 @@
 package org.sonatype.nexus.spring.application.classpath.finder;
 
 import java.util.List;
-import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.spring.application.classpath.components.JettyConfigurationComponentSet;
+import org.sonatype.nexus.spring.application.classpath.components.JettyConfigurationComponentList;
 
 import org.eclipse.sisu.space.ClassFinder;
 
@@ -30,11 +29,11 @@ public class JettyConfigurationIndexClassFinder
     extends AbstractIndexClassFinder
     implements ClassFinder
 {
-  private final JettyConfigurationComponentSet jettyConfigurationComponentSet;
+  private final JettyConfigurationComponentList jettyConfigurationComponentSet;
 
   @Inject
   public JettyConfigurationIndexClassFinder(
-      final JettyConfigurationComponentSet jettyConfigurationComponentSet,
+      final JettyConfigurationComponentList jettyConfigurationComponentSet,
       final FeatureFlagEnabledClassFinderFilter featureFlagEnabledClassFinderFilter)
   {
     super(List.of(featureFlagEnabledClassFinderFilter));
@@ -42,7 +41,7 @@ public class JettyConfigurationIndexClassFinder
   }
 
   @Override
-  protected Set<String> getClassnames() {
+  protected List<String> getClassnames() {
     return jettyConfigurationComponentSet.getComponents();
   }
 }

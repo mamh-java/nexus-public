@@ -16,7 +16,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.sisu.space.ClassFinder;
 import org.eclipse.sisu.space.ClassSpace;
@@ -39,7 +38,7 @@ public abstract class AbstractIndexClassFinder
 
   @Override
   public Enumeration<URL> findClasses(final ClassSpace space) {
-    Set<String> lines = getClassnames();
+    List<String> lines = getClassnames();
     LOG.debug("Found {} entries in index cache", lines.size());
     List<URL> urls = new ArrayList<>();
     for (String line : lines) {
@@ -62,7 +61,7 @@ public abstract class AbstractIndexClassFinder
     return asEnumeration(urls.iterator());
   }
 
-  protected abstract Set<String> getClassnames();
+  protected abstract List<String> getClassnames();
 
   protected String postProcessLine(final String line) {
     // no-op by default

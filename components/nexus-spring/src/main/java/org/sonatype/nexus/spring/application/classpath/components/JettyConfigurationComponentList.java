@@ -17,7 +17,7 @@ import javax.inject.Singleton;
 
 @Named
 @Singleton
-public class MybatisDAOComponentSet
-    extends AbstractComponentSet<String>
+public class JettyConfigurationComponentList
+    extends AbstractComponentList<String>
 {
 }

@@ -13,7 +13,7 @@
 package org.sonatype.nexus.spring.application.classpath.finder;
 
 import java.io.IOException;
-import java.util.Set;
+import java.util.List;
 
 import org.sonatype.nexus.spring.application.NexusProperties;
 import org.sonatype.nexus.spring.application.PropertyMap;
@@ -34,7 +34,7 @@ public class FeatureFlagEnabledClassFinderFilterTest
   @BeforeEach
   public void setup() {
     featureFlagComponentMap = mock(FeatureFlagComponentMap.class);
-    when(featureFlagComponentMap.getComponents()).thenReturn(Set.of(
+    when(featureFlagComponentMap.getComponents()).thenReturn(List.of(
         "org.sonatype.nexus.test.MyFakeClassName/nexus.test/false/false"));
   }
 

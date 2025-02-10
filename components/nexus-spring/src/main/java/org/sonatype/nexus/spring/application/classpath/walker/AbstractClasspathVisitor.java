@@ -15,12 +15,12 @@ package org.sonatype.nexus.spring.application.classpath.walker;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Set;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toList;
 
 public abstract class AbstractClasspathVisitor
     implements ClasspathVisitor
@@ -40,9 +40,9 @@ public abstract class AbstractClasspathVisitor
     return false;
   }
 
-  protected Set<String> toSimpleStringSet(final InputStream applicationJarInputStream) {
+  protected List<String> toSimpleStringList(final InputStream applicationJarInputStream) {
     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(applicationJarInputStream));
-    return bufferedReader.lines().collect(toSet());
+    return bufferedReader.lines().collect(toList());
   }
 
   protected abstract boolean applies(final String path);

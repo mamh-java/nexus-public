@@ -17,7 +17,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.spring.application.classpath.components.JettyConfigurationComponentSet;
+import org.sonatype.nexus.spring.application.classpath.components.JettyConfigurationComponentList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,10 +32,10 @@ public class JettyConfigurationClasspathVisitor
 {
   private static final Logger LOG = LoggerFactory.getLogger(JettyConfigurationClasspathVisitor.class);
 
-  private final JettyConfigurationComponentSet jettyConfigurationComponentSet;
+  private final JettyConfigurationComponentList jettyConfigurationComponentSet;
 
   @Inject
-  public JettyConfigurationClasspathVisitor(final JettyConfigurationComponentSet jettyConfigurationComponentSet) {
+  public JettyConfigurationClasspathVisitor(final JettyConfigurationComponentList jettyConfigurationComponentSet) {
     this.jettyConfigurationComponentSet = checkNotNull(jettyConfigurationComponentSet);
   }
 

@@ -12,35 +12,35 @@
  */
 package org.sonatype.nexus.spring.application.classpath.components;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toList;
 
 public abstract class AbstractComponentMap<T>
     implements ComponentMap<T>
 {
-  private final Map<String, Set<T>> componentMap = new HashMap<>();
+  private final Map<String, List<T>> componentMap = new LinkedHashMap<>();
 
   @Override
   public void addComponent(final String module, final T component) {
-    componentMap.computeIfAbsent(module, k -> new HashSet<>()).add(component);
+    componentMap.computeIfAbsent(module, k -> new ArrayList<>()).add(component);
   }
 
   @Override
-  public void addComponents(final String module, final Set<T> components) {
-    componentMap.computeIfAbsent(module, k -> new HashSet<>()).addAll(components);
+  public void addComponents(final String module, final List<T> components) {
+    componentMap.computeIfAbsent(module, k -> new ArrayList<>()).addAll(components);
   }
 
   @Override
-  public Set<T> getComponents(final String module) {
+  public List<T> getComponents(final String module) {
     return componentMap.get(module);
   }
 
   @Override
-  public Set<T> getComponents() {
-    return componentMap.values().stream().flatMap(Set::stream).collect(toSet());
+  public List<T> getComponents() {
+    return componentMap.values().stream().flatMap(List::stream).collect(toList());
   }
 }

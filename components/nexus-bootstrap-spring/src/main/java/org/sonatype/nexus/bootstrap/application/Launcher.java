@@ -28,8 +28,8 @@ import org.sonatype.nexus.bootstrap.jetty.JettyServer;
 import org.sonatype.nexus.spring.application.NexusProperties;
 import org.sonatype.nexus.spring.application.PropertyMap;
 import org.sonatype.nexus.spring.application.ShutdownHelper;
-import org.sonatype.nexus.spring.application.classpath.components.JettyConfigurationComponentSet;
-import org.sonatype.nexus.spring.application.classpath.components.MybatisDAOComponentSet;
+import org.sonatype.nexus.spring.application.classpath.components.JettyConfigurationComponentList;
+import org.sonatype.nexus.spring.application.classpath.components.MybatisDAOComponentList;
 import org.sonatype.nexus.spring.application.classpath.components.SisuComponentMap;
 import org.sonatype.nexus.spring.application.classpath.finder.FeatureFlagEnabledClassFinderFilter;
 import org.sonatype.nexus.spring.application.classpath.walker.ClasspathWalker;
@@ -58,7 +58,7 @@ public class Launcher
 
   private final JettyServer server;
 
-  private final JettyConfigurationComponentSet jettyConfigurationComponentSet;
+  private final JettyConfigurationComponentList jettyConfigurationComponentList;
 
   @Inject
   public Launcher(
@@ -66,8 +66,8 @@ public class Launcher
       final ClasspathWalker classpathWalker,
       final FeatureFlagEnabledClassFinderFilter featureFlagEnabledClassFinderFilter,
       final SisuComponentMap sisuComponentMap,
-      final MybatisDAOComponentSet mybatisDAOComponentSet,
-      final JettyConfigurationComponentSet jettyConfigurationComponentSet) throws Exception
+      final MybatisDAOComponentList mybatisDAOComponentList,
+      final JettyConfigurationComponentList jettyConfigurationComponentList) throws Exception
   {
     configureLogging();
 
@@ -110,12 +110,12 @@ public class Launcher
     Map<String, Object> objectsForContext = new HashMap<>();
     objectsForContext.put("nexusProperties", nexusProperties);
     objectsForContext.put("sisuComponentMap", sisuComponentMap);
-    objectsForContext.put("mybatisDAOComponentSet", mybatisDAOComponentSet);
-    objectsForContext.put("jettyConfigurationComponentSet", jettyConfigurationComponentSet);
+    objectsForContext.put("mybatisDAOComponentList", mybatisDAOComponentList);
+    objectsForContext.put("jettyConfigurationComponentList", jettyConfigurationComponentList);
     objectsForContext.put("featureFlagEnabledClassFinderFilter", featureFlagEnabledClassFinderFilter);
 
     this.server = new JettyServer(cl, nexusPropertiesMap, args.split(","), objectsForContext);
-    this.jettyConfigurationComponentSet = jettyConfigurationComponentSet;
+    this.jettyConfigurationComponentList = jettyConfigurationComponentList;
   }
 
   public JettyServer getServer() {

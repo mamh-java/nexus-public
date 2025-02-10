@@ -23,7 +23,7 @@ import javax.servlet.ServletContext;
 import org.sonatype.nexus.common.log.LogManager;
 import org.sonatype.nexus.extender.sisu.modules.SisuAggregatedIndexModule;
 import org.sonatype.nexus.spring.application.NexusProperties;
-import org.sonatype.nexus.spring.application.classpath.components.MybatisDAOComponentSet;
+import org.sonatype.nexus.spring.application.classpath.components.MybatisDAOComponentList;
 import org.sonatype.nexus.spring.application.classpath.components.SisuComponentMap;
 import org.sonatype.nexus.spring.application.classpath.finder.FeatureFlagEnabledClassFinderFilter;
 import org.sonatype.nexus.spring.application.classpath.finder.NexusMybatisDAOIndexClassFinder;
@@ -61,7 +61,7 @@ public class NexusExtenderModule
 
   private final SisuComponentMap sisuComponentMap;
 
-  private final MybatisDAOComponentSet mybatisDAOComponentSet;
+  private final MybatisDAOComponentList mybatisDAOComponentList;
 
   private final FeatureFlagEnabledClassFinderFilter featureFlagEnabledClassFinderFilter;
 
@@ -73,7 +73,7 @@ public class NexusExtenderModule
     this.space = new URLClassSpace(getClass().getClassLoader());
     this.nexusProperties = (NexusProperties) servletContext.getAttribute("nexusProperties");
     this.sisuComponentMap = (SisuComponentMap) servletContext.getAttribute("sisuComponentMap");
-    this.mybatisDAOComponentSet = (MybatisDAOComponentSet) servletContext.getAttribute("mybatisDAOComponentSet");
+    this.mybatisDAOComponentList = (MybatisDAOComponentList) servletContext.getAttribute("mybatisDAOComponentList");
     this.featureFlagEnabledClassFinderFilter = (FeatureFlagEnabledClassFinderFilter) servletContext.getAttribute(
         "featureFlagEnabledClassFinderFilter");
     this.nexusServletContextModule = new NexusServletContextModule(servletContext, nexusProperties.get());
@@ -94,7 +94,7 @@ public class NexusExtenderModule
 
       modules.add(new DataAccessModule(
           new NexusMybatisDAOIndexClassFinder(
-              mybatisDAOComponentSet,
+              mybatisDAOComponentList,
               featureFlagEnabledClassFinderFilter),
           space));
       modules.add(new SisuAggregatedIndexModule(

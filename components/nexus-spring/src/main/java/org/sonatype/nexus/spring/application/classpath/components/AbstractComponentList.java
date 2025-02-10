@@ -12,13 +12,13 @@
  */
 package org.sonatype.nexus.spring.application.classpath.components;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-public abstract class AbstractComponentSet<T>
-    implements ComponentSet<T>
+public abstract class AbstractComponentList<T>
+    implements ComponentList<T>
 {
-  private final Set<T> components = new HashSet<>();
+  private final List<T> components = new ArrayList<>();
 
   @Override
   public void addComponent(final T component) {
@@ -26,7 +26,7 @@ public abstract class AbstractComponentSet<T>
   }
 
   @Override
-  public Set<T> getComponents() {
+  public List<T> getComponents() {
     return components;
   }
 }

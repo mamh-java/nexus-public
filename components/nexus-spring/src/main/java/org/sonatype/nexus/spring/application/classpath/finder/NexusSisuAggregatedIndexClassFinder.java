@@ -13,7 +13,6 @@
 package org.sonatype.nexus.spring.application.classpath.finder;
 
 import java.util.List;
-import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -47,7 +46,7 @@ public class NexusSisuAggregatedIndexClassFinder
   }
 
   @Override
-  protected Set<String> getClassnames() {
+  protected List<String> getClassnames() {
     return sisuComponentMap.getComponents();
   }
 }

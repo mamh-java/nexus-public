@@ -17,7 +17,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.spring.application.classpath.components.MybatisDAOComponentSet;
+import org.sonatype.nexus.spring.application.classpath.components.MybatisDAOComponentList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,11 +32,11 @@ public class MybatisDAOClasspathVisitor
 {
   private static final Logger LOG = LoggerFactory.getLogger(MybatisDAOClasspathVisitor.class);
 
-  private final MybatisDAOComponentSet mybatisDAOComponentSet;
+  private final MybatisDAOComponentList mybatisDAOComponentList;
 
   @Inject
-  public MybatisDAOClasspathVisitor(final MybatisDAOComponentSet mybatisDAOComponentSet) {
-    this.mybatisDAOComponentSet = checkNotNull(mybatisDAOComponentSet);
+  public MybatisDAOClasspathVisitor(final MybatisDAOComponentList mybatisDAOComponentList) {
+    this.mybatisDAOComponentList = checkNotNull(mybatisDAOComponentList);
   }
 
   @Override
@@ -50,7 +50,7 @@ public class MybatisDAOClasspathVisitor
       final String applicationJarPath,
       final InputStream applicationJarInputStream)
   {
-    mybatisDAOComponentSet.addComponent(path);
+    mybatisDAOComponentList.addComponent(path);
     LOG.debug("Adding DAO class to cache: {}", path);
   }
 

@@ -13,12 +13,11 @@
 package org.sonatype.nexus.spring.application.classpath.finder;
 
 import java.util.List;
-import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.spring.application.classpath.components.MybatisDAOComponentSet;
+import org.sonatype.nexus.spring.application.classpath.components.MybatisDAOComponentList;
 
 import org.eclipse.sisu.space.ClassFinder;
 
@@ -30,19 +29,19 @@ public class NexusMybatisDAOIndexClassFinder
     extends AbstractIndexClassFinder
     implements ClassFinder
 {
-  private final MybatisDAOComponentSet mybatisDAOComponentSet;
+  private final MybatisDAOComponentList mybatisDAOComponentList;
 
   @Inject
   public NexusMybatisDAOIndexClassFinder(
-      final MybatisDAOComponentSet mybatisDAOComponentSet,
+      final MybatisDAOComponentList mybatisDAOComponentList,
       final FeatureFlagEnabledClassFinderFilter featureFlagEnabledClassFinderFilter)
   {
     super(List.of(featureFlagEnabledClassFinderFilter));
-    this.mybatisDAOComponentSet = checkNotNull(mybatisDAOComponentSet);
+    this.mybatisDAOComponentList = checkNotNull(mybatisDAOComponentList);
   }
 
   @Override
-  protected Set<String> getClassnames() {
-    return mybatisDAOComponentSet.getComponents();
+  protected List<String> getClassnames() {
+    return mybatisDAOComponentList.getComponents();
   }
 }

@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -84,7 +83,7 @@ public class FeatureFlagEnabledClassFinderFilter
   }
 
   protected void parseFeatureFlags() {
-    Set<String> featureFlags = featureFlagComponentMap.getComponents();
+    List<String> featureFlags = featureFlagComponentMap.getComponents();
     for (String line : featureFlags) {
       initializeFeatureFlag(new FeatureFlagEntry(line));
     }

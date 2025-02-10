@@ -12,11 +12,12 @@
  */
 package org.sonatype.nexus.spring.application.classpath.components;
 
-import java.util.Set;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
-public interface ComponentSet<T>
+@Named
+@Singleton
+public class MybatisDAOComponentList
+    extends AbstractComponentList<String>
 {
-  void addComponent(T component);
-
-  Set<T> getComponents();
 }

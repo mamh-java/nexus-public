@@ -13,7 +13,7 @@
 package org.sonatype.nexus.spring.application.classpath.walker;
 
 import java.io.InputStream;
-import java.util.Set;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -51,7 +51,7 @@ public class SisuAggregatedIndexClasspathVisitor
       final String applicationJarPath,
       final InputStream applicationJarInputStream)
   {
-    Set<String> components = toSimpleStringSet(applicationJarInputStream);
+    List<String> components = toSimpleStringList(applicationJarInputStream);
     LOG.debug("Found indexed components: {}", components);
     sisuComponentMap.addComponents(applicationJarPath, components);
   }

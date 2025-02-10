@@ -12,12 +12,11 @@
  */
 package org.sonatype.nexus.spring.application.classpath.components;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
+import java.util.List;
 
-@Named
-@Singleton
-public class JettyConfigurationComponentSet
-    extends AbstractComponentSet<String>
+public interface ComponentList<T>
 {
+  void addComponent(T component);
+
+  List<T> getComponents();
 }

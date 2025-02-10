@@ -12,15 +12,15 @@
  */
 package org.sonatype.nexus.spring.application.classpath.components;
 
-import java.util.Set;
+import java.util.List;
 
 public interface ComponentMap<T>
 {
   void addComponent(final String module, final T component);
 
-  void addComponents(final String module, final Set<T> components);
+  void addComponents(final String module, final List<T> components);
 
-  Set<T> getComponents(final String module);
+  List<T> getComponents(final String module);
 
-  Set<T> getComponents();
+  List<T> getComponents();
 }

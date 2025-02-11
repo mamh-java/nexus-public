@@ -25,7 +25,6 @@ import LdapServers from './components/pages/admin/LdapServers/LdapServers';
 import Tasks from './components/pages/admin/Tasks/Tasks';
 import AnonymousSettings from './components/pages/admin/AnonymousSettings/AnonymousSettings';
 import BlobStores from './components/pages/admin/BlobStores/BlobStores';
-import InsightFrontend from './components/pages/admin/InsightFrontend/InsightFrontend';
 import LoggingConfiguration from './components/pages/admin/LoggingConfiguration/LoggingConfiguration';
 import Logs from "./components/pages/admin/Logs/Logs";
 import Repositories from './components/pages/admin/Repositories/Repositories';
@@ -397,24 +396,6 @@ window.plugins.push({
       iconCls: 'x-fa fa-door-closed',
       visibility: {
         permissions: [Permissions.SETTINGS.READ]
-      }
-    },
-    {
-      mode: 'admin',
-      path: '/Repository/InsightFrontend',
-      text: 'Log4j Visualizer',
-      description: 'Log4j Visualizer',
-      view: InsightFrontend,
-      iconCls: 'x-fa fa-binoculars',
-      visibility: {
-        requiresUser: true,
-        statesEnabled: [
-          {
-            key: 'vulnerabilityCapabilityState',
-            defaultValue: {enabled: false}
-          }
-        ],
-        permissions: [Permissions.ADMIN]
       }
     },
     {

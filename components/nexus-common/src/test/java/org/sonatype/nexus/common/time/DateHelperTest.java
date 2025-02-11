@@ -12,12 +12,8 @@
  */
 package org.sonatype.nexus.common.time;
 
-import java.text.ParseException;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -27,7 +23,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.sonatype.nexus.common.time.DateHelper.toDateTime;
 import static org.sonatype.nexus.common.time.DateHelper.toJavaDuration;
 import static org.sonatype.nexus.common.time.DateHelper.toJodaDuration;
-import static org.sonatype.nexus.common.time.DateHelper.toLocalDate;
 import static org.sonatype.nexus.common.time.DateHelper.toOffsetDateTime;
 
 public class DateHelperTest
@@ -58,14 +53,5 @@ public class DateHelperTest
     Duration javaDuration = Duration.ofHours(5);
     org.joda.time.Duration jodaDuration = org.joda.time.Duration.standardHours(5);
     assertThat(toJodaDuration(javaDuration), equalTo(jodaDuration));
-  }
-
-  @Test
-  public void toLocalDateTest() throws ParseException {
-    LocalDate javaLocalDate = LocalDate.of(2022, 6, 21);
-
-    Date javaDate = Date.from(javaLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-
-    assertThat(toLocalDate(javaDate), equalTo(javaLocalDate));
   }
 }

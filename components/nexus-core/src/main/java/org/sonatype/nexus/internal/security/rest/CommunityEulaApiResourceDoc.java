@@ -40,7 +40,7 @@ public interface CommunityEulaApiResourceDoc
   @ApiOperation("Set the Community Eula status.")
   @ApiResponses(value = {
       @ApiResponse(code = 204, message = "EULA status set successfully"),
-      @ApiResponse(code = 500, message = "Incorrect EULA disclaimer")
+      @ApiResponse(code = 500, message = "Incorrect EULA Status")
   })
   void setEulaAcceptedCE(
       @ApiParam(examples = @Example(value = {

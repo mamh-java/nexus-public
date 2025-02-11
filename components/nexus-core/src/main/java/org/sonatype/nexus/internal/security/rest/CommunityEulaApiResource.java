@@ -68,15 +68,26 @@ public class CommunityEulaApiResource
   @RequiresPermissions("nexus:*")
   @Consumes(MediaType.APPLICATION_JSON)
   public void setEulaAcceptedCE(EulaStatus eulaStatus) {
-    if (eulaStatus.hasExpectedDisclaimer()) {
+    boolean validDisclaimer = eulaStatus.hasExpectedDisclaimer();
+    boolean isAlreadyAccepted = getCommunityEulaStatus().isAccepted();
+    boolean isSettingFalse = !eulaStatus.isAccepted();
+
+    if (!validDisclaimer) {
+      throw new IllegalArgumentException("Invalid EULA disclaimer");
+    }
+    else if (isSettingFalse) {
+      throw new IllegalArgumentException("EULA must be accepted");
+    }
+    else if (isAlreadyAccepted) {
+      throw new IllegalArgumentException("EULA has already been accepted");
+    }
+
+    if (eulaStatus.hasExpectedDisclaimer() && eulaStatus.isAccepted()) {
       NexusKeyValue kv = new NexusKeyValue();
       kv.setKey(EULA_KEY);
       kv.setType(ValueType.OBJECT);
       kv.setValue(Map.of("accepted", eulaStatus.isAccepted()));
       globalKeyValueStore.setKey(kv);
-    }
-    else {
-      throw new IllegalArgumentException("Invalid EULA disclaimer");
     }
   }
 }

@@ -14,6 +14,7 @@ package org.sonatype.nexus.repository.content.store.internal.migration;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -22,6 +23,9 @@ import org.sonatype.goodies.lifecycle.LifecycleSupport;
 import org.sonatype.nexus.common.app.ManagedLifecycle;
 import org.sonatype.nexus.common.collect.NestedAttributesMap;
 import org.sonatype.nexus.common.event.EventAware;
+import org.sonatype.nexus.kv.GlobalKeyValueStore;
+import org.sonatype.nexus.kv.NexusKeyValue;
+import org.sonatype.nexus.kv.ValueType;
 import org.sonatype.nexus.repository.config.Configuration;
 import org.sonatype.nexus.repository.content.store.AssetBlobStore;
 import org.sonatype.nexus.repository.content.store.FormatStoreManager;
@@ -56,21 +60,26 @@ public class AssetBlobRefMigrationTaskManager
 
   private final TaskScheduler taskScheduler;
 
+  private final GlobalKeyValueStore globalKeyValueStore;
+
   @Inject
   public AssetBlobRefMigrationTaskManager(
       final RepositoryManager repositoryManager,
       final Map<String, FormatStoreManager> formatStoreManagers,
-      final TaskScheduler taskScheduler) {
+      final TaskScheduler taskScheduler,
+      final GlobalKeyValueStore globalKeyValueStore)
+  {
     this.repositoryManager = checkNotNull(repositoryManager);
     this.formatStoreManagers = checkNotNull(formatStoreManagers);
     this.taskScheduler = checkNotNull(taskScheduler);
+    this.globalKeyValueStore = checkNotNull(globalKeyValueStore);
   }
 
   @Override
   protected void doStart() throws Exception {
     browseActiveFormatStores().forEach((format, contentStore) -> {
       FormatStoreManager formatStoreManager = formatStoreManagers.get(format);
-      if (formatStoreManager != null) {
+      if (formatStoreManager != null && !getFormatChecked(format, contentStore)) {
         AssetBlobStore<?> assetBlobStore = formatStoreManager.assetBlobStore(contentStore);
         boolean notMigratedAssetBlobRefsExists = assetBlobStore.notMigratedAssetBlobRefsExists();
         if (notMigratedAssetBlobRefsExists) {
@@ -78,6 +87,7 @@ public class AssetBlobRefMigrationTaskManager
               format, contentStore);
           scheduleMigrationTask(format, contentStore);
         }
+        setFormatChecked(format, contentStore);
       }
     });
   }
@@ -111,5 +121,22 @@ public class AssetBlobRefMigrationTaskManager
       log.info("Scheduling blobRef migration task for {} format on {}", format, contentStore);
       taskScheduler.scheduleTask(taskConfiguration, schedule);
     }
+  }
+
+  private void setFormatChecked(final String format, final String contentStore) {
+    NexusKeyValue kv = new NexusKeyValue();
+    kv.setKey(buildKey(format, contentStore));
+    kv.setType(ValueType.BOOLEAN);
+    kv.setValue(true);
+    globalKeyValueStore.setKey(kv);
+  }
+
+  private String buildKey(final String format, final String contentStore) {
+    return TYPE_ID + ":checked:" + format + ":" + contentStore;
+  }
+
+  private boolean getFormatChecked(final String format, final String contentStore) {
+    Optional<NexusKeyValue> key = globalKeyValueStore.getKey(buildKey(format, contentStore));
+    return key.map(NexusKeyValue::getAsBoolean).orElse(false);
   }
 }

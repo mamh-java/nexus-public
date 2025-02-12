@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.sonatype.goodies.testsupport.TestSupport;
 import org.sonatype.nexus.common.collect.NestedAttributesMap;
+import org.sonatype.nexus.kv.GlobalKeyValueStore;
 import org.sonatype.nexus.repository.Format;
 import org.sonatype.nexus.repository.Repository;
 import org.sonatype.nexus.repository.config.Configuration;
@@ -87,6 +88,9 @@ public class AssetBlobRefMigrationTaskManagerTest
   @Mock
   private AssetBlobStore<?> assetBlobStore;
 
+  @Mock
+  private GlobalKeyValueStore globalKeyValueStore;
+
   private Map<String, FormatStoreManager> formatStoreManagers = new HashMap<>();
 
   @Before
@@ -118,7 +122,7 @@ public class AssetBlobRefMigrationTaskManagerTest
     when(assetBlobStore.notMigratedAssetBlobRefsExists()).thenReturn(true);
 
     AssetBlobRefMigrationTaskManager underTest = new AssetBlobRefMigrationTaskManager(repositoryManager,
-        formatStoreManagers, taskScheduler);
+        formatStoreManagers, taskScheduler, globalKeyValueStore);
     InOrder inOrder = inOrder(taskScheduler);
 
     inOrder.verify(taskScheduler, never()).scheduleTask(any(), any());
@@ -142,7 +146,7 @@ public class AssetBlobRefMigrationTaskManagerTest
     when(assetBlobStore.notMigratedAssetBlobRefsExists()).thenReturn(false);
 
     AssetBlobRefMigrationTaskManager underTest = new AssetBlobRefMigrationTaskManager(repositoryManager,
-        formatStoreManagers, taskScheduler);
+        formatStoreManagers, taskScheduler, globalKeyValueStore);
 
     InOrder inOrder = inOrder(taskScheduler);
 

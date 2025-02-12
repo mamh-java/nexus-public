@@ -186,11 +186,11 @@ public interface AssetBlobDAO
   boolean updateBlobRef(@Param("assetBlobData") AssetBlob assetBlob);
 
   /**
-   * Count asset blobs with legacy blobRef format {@code store-name:blob-id@node-id}.
+   * Exist asset blobs with legacy blobRef format {@code store-name:blob-id@node-id}.
    *
-   * @return asset blobs count
+   * @return Exist asset blobs with legacy blobRef format
    */
-  int countNotMigratedAssetBlobs();
+  boolean existsNotMigratedAssetBlobs();
 
   /**
    * Get repository name by blob reference.

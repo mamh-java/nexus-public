@@ -7,16 +7,9 @@
       <Arg>
         <New id="RequestLogHandler" class="org.eclipse.jetty.server.handler.RequestLogHandler">
           <Set name="requestLog">
-            <New id="RequestLogImpl" class="org.eclipse.jetty.server.CustomRequestLog">
-              <Arg>
-                <New class="org.eclipse.jetty.server.RequestLogWriter">
-                  <Set name="filename"><SystemProperty name="jetty.logs" default="../sonatype-work/nexus3/log"/>/request.log</Set>
-                  <Set name="append">true</Set>
-                  <Set name="retainDays">90</Set>
-                  <Set name="timeZone">GMT</Set>
-                </New>
-              </Arg>
-              <Arg>%{client}a - %u %t "%r" %s %{Content-Length}i %O %T %{User-Agent}i</Arg>
+            <New id="LogbackRequestLog" class="ch.qos.logback.access.jetty.RequestLogImpl2">
+              <Set name="fileName"><Property name="logback.etc"/>/logback-access.xml</Set>
+              <Set name="quiet">true</Set>
             </New>
           </Set>
         </New>
